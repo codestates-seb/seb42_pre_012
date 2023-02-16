@@ -1,10 +1,10 @@
-package com.pre12.stackoverflowclone;
+package com.pre012.server;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class StackoverflowCloneApplicationTests {
+class ServerApplicationTests {
 
 	@Test
 	void contextLoads() {

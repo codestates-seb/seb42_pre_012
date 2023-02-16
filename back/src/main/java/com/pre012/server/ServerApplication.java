@@ -1,13 +1,13 @@
-package com.pre12.stackoverflowclone;
+package com.pre012.server;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class StackoverflowCloneApplication {
+public class ServerApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(StackoverflowCloneApplication.class, args);
+		SpringApplication.run(ServerApplication.class, args);
 	}
 
 }

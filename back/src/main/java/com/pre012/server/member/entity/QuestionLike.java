@@ -10,7 +10,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
-import com.pre012.server.member.entity.enums.LikeType;
+import com.pre012.server.member.enums.LikeType;
 import com.pre012.server.question.entity.Question;
 
 import lombok.Getter;
@@ -24,6 +24,7 @@ import lombok.Setter;
 public class QuestionLike {
     
     @Id
+    @Column(name = "question_like_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     

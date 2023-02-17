@@ -1,11 +1,12 @@
-package com.pre012.server.tag.entity;
+package com.pre012.server.question.entity;
 
-import com.pre012.server.question.entity.Question;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+
+import com.pre012.server.tag.entity.Tag;
 
 @NoArgsConstructor
 @Setter
@@ -13,8 +14,9 @@ import javax.persistence.*;
 @Entity
 public class QuestionTag {
     @Id
+    @Column(name = "question_tag_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long questionId;
+    private long id;
 
     @ManyToOne
     @JoinColumn(name = "TAG_ID")

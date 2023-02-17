@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 
 @NoArgsConstructor
 @Setter
@@ -15,8 +14,9 @@ import java.time.LocalDateTime;
 @Entity
 public class QuestionComment extends Auditable {
     @Id
+    @Column(name = "question_comment_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long questionCommentId;
+    private Long id;
 
     @Column(nullable = false)
     private String content;

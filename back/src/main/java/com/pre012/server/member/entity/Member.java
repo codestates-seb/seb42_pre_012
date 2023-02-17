@@ -16,7 +16,7 @@ import javax.persistence.OneToMany;
 
 import com.pre012.server.answer.entity.Answer;
 import com.pre012.server.common.audit.Auditable;
-import com.pre012.server.member.entity.enums.MemberStatus;
+import com.pre012.server.member.enums.MemberStatus;
 import com.pre012.server.question.entity.Question;
 
 import lombok.*;
@@ -28,6 +28,7 @@ import lombok.*;
 public class Member extends Auditable {
 
     @Id
+    @Column(name = "member_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 

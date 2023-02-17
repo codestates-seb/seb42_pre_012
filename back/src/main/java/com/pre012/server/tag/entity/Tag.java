@@ -23,6 +23,6 @@ public class Tag {
     @Column(nullable = false)
     private String tagContent; // 태그 상세 설명
 
-    @OneToMany(mappedBy = "tag", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "tag",  fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<QuestionTag> questionTags = new ArrayList<>();
 }

@@ -4,6 +4,7 @@ import com.pre012.server.answer.entity.Answer;
 import com.pre012.server.common.audit.Auditable;
 import com.pre012.server.member.entity.Bookmark;
 import com.pre012.server.member.entity.Member;
+import com.pre012.server.member.entity.QuestionLike;
 import com.pre012.server.tag.entity.QuestionTag;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -44,17 +45,17 @@ public class Question extends Auditable {
     @JoinColumn(name = "MEMBER_ID")
     private Member member;
 
-    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "question", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<QuestionComment> questionComments = new ArrayList<>();
 
-    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "question", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<QuestionLike> memberQuestionLikes = new ArrayList<>();
 
-    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "question", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<QuestionTag> questionTags = new ArrayList<>();
 
     @Setter(AccessLevel.NONE)
-    @OneToMany(mappedBy = "question", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "question", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Bookmark> bookmarks = new ArrayList<>();
 
 }

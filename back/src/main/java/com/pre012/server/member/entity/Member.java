@@ -58,11 +58,11 @@ public class Member extends Auditable {
     private List<Bookmark> bookmarks = new ArrayList<>();
     
     @Setter(AccessLevel.NONE)
-    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
     private List<QuestionLike> questionLikes = new ArrayList<>();
     
     @Setter(AccessLevel.NONE)
-    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
     private List<AnswerLike> answerLikes = new ArrayList<>();
 
     /*

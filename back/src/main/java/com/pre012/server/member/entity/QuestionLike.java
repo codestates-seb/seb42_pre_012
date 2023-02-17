@@ -1,5 +1,6 @@
 package com.pre012.server.member.entity;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -27,6 +28,7 @@ public class QuestionLike {
     private Long id;
     
     @Enumerated(value = EnumType.STRING)
+    @Column(length = 20)
     private LikeType likeType;
     
     @ManyToOne

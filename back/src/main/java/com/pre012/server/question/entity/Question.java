@@ -1,8 +1,11 @@
 package com.pre012.server.question.entity;
 
 import com.pre012.server.answer.entity.Answer;
+import com.pre012.server.common.audit.Auditable;
+import com.pre012.server.member.entity.Bookmark;
 import com.pre012.server.member.entity.Member;
 import com.pre012.server.tag.entity.QuestionTag;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -16,7 +19,7 @@ import java.util.List;
 @Setter
 @Getter
 @Entity
-public class Question {
+public class Question extends Auditable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long questionId;
@@ -34,12 +37,6 @@ public class Question {
     @Column(name = "LIKES")
     private int like;
 
-    @Column(nullable = false)
-    private LocalDateTime createdAt = LocalDateTime.now();
-
-    @Column(nullable = false)
-    private LocalDateTime modifiedAt = LocalDateTime.now();
-
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL)
     private List<Answer> answers;
 
@@ -56,5 +53,8 @@ public class Question {
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL)
     private List<QuestionTag> questionTags = new ArrayList<>();
 
+    @Setter(AccessLevel.NONE)
+    @OneToMany(mappedBy = "question", fetch = FetchType.LAZY)
+    private List<Bookmark> bookmarks = new ArrayList<>();
 
 }

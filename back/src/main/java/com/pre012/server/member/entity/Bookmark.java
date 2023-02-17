@@ -1,5 +1,6 @@
 package com.pre012.server.member.entity;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -20,6 +21,7 @@ import lombok.Setter;
 public class Bookmark {
     
     @Id
+    @Column(name = "member_bookmark_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     

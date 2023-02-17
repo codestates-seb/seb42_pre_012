@@ -1,4 +1,4 @@
-package com.pre012.server.member.entity.enums;
+package com.pre012.server.member.enums;
 
 import lombok.Getter;
 

@@ -11,7 +11,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 import com.pre012.server.answer.entity.Answer;
-import com.pre012.server.member.entity.enums.LikeType;
+import com.pre012.server.member.enums.LikeType;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,6 +24,7 @@ import lombok.Setter;
 public class AnswerLike {
     
     @Id
+    @Column(name = "answer_like_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     

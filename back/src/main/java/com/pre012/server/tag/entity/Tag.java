@@ -5,6 +5,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+
+import com.pre012.server.question.entity.QuestionTag;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,14 +17,15 @@ import java.util.List;
 @Entity
 public class Tag {
     @Id
+    @Column(name = "tag_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long tagId;
+    private long id;
 
     @Column(nullable = false)
-    private String tagName;
+    private String name;
 
-    @Column(nullable = false)
-    private String tagContent; // 태그 상세 설명
+    @Column
+    private String content; // 태그 상세 설명
 
     @OneToMany(mappedBy = "tag",  fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<QuestionTag> questionTags = new ArrayList<>();

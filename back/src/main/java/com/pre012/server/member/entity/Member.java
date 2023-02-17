@@ -3,6 +3,7 @@ package com.pre012.server.member.entity;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -45,15 +46,15 @@ public class Member extends Auditable {
     private List<Answer> answers = new ArrayList<>();
     
     @Setter(AccessLevel.NONE)
-    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<Bookmark> bookmarks = new ArrayList<>();
     
     @Setter(AccessLevel.NONE)
-    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<QuestionLike> questionLikes = new ArrayList<>();
     
     @Setter(AccessLevel.NONE)
-    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<AnswerLike> answerLikes = new ArrayList<>();
 
     /*

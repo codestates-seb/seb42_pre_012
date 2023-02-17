@@ -5,7 +5,6 @@ import com.pre012.server.common.audit.Auditable;
 import com.pre012.server.member.entity.Bookmark;
 import com.pre012.server.member.entity.Member;
 import com.pre012.server.member.entity.QuestionLike;
-
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -28,36 +27,81 @@ public class Question extends Auditable {
     @Column(nullable = false)
     private String title;
 
-    // 이미지를 중간에 넣는다면 배열로 해야하는 걸까나? 이미지는 byte 로 오지 않나..?
+    // 이미지 넣는 부분
     @Column(length = 200)
-    private String image_path;  
-    
+    private String image_path;
+
     @Column
     private String content;
 
     @Column
-    private int hits;
+    private int viewCnt;
 
     @Column
-    private int likes;
+    private int likeCnt;
 
     @ManyToOne
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL) // ↓ cascade들 우선 둘게요!!
-    private List<Answer> answers;
+    // 1 : N
+    @Setter(AccessLevel.NONE)
+    @OneToMany(mappedBy = "question")
+    private List<Answer> answers = new ArrayList<>();
 
+    @Setter(AccessLevel.NONE)
     @OneToMany(mappedBy = "question", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<QuestionComment> comments = new ArrayList<>();
 
+    @Setter(AccessLevel.NONE)
     @OneToMany(mappedBy = "question", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<QuestionLike> memberLikes = new ArrayList<>();
 
+    @Setter(AccessLevel.NONE)
     @OneToMany(mappedBy = "question", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<QuestionTag> tags = new ArrayList<>();
 
     @Setter(AccessLevel.NONE)
     @OneToMany(mappedBy = "question", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Bookmark> bookmarks = new ArrayList<>();
+
+
+    /*
+     *  양방향 매핑 설정
+     */
+
+    public void setAnswer(Answer answer) {
+        this.answers.add(answer);
+        if (answer.getQuestion() != this) {
+            answer.setQuestion(this);
+        }
+    }
+
+    public void setComments(QuestionComment questionComment) {
+        this.comments.add(questionComment);
+        if (questionComment.getQuestion() != this) {
+            questionComment.setQuestion(this);
+        }
+    }
+
+    public void setMemberLikes(QuestionLike questionLike) {
+        this.memberLikes.add(questionLike);
+        if (questionLike.getQuestion() != this) {
+            questionLike.setQuestion(this);
+        }
+    }
+
+    public void setTags(QuestionTag tag) {
+        this.tags.add(tag);
+        if (tag.getQuestion() != this) {
+            tag.setQuestion(this);
+        }
+    }
+
+    public void setBookmark(Bookmark bookmark) {
+        this.bookmarks.add(bookmark);
+        if (bookmark.getQuestion() != this) {
+            bookmark.setQuestion(this);
+        }
+    }
 }

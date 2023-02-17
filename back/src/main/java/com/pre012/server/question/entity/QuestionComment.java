@@ -19,13 +19,13 @@ public class QuestionComment extends Auditable {
     private Long id;
 
     @Column(nullable = false)
-    private String content;
+    private String content; // 댓글 내용
 
     @ManyToOne
-    @JoinColumn(name = "MEMBER_ID")
+    @JoinColumn(name = "member_id")
     private Member member;
 
     @ManyToOne
-    @JoinColumn(name = "QUESTION_ID")
+    @JoinColumn(name = "question_id")
     private Question question;
 }

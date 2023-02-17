@@ -30,22 +30,22 @@ public class Answer extends Auditable {
 
     //좋아요 수
     @Column
-    private int likes;
+    private int likeCnt;
 
     //조회 수
     @Column
-    private int hits;
+    private int viewCnt;
 
     //이미지 가져오는 법 확인
     @Column(length = 200)
     private String image_path;    
 
     @Setter(AccessLevel.NONE)
-    @OneToMany(mappedBy = "answer", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "answer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<AnswerComment> comments = new ArrayList<>();
 
     @Setter(AccessLevel.NONE)
-    @OneToMany(mappedBy = "answer", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "answer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<AnswerLike> memberLikes = new ArrayList<>();
 
     @ManyToOne

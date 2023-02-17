@@ -7,8 +7,8 @@ spring:
     datasource:
         driver-class-name: com.mysql.cj.jdbc.Driver
         url: jdbc:mysql://localhost:3306/pre012?serverTimezone=Asia/Seoul
-        username: # 계정
-        password: # 비밀번호
+        username: ${MYSQL_USERNAME}
+        password: ${MYSQL_PASSWORD}
     jpa:
         hibernate:
             ddl-auto: none

@@ -20,7 +20,7 @@ const TopbarContainer = styled.div`
     rgba(60, 64, 67, 0.15) 0px 0px 6px 0px;
   display: flex;
   align-items: center;
-  position: relative;
+  position: fixed;
 
   .topbarLeftBlank {
     width: 5.5%;

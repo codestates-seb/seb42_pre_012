@@ -4,7 +4,6 @@ import GlobalStyle from "./style/Globalstyle";
 
 const Main = styled.div`
   width: 100vw;
-  height: 100vh;
   display: flex;
   background-color: RGB(248, 249, 249);
 `;

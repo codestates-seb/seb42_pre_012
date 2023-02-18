@@ -1,14 +1,12 @@
 import styled from "styled-components";
-
-import GlobalStyle from "./styles/GlobalStyle";
 import Topbar from "./components/Topbar";
+import GlobalStyle from "./style/Globalstyle";
 
 const Main = styled.div`
   width: 100vw;
   height: 100vh;
   display: flex;
-  flex-direction: column;
-  background-color: wheat;
+  background-color: RGB(248, 249, 249);
 `;
 
 function App() {

@@ -23,12 +23,7 @@ const TopbarContainer = styled.div`
   position: relative;
 
   .topbarLeftBlank {
-    width: 5.68%;
-
-    @media (max-width: 1080px) {
-      width: auto;
-      margin-left: 7px;
-    }
+    width: 5.5%;
   }
 
   .topbarRightBlank {
@@ -52,6 +47,7 @@ const TopbarContainer = styled.div`
     bottom: 2px;
     width: 145px;
     height: auto;
+    cursor: pointer;
   }
 
   .productsText {
@@ -59,7 +55,8 @@ const TopbarContainer = styled.div`
     font-weight: 350;
     font-size: 14px;
     margin-top: 3px;
-    margin-left: 17px;
+    margin-left: 15px;
+    letter-spacing: 0.3px;
   }
 `;
 
@@ -67,7 +64,7 @@ const TopbarSearchContainer = styled.div`
   margin-left: 21px;
   background-color: green;
   position: relative;
-  width: 53.8%;
+  width: 53.5%;
   height: 29px;
 
   input {
@@ -137,16 +134,29 @@ const TopbarRightSideLogin = styled.div`
   align-items: center;
   /* display: none; */
   width: 215px;
-  margin-left: 19px;
+  margin-left: 7px;
+
+  .userIconContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 47px;
+    width: 50px;
+
+    &:hover {
+      background-color: RGB(228, 229, 231);
+    }
+  }
 
   .userIcon {
     font-size: 22px;
     color: RGB(81, 89, 95);
+    cursor: pointer;
   }
 
   .mailIcon {
     font-size: 21px;
-    margin-left: 38px;
+    margin-left: 20px;
     color: RGB(81, 89, 95);
   }
 
@@ -290,7 +300,9 @@ function Topbar() {
         <input className="signupButton" type={"button"} value="Sign up" />
       </TopbarRightSideNotLogin>
       <TopbarRightSideLogin>
-        <FaUser className="userIcon" />
+        <div className="userIconContainer">
+          <FaUser className="userIcon" />
+        </div>
         <IoMailOpen className="mailIcon" />
         <ImTrophy className="trophyIcon" />
         <BsQuestionCircleFill className="questionIcon" />

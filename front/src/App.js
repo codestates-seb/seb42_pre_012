@@ -1,12 +1,19 @@
+import styled from "styled-components";
+import Topbar from "./components/Topbar";
+import GlobalStyle from "./style/Globalstyle";
+
+const Main = styled.div`
+  width: 100vw;
+  display: flex;
+  background-color: RGB(248, 249, 249);
+`;
+
 function App() {
   return (
-    <div>
-      <header>
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-      </header>
-    </div>
+    <Main>
+      <GlobalStyle />
+      <Topbar />
+    </Main>
   );
 }
 

@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { Routes, Route, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import LeftSidebar from "./components/LeftSidebar";
 import Topbar from "./components/Topbar";
@@ -26,6 +26,11 @@ const Main = styled.div`
 function App() {
   const [login, setLogin] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    navigate("/login");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   function onLogin(e) {
     e.preventDefault();

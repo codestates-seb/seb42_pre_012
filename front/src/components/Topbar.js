@@ -94,7 +94,6 @@ const TopbarSearchContainer = styled.div`
 `;
 
 const TopbarRightSideNotLogin = styled.div`
-  display: none;
   width: 215px;
   margin-left: 20px;
 
@@ -133,7 +132,6 @@ const TopbarRightSideNotLogin = styled.div`
 const TopbarRightSideLogin = styled.div`
   display: flex;
   align-items: center;
-  /* display: none; */
   width: 215px;
   margin-left: 7px;
 
@@ -199,6 +197,7 @@ const Keyword = styled.div`
   position: absolute;
   display: flex;
   flex-direction: column;
+  background-color: white;
   width: 53.6%;
   height: 182px;
   top: 50px;
@@ -270,7 +269,7 @@ const Keyword = styled.div`
   }
 `;
 
-function Topbar() {
+function Topbar({ login, onLogin }) {
   const [searchFocus, setSearchFocus] = useState(false);
   const navigate = useNavigate();
 
@@ -290,6 +289,14 @@ function Topbar() {
     navigate("/users");
   }
 
+  function navigateToLogin() {
+    navigate("/login");
+  }
+
+  function navigateToSignup() {
+    navigate("/signup");
+  }
+
   return (
     <TopbarContainer>
       <div className="topbarLeftBlank" />
@@ -305,21 +312,34 @@ function Topbar() {
         />
         <GrSearch className="searchIcon" />
       </TopbarSearchContainer>
-      <TopbarRightSideNotLogin>
-        <input className="loginButton" type={"button"} value="Log in" />
-        <input className="signupButton" type={"button"} value="Sign up" />
-      </TopbarRightSideNotLogin>
-      <TopbarRightSideLogin>
-        <div className="userIconContainer">
-          <FaUser onClick={navigateToUsers} className="userIcon" />
-        </div>
-        <IoMailOpen className="mailIcon" />
-        <ImTrophy className="trophyIcon" />
-        <BsQuestionCircleFill className="questionIcon" />
-        <div className="logoutIconContainer">
-          <RiLogoutBoxRLine className="logoutIcon" />
-        </div>
-      </TopbarRightSideLogin>
+      {login ? (
+        <TopbarRightSideLogin>
+          <div className="userIconContainer">
+            <FaUser onClick={navigateToUsers} className="userIcon" />
+          </div>
+          <IoMailOpen className="mailIcon" />
+          <ImTrophy className="trophyIcon" />
+          <BsQuestionCircleFill className="questionIcon" />
+          <div className="logoutIconContainer">
+            <RiLogoutBoxRLine onClick={onLogin} className="logoutIcon" />
+          </div>
+        </TopbarRightSideLogin>
+      ) : (
+        <TopbarRightSideNotLogin>
+          <input
+            onClick={navigateToLogin}
+            className="loginButton"
+            type={"button"}
+            value="Log in"
+          />
+          <input
+            onClick={navigateToSignup}
+            className="signupButton"
+            type={"button"}
+            value="Sign up"
+          />
+        </TopbarRightSideNotLogin>
+      )}
       <div className="topbarRightBlank" />
       {searchFocus ? (
         <Keyword>

@@ -1,4 +1,6 @@
 import styled from "styled-components";
+import { useNavigate } from "react-router-dom";
+
 import { FaGithub, FaFacebookSquare, FaExternalLinkAlt } from "react-icons/fa";
 
 // 로그인 페이지의 컨테이너
@@ -7,6 +9,7 @@ const LoginContainer = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  margin-top: 15px;
 
   width: 100%;
   height: 100vh;
@@ -27,10 +30,12 @@ const LoginContainer = styled.div`
 // props.bgColor: background-color
 // props.color: color
 // props.hoverColor: background-color while hovering
+
 const OAuth2Btn = styled.button`
   display: flex;
   justify-content: center;
   align-items: center;
+  cursor: pointer;
 
   width: 277.99px;
   height: 37.4px;
@@ -53,14 +58,14 @@ const OAuth2Btn = styled.button`
 `;
 
 // TODO: form -> 로그인 버튼 클릭 -> Axios API
-const LoginBox = styled.div`
+const LoginBox = styled.form`
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
 
-  width: 277.99px;
-  height: 233.43px;
+  width: 230px;
+  height: 190px;
   margin: 16px 0 24px 0;
   padding: 24px;
 
@@ -71,54 +76,63 @@ const LoginBox = styled.div`
     0 20px 48px hsla(0, 0%, 0%, 0.05), 0 1px 4px hsla(0, 0%, 0%, 0.1);
   font-size: 13px;
 
-  & > form {
-    color: #0c0d0e;
+  color: #0c0d0e;
 
-    li {
-      list-style: none;
+  label {
+    /* color: #0C0D0E; */
+    font-size: 15px;
+    font-weight: 600;
+    align-self: flex-start;
+  }
+
+  div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    align-self: flex-start;
+    a {
+      position: relative;
+      left: 73px;
     }
+  }
 
-    label {
-      /* color: #0C0D0E; */
-      font-size: 15px;
-      font-weight: 600;
-    }
-
-    div {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    /* span {
+  /* span {
       color: #0C0D0E;
     } */
 
-    input[type="email"],
-    input[type="password"] {
-      width: 229.99px;
-      height: 32.4px;
-      margin: 5px 0 16px 0;
+  input[type="email"],
+  input[type="password"] {
+    width: 229.99px;
+    height: 32.4px;
+    margin: 5px 0 16px 0;
+    border-radius: 2.5px;
+    border: 1px solid RGB(201, 205, 209);
+    background: white;
+
+    &:focus {
+      outline: none;
+      border: 1px solid RGB(107, 187, 247);
+      box-shadow: 0px 0px 1px 4px RGB(215, 229, 242);
     }
+  }
 
-    input[type="submit"] {
-      width: 229.99px;
-      height: 37.4px;
-      background-color: "#0A95FF";
-      color: white;
-      border: none;
-      border-radius: 5px;
-      text-align: center;
+  input[type="submit"] {
+    width: 229.99px;
+    height: 37.4px;
+    background-color: RGB(9, 149, 255);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    text-align: center;
+    cursor: pointer;
 
-      &:hover {
-        background-color: "#0074CC";
-      }
+    &:hover {
+      background-color: "#0074CC";
     }
   }
 `;
 
 const ExtraMsg = styled.div`
-  padding: 16px;
   font-size: 13px;
   text-align: center;
   & p {
@@ -127,10 +141,26 @@ const ExtraMsg = styled.div`
   & span {
     margin-left: 5px;
   }
+
+  & button {
+    border: 0;
+    background-color: inherit;
+    color: #0074cc;
+    position: relative;
+    right: 10px;
+    font-size: 12px;
+    cursor: pointer;
+  }
 `;
 
-function Login() {
+function Login({ onLogin }) {
   // TODO: 함수 만들기
+  const navigate = useNavigate();
+
+  const navigateToSignup = () => {
+    navigate("/signup");
+  };
+
   const handleClickOAuth2Btn = (e) => {
     //
   };
@@ -176,18 +206,14 @@ function Login() {
 
       {/* Login box; form */}
       <LoginBox>
-        <form action="">
-          <label htmlFor="email_input">Email</label>
-          <input type="email" id="email_input" autoComplete="off" />
-          <div>
-            <label htmlFor="password_input">Password</label>
-            <span>
-              <a href="#">Forgot password?</a>
-            </span>
-          </div>
-          <input type="password" id="password_input" />
-          <input type="submit" value="Log in" />
-        </form>
+        <label htmlFor="email_input">Email</label>
+        <input type="email" id="email_input" autoComplete="off" />
+        <div>
+          <label htmlFor="password_input">Password</label>
+          <a href="#">Forgot password?</a>
+        </div>
+        <input type="password" id="password_input" />
+        <input onClick={onLogin} type="submit" value="Log in" />
       </LoginBox>
 
       {/* Extra messages */}
@@ -195,7 +221,7 @@ function Login() {
         <p>
           Don't have an account?{" "}
           <span>
-            <a href="#">Sign up</a>
+            <button onClick={navigateToSignup}>Sign up</button>
           </span>
         </p>
         <p>

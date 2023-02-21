@@ -136,49 +136,51 @@ const StyledLink = styled(NavLink)`
   }
 `;
 
-function LeftSidebar() {
+function LeftSidebar({ login }) {
   return (
     <LeftSidebarContainer>
-      <ol>
-        <StyledLink to="/" className="home">
-          Home
-        </StyledLink>
-        <li>
-          <span className="public">PUBLIC</span>
-          <ol className="mainNav">
-            <StyledLink to="questions" className="questions">
-              <IoEarth className="earthIcon" />
-              Questions
-            </StyledLink>
-            <StyledLink to="tags">Tags</StyledLink>
-            <StyledLink to="users">Users</StyledLink>
-            <li className="companies">Companies</li>
-          </ol>
-        </li>
-        <li>
-          <span className="collectives">
-            COLLECTIVES
-            <MdInfo className="infoIcon" />
-          </span>
-          <ol className="subNav">
-            <li>
-              <MdStars className="starIcon" />
-              Explore Collectives
-            </li>
-          </ol>
-        </li>
-        <li>
-          <span className="teams">
-            TEAMS <MdInfo className="infoIcon" />
-          </span>
-          <ol className="subNav">
-            <li>
-              <MdAssignment className="teamIcon" />
-              Create free Team
-            </li>
-          </ol>
-        </li>
-      </ol>
+      {login ? (
+        <ol>
+          <StyledLink to="/" className="home">
+            Home
+          </StyledLink>
+          <li>
+            <span className="public">PUBLIC</span>
+            <ol className="mainNav">
+              <StyledLink to="questions" className="questions">
+                <IoEarth className="earthIcon" />
+                Questions
+              </StyledLink>
+              <StyledLink to="tags">Tags</StyledLink>
+              <StyledLink to="users">Users</StyledLink>
+              <li className="companies">Companies</li>
+            </ol>
+          </li>
+          <li>
+            <span className="collectives">
+              COLLECTIVES
+              <MdInfo className="infoIcon" />
+            </span>
+            <ol className="subNav">
+              <li>
+                <MdStars className="starIcon" />
+                Explore Collectives
+              </li>
+            </ol>
+          </li>
+          <li>
+            <span className="teams">
+              TEAMS <MdInfo className="infoIcon" />
+            </span>
+            <ol className="subNav">
+              <li>
+                <MdAssignment className="teamIcon" />
+                Create free Team
+              </li>
+            </ol>
+          </li>
+        </ol>
+      ) : null}
     </LeftSidebarContainer>
   );
 }

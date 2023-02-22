@@ -40,7 +40,7 @@ public class SuccessHandler implements AuthenticationSuccessHandler{
         LoginResponse memberInfo = new LoginResponse(member.getId(), member.getProfileImagePath());
 
         response.setHeader("Authorization", "Bearer " + accessToken);
-        response.setHeader("Refresh", refreshToken);
+        response.setHeader("RefreshToken", refreshToken);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setStatus(HttpStatus.OK.value());
         response.getWriter().write(gson.toJson(memberInfo, LoginResponse.class));

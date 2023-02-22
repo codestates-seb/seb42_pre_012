@@ -47,7 +47,7 @@ public class JWTTokenizer {
     // AccessToken 생성
     public String generateAccessToken(Map<String, Object> claims, 
                                       String subject, 
-                                      Date ExpirationDate, 
+                                      Date expirationDate, 
                                       String encodedSecretKey) 
     {
         Key secretKey = getKeyFromBase64EncodedKey(encodedSecretKey);
@@ -56,19 +56,19 @@ public class JWTTokenizer {
                 .setClaims(claims)   // JWT에 포함 시킬 정보
                 .setSubject(subject) // JWT 제목
                 .setIssuedAt(Calendar.getInstance().getTime()) // 생성 일시
-                .setExpiration(ExpirationDate)                 // 만료 일시
+                .setExpiration(expirationDate)                 // 만료 일시
                 .signWith(secretKey)
                 .compact();
     }
 
     // RefreshToken 생성
-    public String generateRefreshToken(String subject, Date expiration, String base64EncodedSecretKey) {
+    public String generateRefreshToken(String subject, Date expirationDate, String base64EncodedSecretKey) {
         Key key = getKeyFromBase64EncodedKey(base64EncodedSecretKey);
 
         return Jwts.builder()
                 .setSubject(subject)
                 .setIssuedAt(Calendar.getInstance().getTime())
-                .setExpiration(expiration)
+                .setExpiration(expirationDate)
                 .signWith(key)
                 .compact();
     }

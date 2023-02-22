@@ -8,6 +8,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.pre012.server.common.dto.SingleResponseDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
@@ -48,18 +49,20 @@ public class SuccessHandler implements AuthenticationSuccessHandler{
         String refreshToken = delegateRefreshToken(member);
 
         Gson gson = new Gson();
-        LoginResponse memberInfo = new LoginResponse(member.getId(), member.getProfileImagePath());
+        String imgPath = member.getProfileImagePath() != null ? member.getProfileImagePath() : "";
+        LoginResponse memberInfo = new LoginResponse(member.getId(), imgPath);
+        SingleResponseDto<LoginResponse> responseDto = new SingleResponseDto<>(memberInfo);
 
         response.setHeader("Authorization", "Bearer " + accessToken);
         response.setHeader("RefreshToken", refreshToken);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setStatus(HttpStatus.OK.value());
-        response.getWriter().write(gson.toJson(memberInfo, LoginResponse.class));
+        response.getWriter().write(gson.toJson(responseDto, SingleResponseDto.class));
     }
 
     
-    // Access Token 발급 
-    private String delegateAccessToken(Member member) { 
+    // Access Token 발급
+    private String delegateAccessToken(Member member) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("memberId", member.getId());
         claims.put("roles", member.getRoles());
@@ -76,7 +79,6 @@ public class SuccessHandler implements AuthenticationSuccessHandler{
         String subject = member.getEmail();
         Date expirationDate = tokenizer.getTokenExpirationDate(tokenizer.getRefreshTokenExpirationMinutes());
         String base64EncodedSecretKey = tokenizer.encodeBase64SecretKey(tokenizer.getSecretKey());
-
         String refreshToken = tokenizer.generateRefreshToken(subject, expirationDate, base64EncodedSecretKey);
 
         return refreshToken;

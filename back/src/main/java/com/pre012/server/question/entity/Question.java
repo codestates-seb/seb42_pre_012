@@ -35,10 +35,10 @@ public class Question extends Auditable {
     private String content;
 
     @Column
-    private int viewCnt;
+    private int viewCnt = 0;
 
     @Column
-    private int likeCnt;
+    private int likeCnt = 0;
 
     @ManyToOne
     @JoinColumn(name = "member_id")

@@ -54,7 +54,7 @@ public class Member extends Auditable {
     // DB에 member_role 저장, @OneToMany로 관리
     @ElementCollection(fetch = FetchType.EAGER)
     // JoinColumn 이름은 "member_id"로 설정
-    @CollectionTable(joinColumns = @JoinColumn(name = "member_id"))
+    @CollectionTable(name = "member_role", joinColumns = @JoinColumn(name = "member_id"))
     private List<String> roles = new ArrayList<>();
     
     @Setter(AccessLevel.NONE)

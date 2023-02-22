@@ -1,5 +1,7 @@
 package com.pre012.server.member.controller;
 
+import javax.validation.Valid;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -8,9 +10,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.Valid;
-
+import static com.pre012.server.member.dto.MemberDto.SignUpDto;
 import com.pre012.server.member.service.MemberService;
+
 
 @RestController
 @RequestMapping("/members")
@@ -23,7 +25,7 @@ public class MemberController {
     }
 
     @PostMapping
-    public ResponseEntity signup() {
+    public ResponseEntity signup(@Valid SignUpDto signUpDto) {
         return null;
     }
 

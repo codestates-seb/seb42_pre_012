@@ -43,7 +43,7 @@ public class Member extends Auditable {
 
     @Enumerated(EnumType.STRING)
     @Column(length = 30)
-    private MemberStatus memberStatus;
+    private MemberStatus memberStatus = MemberStatus.MEMBER_ACTIVE;
 
     @Setter(AccessLevel.NONE)
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)

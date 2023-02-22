@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.CascadeType;
+import javax.persistence.CollectionTable;
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -12,6 +14,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 
 import com.pre012.server.answer.entity.Answer;
@@ -45,6 +48,15 @@ public class Member extends Auditable {
     @Column(length = 30)
     private MemberStatus memberStatus;
 
+    @Column(length = 200)
+    private String profileImagePath;
+
+    // DB에 member_role 저장, @OneToMany로 관리
+    @ElementCollection(fetch = FetchType.EAGER)
+    // JoinColumn 이름은 "member_id"로 설정
+    @CollectionTable(joinColumns = @JoinColumn(name = "member_id"))
+    private List<String> roles = new ArrayList<>();
+    
     @Setter(AccessLevel.NONE)
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
     private List<Question> questions = new ArrayList<>();

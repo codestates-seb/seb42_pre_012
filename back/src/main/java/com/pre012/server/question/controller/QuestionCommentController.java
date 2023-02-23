@@ -1,6 +1,7 @@
 package com.pre012.server.question.controller;
 
 import com.pre012.server.member.entity.Member;
+import com.pre012.server.member.service.MemberService;
 import com.pre012.server.question.dto.QuestionCommentDto;
 import com.pre012.server.question.entity.Question;
 import com.pre012.server.question.entity.QuestionComment;
@@ -43,7 +44,7 @@ public class QuestionCommentController {
         questionComment.setQuestion(findQuestion);
 
         // member 검증 후 넣어주기
-        Member findMember = memberService.findVerifyMember(requestBody.getMemberId());
+        Member findMember = memberService.findVerifiedMember(requestBody.getMemberId());
         questionComment.setMember(findMember);
 
 
@@ -77,6 +78,5 @@ public class QuestionCommentController {
 
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
-
 
 }

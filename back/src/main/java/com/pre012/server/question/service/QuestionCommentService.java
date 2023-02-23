@@ -12,11 +12,9 @@ import java.util.Optional;
 public class QuestionCommentService {
 
     private final QuestionCommentRepository repository;
-    private final QuestionService questionService;
 
-    public QuestionCommentService(QuestionCommentRepository repository, QuestionService questionService) {
+    public QuestionCommentService(QuestionCommentRepository repository) {
         this.repository = repository;
-        this.questionService = questionService;
     }
 
     /**

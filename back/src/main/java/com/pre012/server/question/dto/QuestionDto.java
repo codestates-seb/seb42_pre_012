@@ -1,12 +1,9 @@
 package com.pre012.server.question.dto;
 
-import com.pre012.server.question.entity.QuestionTag;
-import com.pre012.server.tag.dto.TagDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 public class QuestionDto {
 
@@ -16,7 +13,7 @@ public class QuestionDto {
         private Long memberId;
         private String title;
         private String content;
-        private List<TagDto> tags; // 수정 필요
+//        private List<TagDto> tags; // 수정 필요
     }
 
     @Getter
@@ -25,7 +22,7 @@ public class QuestionDto {
         private Long memberId;
         private String title;
         private String content;
-        private List<QuestionTag> tag; // DTO로 받기 수정 필요
+//        private List<QuestionTag> tag; // DTO로 받기 수정 필요
 
         private Long questionId;
 

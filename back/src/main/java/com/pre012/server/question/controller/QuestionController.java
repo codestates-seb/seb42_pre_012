@@ -1,30 +1,27 @@
 package com.pre012.server.question.controller;
 
-import com.pre012.server.dto.MultiResponseDto;
+import com.pre012.server.common.dto.MultiResponseDto;
 import com.pre012.server.member.entity.Member;
 import com.pre012.server.member.entity.QuestionLike;
+import com.pre012.server.member.service.MemberService;
 import com.pre012.server.question.dto.QuestionDto;
 import com.pre012.server.question.entity.Question;
 import com.pre012.server.question.entity.QuestionComment;
 import com.pre012.server.question.mapper.QuestionMapper;
 import com.pre012.server.question.service.QuestionService;
 import com.pre012.server.tag.entity.Tag;
-import com.pre012.server.utils.UriCreator;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Validated
 @RestController
 @RequestMapping("/questions")
 public class QuestionController {
-    private final static String QUESTION_DEFAULT_URL = "/questions";
     private final QuestionService questionService;
     private final MemberService memberService;
     private final QuestionMapper mapper;
@@ -37,6 +34,7 @@ public class QuestionController {
 
     /**
      * 질문 등록
+     * 이미지 관련 내용 수정 필요 (DTO 도)
      * 태그 관련 내용 수정 필요
      */
     @PostMapping
@@ -47,14 +45,12 @@ public class QuestionController {
         Question question = mapper.questionPostToQuestion(requestBody);
 
         // 검증된 member 찾아서 넣기
-        Member member = memberService.findVerifyMember(requestBody.getMemberId());
+        Member member = memberService.findVerifiedMember(requestBody.getMemberId());
         question.setMember(member);
 
         Question savedQuestion = questionService.createQuestion(question);
 
-        URI location = UriCreator.createUri(QUESTION_DEFAULT_URL, savedQuestion.getId());
-
-        return ResponseEntity.created(location).build();
+        return new ResponseEntity(HttpStatus.CREATED);
     }
 
     /**
@@ -68,19 +64,18 @@ public class QuestionController {
         Question question = mapper.questionPatchToQuestion(requestBody);
 
         // 검증된 member 찾아서 넣기
-        Member member = memberService.findVerifyMember(requestBody.getMemberId());
+        Member member = memberService.findVerifiedMember(requestBody.getMemberId());
         question.setMember(member);
 
         Question updatedQuestion = questionService.updateQuestion(question);
 
-        URI location = UriCreator.createUri(QUESTION_DEFAULT_URL, updatedQuestion.getId());
-
-        return ResponseEntity.ok(location);  // header 에 location 정보 잘 들어가는 지 확인 필요
+        return new ResponseEntity(HttpStatus.OK);
 
     }
 
     /**
      * 질문 삭제
+     * answer 지우는 메소드 추가하기
      */
     @DeleteMapping("{question-id}")
     public ResponseEntity deleteQuestion(@PathVariable("question-id") Long questionId,
@@ -130,33 +125,60 @@ public class QuestionController {
     }
 
     /**
-     * 질문 좋아요 (값 고정)
+     * 질문 좋아요 (완성)
      */
     @PostMapping("/like/{question-id}")
-    public ResponseEntity likeQuestion(@PathVariable("question-id") Long questionId,
-                                       @RequestParam Long memberId) {
+    public ResponseEntity postQuestionLike(@PathVariable("question-id") Long questionId,
+                                           @RequestParam Long memberId) {
 
         // 멤버 찾아서 파라미터로 넣기
-        Member findMember = memberService.findVerifyMember(memberId);
+        Member findMember = memberService.findVerifiedMember(memberId);
 
-        questionService.createLike(questionId, findMember);
+        questionService.switchLike(questionId, findMember);
 
         return new ResponseEntity(HttpStatus.CREATED);
     }
 
     /**
-     * 질문 싫어요 (값 고정)
+     * 질문 싫어요 (완성)
      */
     @PostMapping("/unlike/{question-id}")
-    public ResponseEntity likeQuestion(@PathVariable("question-id") Long questionId,
-                                       @RequestParam Long memberId) {
+    public ResponseEntity postQuestionUnlike(@PathVariable("question-id") Long questionId,
+                                             @RequestParam Long memberId) {
 
         // 멤버 찾아서 파라미터로 넣기
-        Member findMember = memberService.findVerifyMember(memberId);
+        Member findMember = memberService.findVerifiedMember(memberId);
 
-        questionService.createUnlike(questionId, findMember);
+        questionService.switchUnlike(questionId, findMember);
 
         return new ResponseEntity(HttpStatus.CREATED);
+    }
+
+    /**
+     * 질문 북마크 (완성)
+     */
+    @PostMapping("/bookmark/{question-id}")
+    public ResponseEntity postBookmark(@PathVariable("question-id") Long questionId,
+                                       @RequestParam Long memberId) {
+
+        Member findMember = memberService.findVerifiedMember(memberId);
+
+        questionService.switchBookmark(questionId, findMember);
+
+        return new ResponseEntity(HttpStatus.CREATED);
+    }
+
+    /**
+     * 질문 검색
+     */
+    @GetMapping("/search")
+    public ResponseEntity searchQuestions(@RequestParam String keyword,
+                                          @RequestParam String type,
+                                          @RequestParam int page) {
+
+        Page<Question> questions = questionService.searchQuestions(page - 1, keyword, type);
+
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
 

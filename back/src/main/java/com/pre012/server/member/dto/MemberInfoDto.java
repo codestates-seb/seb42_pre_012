@@ -12,10 +12,10 @@ public class MemberInfoDto {
     @Setter
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class MemberAnswersDto {
+    public static class MemberAnswersResponseDto {
 
         private WriterResponse member;
-        private List<QuestionResponse> questions;
+        private List<MyQuestionResponse> questions;
         private List<TagResponse> TagResponse;
     }
 
@@ -30,7 +30,7 @@ public class MemberInfoDto {
 
     @Getter
     @AllArgsConstructor
-    public static class QuestionResponse {
+    public static class MyQuestionResponse {
         private Long questionId;
         private String title;
         private String content;

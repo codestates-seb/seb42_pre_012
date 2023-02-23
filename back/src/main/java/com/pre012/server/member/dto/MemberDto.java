@@ -21,13 +21,13 @@ public class MemberDto {
     @AllArgsConstructor
     @NoArgsConstructor
     public static class ProfileResponseDto {
-        private ProfileMember member;
-        private ProfileActivity activity;
+        private MemberInfo member;
+        private MemberActivity activity;
     }
 
     @Getter
     @AllArgsConstructor
-    public static class ProfileMember {
+    public static class MemberInfo {
         private Long memberId;
         private String email;
         private String displayName;
@@ -38,7 +38,7 @@ public class MemberDto {
 
     @Getter
     @AllArgsConstructor
-    public static class ProfileActivity {
+    public static class MemberActivity {
         private int questionCnt;
         private int answerCnt;
     }

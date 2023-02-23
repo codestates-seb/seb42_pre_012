@@ -41,6 +41,17 @@ public class MemberService {
         memberRepository.save(member);
     }
 
+    @Transactional
+    public void updateMember(Member member) {
+        // 리팩토링 예정
+        Member findMember = findVerifiedMember(member.getId());
+        if (!member.getPassword().equals("")) {
+            encryptPassword(member);
+            findMember.setPassword(member.getPassword());
+        }
+        findMember.setDisplayName(member.getDisplayName());
+    }
+
     public Member getMemberProfile(Long memberId) {
         return findVerifiedMember(memberId);
     }

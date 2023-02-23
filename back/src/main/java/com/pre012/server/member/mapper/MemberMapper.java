@@ -1,7 +1,7 @@
 package com.pre012.server.member.mapper;
 
 import com.pre012.server.answer.entity.Answer;
-import com.pre012.server.member.dto.MemberInfoDto;
+import com.pre012.server.member.dto.MemberDto;
 import com.pre012.server.member.entity.Member;
 import com.pre012.server.question.entity.Question;
 import com.pre012.server.question.entity.QuestionTag;
@@ -10,6 +10,7 @@ import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 import java.util.List;
 import com.pre012.server.member.dto.MemberDto.SignUpDto;
+import com.pre012.server.member.dto.MemberDto.ModifyDto;
 import com.pre012.server.member.dto.MemberDto.ProfileResponseDto;
 import com.pre012.server.member.dto.MemberDto.MemberInfo;
 import com.pre012.server.member.dto.MemberDto.MemberSimpleInfo;
@@ -28,6 +29,11 @@ public interface MemberMapper {
         -- 회원가입 Input
      */
     Member signUpDtoToMember(SignUpDto signUpDto);
+
+    /*
+    -- 회원 수정 Input
+ */
+    Member modifyDtoToMember(ModifyDto modifyDto);
 
     // ------------------------------------------------------------------------
 

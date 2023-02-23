@@ -17,6 +17,14 @@ public class MemberDto {
     }
 
     @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class ModifyDto {
+        private String password;
+        private String displayName;
+    }
+
+    @Getter
     @Setter
     @AllArgsConstructor
     @NoArgsConstructor

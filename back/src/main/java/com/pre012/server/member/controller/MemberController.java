@@ -4,6 +4,7 @@ import javax.validation.Valid;
 import com.pre012.server.common.dto.SingleResponseDto;
 import com.pre012.server.common.dto.MultiObjectResponseDto;
 import com.pre012.server.member.dto.MemberDto.SignUpDto;
+import com.pre012.server.member.dto.MemberDto.ModifyDto;
 import com.pre012.server.member.dto.MemberDto.ProfileResponseDto;
 import com.pre012.server.member.dto.MemberDto.MemberSimpleInfo;
 import com.pre012.server.member.dto.MemberInfoDto.MemberAnswersResponseDto;
@@ -95,9 +96,14 @@ public class MemberController {
     }
 
     // 회원 정보 수정
-    @PatchMapping
-    public ResponseEntity patchMember() {
-        return null;
+    @PatchMapping("/{member-id}")
+    public ResponseEntity<HttpStatus> patchMember(@PathVariable("member-id") Long memberId,
+                                                  @RequestBody ModifyDto modifyDto)
+    {
+        Member member = memberMapper.modifyDtoToMember(modifyDto);
+        member.setId(memberId);
+        memberService.updateMember(member);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     // 회원 탈퇴

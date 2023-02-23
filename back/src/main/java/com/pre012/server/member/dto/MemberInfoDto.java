@@ -7,19 +7,21 @@ import lombok.Setter;
 
 import java.util.List;
 
-public class MemberAnswersDto {
+public class MemberInfoDto {
     @Getter
     @Setter
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class AnswersResponseDto {
-        private QuestionMember member;
-        private List<QuestionDto> questions;
+    public static class MemberAnswersDto {
+
+        private WriterResponse member;
+        private List<QuestionResponse> questions;
+        private List<TagResponse> TagResponse;
     }
 
     @Getter
     @AllArgsConstructor
-    public static class QuestionMember {
+    public static class WriterResponse {
         private Long memberId;
         private String email;
         private String displayName;
@@ -28,7 +30,7 @@ public class MemberAnswersDto {
 
     @Getter
     @AllArgsConstructor
-    public static class QuestionDto {
+    public static class QuestionResponse {
         private Long questionId;
         private String title;
         private String content;
@@ -37,12 +39,13 @@ public class MemberAnswersDto {
         private int likeCnt;
         private String createdAt;
         private String modifiedAt;
-        private List<AnswerDto> answers;
+        private List<AnswerResponse> answers;
+        private List<TagResponse> tags;
     }
 
     @Getter
     @AllArgsConstructor
-    public static class AnswerDto {
+    public static class AnswerResponse {
         private Long answerId;
         private String content;
         private String imagePath;
@@ -50,4 +53,12 @@ public class MemberAnswersDto {
         private String createdAt;
         private String modifiedAt;
     }
+
+    @Getter
+    @AllArgsConstructor
+    public static class TagResponse {
+        private Long tagId;
+        private String name;
+    }
+
 }

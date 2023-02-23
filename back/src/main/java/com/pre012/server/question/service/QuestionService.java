@@ -77,20 +77,23 @@ public class QuestionService {
 
     /**
      * 질문 목록 조회
+     * Unanswered : answerCnt == 0
+     * Interesting : viewCnt 많은 순
+     * Hot : answerCnt 많은 순
      */
     public Page<Question> findQuestions(int page, String sortedBy) {
-//
-//        if (sortedBy.equals("Unanswered")) {
-//            return questionRepository.findUnanswered(PageRequest.of(page, 15));
-//        } else if (sortedBy.equals("Interesting")) { // view 많은 순
-//            return questionRepository.findAll(PageRequest.of(page, 15,
-//                    Sort.by("viewCnt").descending()));
-//        } else if (sortedBy.equals("Hot")) { // Answer 많은 순
-//            return questionRepository.findAll(PageRequest.of(page, 15,
-//                    Sort.by("answerCnt").descending()));
-//        }
 
-        // Default : Newest
+        if (sortedBy.equals("Unanswered")) {
+            return questionRepository.findByAnswerCnt(0,PageRequest.of(page, 15));
+        } else if (sortedBy.equals("Interesting")) {
+            return questionRepository.findAll(PageRequest.of(page, 15,
+                    Sort.by("viewCnt").descending()));
+        } else if (sortedBy.equals("Hot")) {
+            return questionRepository.findAll(PageRequest.of(page, 15,
+                    Sort.by("answerCnt").descending()));
+        }
+
+        // Default : Newest (최신 등록순)
         return questionRepository.findAll(PageRequest.of(page, 15,
                 Sort.by("createdAt").descending()));
 
@@ -98,13 +101,16 @@ public class QuestionService {
 
     /**
      * 질문 상세 조회
+     * viewCnt + 1
+     *
      */
-//    public Question findQuestion(Long questionId) {
-//        Question findQuestion = findVerifyQuestion(questionId);
-//
-//        // 코맨트랑 태그, 좋아요까지 같이 다 보내야 할 것 같은데...............
-//
-//    }
+    public Question findQuestion(Long questionId) {
+        Question findQuestion = findVerifyQuestion(questionId);
+        int viewCnt = findQuestion.getViewCnt();
+        findQuestion.setViewCnt(viewCnt + 1);
+
+        return findQuestion;
+    }
 
     /**
      * 질문 좋아요 (코드 리팩토링 필요)
@@ -190,7 +196,7 @@ public class QuestionService {
     }
 
     /**
-     * 질문 검색
+     * 질문 검색 (태그 부분 빼면 완성)
      * Default : 제목 + 내용
      * User : 회원 번호
      * Tag : 태그 (2순위)
@@ -223,5 +229,21 @@ public class QuestionService {
         return findQuestion;
     }
 
+    // bookmark 여부 찾기
+    public boolean getBookmarked(Long memberId, Long questionId) {
+        return bookmarkRepository.findByMemberIdAndQuestionId(memberId, questionId)
+                .isPresent();
+    }
+
+    // like status 찾기
+    public String getLikeStatus(Long memberId, Long questionId) {
+        Optional<QuestionLike> optionalQuestionLike = questionLikeRepository.findByMemberIdAndQuestionId(memberId, questionId);
+
+        if (optionalQuestionLike.isPresent()){
+            return optionalQuestionLike.get().getLikeType().toString();
+        } else {
+            return null;
+        }
+    }
 
 }

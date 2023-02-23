@@ -9,6 +9,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Formula;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -39,6 +40,9 @@ public class Question extends Auditable {
 
     @Column
     private int likeCnt = 0;
+
+    @Formula("(SELECT COUNT(1) FROM ANSWER a WHERE a.question_id = question_id)")
+    private int answerCnt;
 
     @ManyToOne
     @JoinColumn(name = "member_id")

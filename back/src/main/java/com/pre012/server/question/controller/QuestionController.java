@@ -4,16 +4,17 @@ import com.pre012.server.common.dto.MultiResponseDto;
 import com.pre012.server.member.entity.Member;
 import com.pre012.server.member.entity.QuestionLike;
 import com.pre012.server.member.service.MemberService;
+import com.pre012.server.question.dto.QuestionCommentDto;
 import com.pre012.server.question.dto.QuestionDto;
 import com.pre012.server.question.entity.Question;
 import com.pre012.server.question.entity.QuestionComment;
+import com.pre012.server.question.mapper.QuestionCommentMapper;
 import com.pre012.server.question.mapper.QuestionMapper;
 import com.pre012.server.question.service.QuestionService;
 import com.pre012.server.tag.entity.Tag;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,11 +26,13 @@ public class QuestionController {
     private final QuestionService questionService;
     private final MemberService memberService;
     private final QuestionMapper mapper;
+    private final QuestionCommentMapper commentMapper;
 
-    public QuestionController(QuestionService questionService, MemberService memberService, QuestionMapper mapper) {
+    public QuestionController(QuestionService questionService, MemberService memberService, QuestionMapper mapper, QuestionCommentMapper commentMapper) {
         this.questionService = questionService;
         this.memberService = memberService;
         this.mapper = mapper;
+        this.commentMapper = commentMapper;
     }
 
     /**
@@ -94,34 +97,32 @@ public class QuestionController {
         Page<Question> pageQuestions = questionService.findQuestions(page - 1, sortedBy);
         List<Question> questions = pageQuestions.getContent();
 
-        return new ResponseEntity(
-                new MultiResponseDto<>(mapper.questionsToQuestionResponses(questions),
-                        pageQuestions)
-                , HttpStatus.OK);
-
+        return new ResponseEntity<>(
+                new MultiResponseDto<>(
+                    mapper.questionsToSearchResponses(questions),
+                    pageQuestions),
+                HttpStatus.OK);
     }
 
 
     /**
      * 질문 상세 조회
-     * viewCnt 올려주기 필요
-     *
-     * @return question / question_comment / member_question_like / question_tag -> tag 정보 줘야하는 거 아닌가?
+     * @return question / question_comment / member_question_like / tag
      */
     @GetMapping("/{question-id}")
-    public ResponseEntity getQuestion(@PathVariable("question-id") Long questionId) {
-        Question findQuestion = questionService.findVerifyQuestion(questionId);
-        int viewCnt = findQuestion.getViewCnt();
-        findQuestion.setViewCnt(viewCnt + 1);
+    public ResponseEntity getQuestion(@PathVariable("question-id") Long questionId,
+                                      @RequestParam Long memberId) {
+        Question question = questionService.findQuestion(questionId);
 
-        List<QuestionComment> comments = findQuestion.getComments();
-        List<QuestionLike> memberLikes = findQuestion.getMemberLikes();
-        List<Tag> tags = findQuestion.getTags().stream()
-                .map(qt -> qt.getTag())
-                .collect(Collectors.toList());
+        List<QuestionCommentDto.Response> commentResponses = commentMapper.commentToQuestionCommentResponses(question.getComments());
 
-        return new ResponseEntity(HttpStatus.OK);
 
+        QuestionDto.getResponse response = mapper.questionToGetResponse(question,
+                commentResponses,
+                questionService.getBookmarked(memberId, questionId),
+                questionService.getLikeStatus(memberId, questionId));
+
+        return new ResponseEntity(response, HttpStatus.OK);
     }
 
     /**
@@ -176,9 +177,20 @@ public class QuestionController {
                                           @RequestParam String type,
                                           @RequestParam int page) {
 
-        Page<Question> questions = questionService.searchQuestions(page - 1, keyword, type);
+        Page<Question> pageQuestions = questionService.searchQuestions(page - 1, keyword, type);
+        List<Question> questions = pageQuestions.getContent();
 
-        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+
+        // 조회를 했는데 데이터가 없는 경우
+            // 1. no_content status를 보냄. (body == null)
+            // 2. multiResponseDTO 형태인데 데이터만 빈 어레이로 보내기
+        return questions.size() == 0 ?
+                new ResponseEntity<>(HttpStatus.NO_CONTENT)
+                : new ResponseEntity<>(new MultiResponseDto<>(
+                        mapper.questionsToSearchResponses(questions),
+                        pageQuestions),
+                HttpStatus.OK);
+
     }
 
 

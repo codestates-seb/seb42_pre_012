@@ -7,7 +7,6 @@ import lombok.Setter;
 @Setter
 public class AnswerPatchDto {
     private Long member_id;
-    private Long question_id;
     private Long answer_id;
     private String content;
 }

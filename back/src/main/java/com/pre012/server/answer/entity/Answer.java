@@ -35,6 +35,12 @@ public class Answer extends Auditable {
     //조회 수
     @Column
     private int viewCnt;
+    
+    @OneToMany(mappedBy = "answer",cascade = CascadeType.ALL)
+    private List<AnswerComment> comments = new ArrayList<>();
+
+    @OneToMany(mappedBy = "answer",cascade = CascadeType.ALL)
+    private List<AnswerLike> like = new ArrayList<>();
 
     //이미지 가져오는 법 확인
     @Column(length = 200)

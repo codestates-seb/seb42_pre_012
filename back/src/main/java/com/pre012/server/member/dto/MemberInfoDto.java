@@ -29,6 +29,13 @@ public class MemberInfoDto {
         private List<QuestionResponse> questions;
     }
 
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class MemberBookmarksResponseDto {
+        private List<QuestionResponse> bookmarks;
+    }
     // -- 최종 ResponseDto 구성요소
 
     @Getter

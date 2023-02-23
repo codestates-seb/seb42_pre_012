@@ -55,6 +55,11 @@ public class MemberService {
         return findVerifiedMember(memberId);
     }
 
+    public Page<Question> getMemberBookmarks(Long memberId, int page) {
+        // 리팩토링 예정
+        PageRequest pageable = PageRequest.of(page - 1, 15, Sort.Direction.DESC, "createdAt");
+        return questionRepository.findByBookmarksMemberId(memberId, pageable);
+    }
     @Transactional
     public void deleteMember(Long memberId) {
         Member member = findVerifiedMember(memberId);

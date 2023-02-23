@@ -2,8 +2,8 @@ package com.pre012.server.member.controller;
 
 import javax.validation.Valid;
 
-import com.pre012.server.common.dto.MultiResponseDto;
 import com.pre012.server.common.dto.SingleResponseDto;
+import com.pre012.server.common.dto.MultiObjectResponseDto;
 import com.pre012.server.member.entity.Member;
 import com.pre012.server.member.mapper.MemberMapper;
 import com.pre012.server.member.service.MemberService;
@@ -17,9 +17,8 @@ import static com.pre012.server.member.dto.MemberDto.SignUpDto;
 import static com.pre012.server.member.dto.MemberDto.ProfileResponseDto;
 
 import com.pre012.server.member.dto.MemberInfoDto.MemberAnswersResponseDto;
-import com.pre012.server.member.dto.MemberInfoDto.QuestionResponse;
-
-import java.util.List;
+import com.pre012.server.member.dto.MemberInfoDto.MemberQuestionsResponseDto;
+import com.pre012.server.member.dto.MemberInfoDto.MemberBookmarksResponseDto;
 
 @RestController
 @RequestMapping("/members")
@@ -50,13 +49,13 @@ public class MemberController {
     }
 
     @GetMapping("/questions/{member-id}")
-    public ResponseEntity<MultiResponseDto<QuestionResponse, Question>> getMemberQuestions(
+    public ResponseEntity<MultiObjectResponseDto<MemberQuestionsResponseDto, Question>> getMemberQuestions(
             @PathVariable("member-id") Long memberId,
             @RequestParam("page") int page)
     {
         Page<Question> questions = memberService.getMemberQuestions(memberId, page);
-        List<QuestionResponse> response = memberMapper.memberToMemberAnswersDto(questions.getContent()).getQuestions();
-        return new ResponseEntity<>(new MultiResponseDto<>(response, questions), HttpStatus.OK);
+        MemberQuestionsResponseDto response = memberMapper.memberToMemberAnswersDto(questions.getContent());
+        return new ResponseEntity<>(new MultiObjectResponseDto<>(response, questions), HttpStatus.OK);
     }
 
     @GetMapping("/answers/{member-id}")
@@ -69,9 +68,14 @@ public class MemberController {
         return new ResponseEntity<>(new SingleResponseDto<>(response), HttpStatus.OK);
     }
 
-    @GetMapping("/bookmark")
-    public ResponseEntity getMemberBookmarks() {
-        return null;
+    @GetMapping("/bookmark/{member-id}")
+    public ResponseEntity<MultiObjectResponseDto<MemberBookmarksResponseDto, Question>> getMemberBookmarks(
+            @PathVariable("member-id") Long memberId,
+            @RequestParam("page") int page)
+    {
+        Page<Question> bookmarks = memberService.getMemberBookmarks(memberId, page);
+        MemberBookmarksResponseDto response = memberMapper.memberToMemberBookmarksDto(bookmarks.getContent());
+        return new ResponseEntity<>(new MultiObjectResponseDto<>(response, bookmarks), HttpStatus.OK);
     }
 
     @PatchMapping

@@ -1,6 +1,7 @@
 package com.pre012.server.member.mapper;
 
 import com.pre012.server.answer.entity.Answer;
+import com.pre012.server.member.dto.MemberInfoDto;
 import com.pre012.server.member.entity.Member;
 import com.pre012.server.question.entity.Question;
 import com.pre012.server.question.entity.QuestionTag;
@@ -21,6 +22,7 @@ import static com.pre012.server.member.dto.MemberInfoDto.QuestionResponse;
 import static com.pre012.server.member.dto.MemberInfoDto.AnswerResponse;
 import static com.pre012.server.member.dto.MemberInfoDto.MemberAnswersResponseDto;
 import static com.pre012.server.member.dto.MemberInfoDto.MemberQuestionsResponseDto;
+import static com.pre012.server.member.dto.MemberInfoDto.MemberBookmarksResponseDto;
 import static com.pre012.server.member.dto.MemberInfoDto.TagResponse;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
@@ -66,6 +68,17 @@ public interface MemberMapper {
     default MemberQuestionsResponseDto memberToMemberAnswersDto(List<Question> questions) {
         MemberQuestionsResponseDto response = new MemberQuestionsResponseDto();
         response.setQuestions(questionsToQuestionDto(questions));
+        return response;
+    }
+
+    /*
+        -- 회원 정보(북마크) 조회
+     */
+
+    // 1) 최종 Response 매핑
+    default MemberBookmarksResponseDto memberToMemberBookmarksDto(List<Question> questions) {
+        MemberBookmarksResponseDto response = new MemberBookmarksResponseDto();
+        response.setBookmarks(questionsToQuestionDto(questions));
         return response;
     }
 

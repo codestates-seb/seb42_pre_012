@@ -16,8 +16,23 @@ public class AuthDto {
     @Getter
     @AllArgsConstructor
     @NoArgsConstructor
+    public static class LogoutDto {
+        private Long memberId;
+    }
+
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class ReissueDto {
+        private String refreshToken;
+    }
+
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
     public static class LoginResponse {
         private Long memberId;
         private String profileImagePath;
     }
+
 }

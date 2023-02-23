@@ -3,19 +3,7 @@ package com.pre012.server.member.entity;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.CascadeType;
-import javax.persistence.CollectionTable;
-import javax.persistence.Column;
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 
 import com.pre012.server.answer.entity.Answer;
 import com.pre012.server.common.audit.Auditable;
@@ -23,6 +11,7 @@ import com.pre012.server.member.enums.MemberStatus;
 import com.pre012.server.question.entity.Question;
 
 import lombok.*;
+import org.hibernate.annotations.Formula;
 
 @NoArgsConstructor
 @Getter
@@ -56,7 +45,13 @@ public class Member extends Auditable {
     // JoinColumn 이름은 "member_id"로 설정
     @CollectionTable(name = "member_role", joinColumns = @JoinColumn(name = "member_id"))
     private List<String> roles = new ArrayList<>();
-    
+
+    @Formula("(SELECT count(1) FROM question q WHERE q.member_id = member_id)")
+    private int questionCnt;
+
+    @Formula("(SELECT count(1) FROM answer a WHERE a.member_id = member_id)")
+    private int answerCnt;
+
     @Setter(AccessLevel.NONE)
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
     private List<Question> questions = new ArrayList<>();

@@ -43,4 +43,13 @@ public class MemberDto {
         private int answerCnt;
     }
 
+    @Getter
+    @AllArgsConstructor
+    public static class MemberSimpleInfo {
+        private Long memberId;
+        private String email;
+        private String displayName;
+        private String profileImagePath;
+    }
+
 }

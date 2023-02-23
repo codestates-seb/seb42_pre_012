@@ -1,9 +1,14 @@
 package com.pre012.server.member.controller;
 
 import javax.validation.Valid;
-
 import com.pre012.server.common.dto.SingleResponseDto;
 import com.pre012.server.common.dto.MultiObjectResponseDto;
+import com.pre012.server.member.dto.MemberDto.SignUpDto;
+import com.pre012.server.member.dto.MemberDto.ProfileResponseDto;
+import com.pre012.server.member.dto.MemberDto.MemberSimpleInfo;
+import com.pre012.server.member.dto.MemberInfoDto.MemberAnswersResponseDto;
+import com.pre012.server.member.dto.MemberInfoDto.MemberQuestionsResponseDto;
+import com.pre012.server.member.dto.MemberInfoDto.MemberBookmarksResponseDto;
 import com.pre012.server.member.entity.Member;
 import com.pre012.server.member.mapper.MemberMapper;
 import com.pre012.server.member.service.MemberService;
@@ -12,13 +17,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import static com.pre012.server.member.dto.MemberDto.SignUpDto;
-import static com.pre012.server.member.dto.MemberDto.ProfileResponseDto;
-
-import com.pre012.server.member.dto.MemberInfoDto.MemberAnswersResponseDto;
-import com.pre012.server.member.dto.MemberInfoDto.MemberQuestionsResponseDto;
-import com.pre012.server.member.dto.MemberInfoDto.MemberBookmarksResponseDto;
 
 @RestController
 @RequestMapping("/members")
@@ -32,6 +30,7 @@ public class MemberController {
         this.memberMapper = memberMapper;
     }
 
+    // 회원가입
     @PostMapping
     public ResponseEntity<HttpStatus> signUp(@Valid @RequestBody SignUpDto signUpDto) {
         Member member = memberMapper.signUpDtoToMember(signUpDto);
@@ -39,6 +38,7 @@ public class MemberController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
+    // 회원 정보_프로필
     @GetMapping("/profile/{member-id}")
     public ResponseEntity<SingleResponseDto<ProfileResponseDto>> getMemberProfile(
             @PathVariable("member-id") Long memberId)
@@ -48,26 +48,42 @@ public class MemberController {
         return new ResponseEntity<>(new SingleResponseDto<>(response), HttpStatus.OK);
     }
 
+    // 회원 정보_내 질문
     @GetMapping("/questions/{member-id}")
     public ResponseEntity<MultiObjectResponseDto<MemberQuestionsResponseDto, Question>> getMemberQuestions(
             @PathVariable("member-id") Long memberId,
             @RequestParam("page") int page)
     {
+        MemberSimpleInfo member = memberMapper.memberToMemberSimpleInfoDto(
+                memberService.getMemberProfile(memberId));
+
         Page<Question> questions = memberService.getMemberQuestions(memberId, page);
-        MemberQuestionsResponseDto response = memberMapper.memberToMemberAnswersDto(questions.getContent());
+        MemberQuestionsResponseDto response = memberMapper.questionsToMemberQuestionsDto(questions.getContent());
+        response.setMember(member);
+
         return new ResponseEntity<>(new MultiObjectResponseDto<>(response, questions), HttpStatus.OK);
     }
 
+    // 회원 정보_내 답변
     @GetMapping("/answers/{member-id}")
-    public ResponseEntity<SingleResponseDto<MemberAnswersResponseDto>> getMemberAnswers(
+    public ResponseEntity<MultiObjectResponseDto<MemberAnswersResponseDto, Question>> getMemberAnswers(
             @PathVariable("member-id") Long memberId,
             @RequestParam("page") int page)
     {
-        Member member = memberService.getMemberAnswers(memberId);
-        MemberAnswersResponseDto response = memberMapper.memberToMemberAnswersDto(member);
-        return new ResponseEntity<>(new SingleResponseDto<>(response), HttpStatus.OK);
+        MemberSimpleInfo member = memberMapper.memberToMemberSimpleInfoDto(
+                memberService.getMemberProfile(memberId));
+
+        Page<Question> questionsMemberAnswered
+                = memberService.getMemberAnsweredQuestions(memberId, page);
+        MemberAnswersResponseDto response
+                = memberMapper.questionsToMemberAnswersDto(questionsMemberAnswered.getContent());
+        response.setMember(member);
+
+        return new ResponseEntity<>(
+                new MultiObjectResponseDto<>(response, questionsMemberAnswered), HttpStatus.OK);
     }
 
+    // 회원 정보_내 북마크
     @GetMapping("/bookmark/{member-id}")
     public ResponseEntity<MultiObjectResponseDto<MemberBookmarksResponseDto, Question>> getMemberBookmarks(
             @PathVariable("member-id") Long memberId,
@@ -78,11 +94,13 @@ public class MemberController {
         return new ResponseEntity<>(new MultiObjectResponseDto<>(response, bookmarks), HttpStatus.OK);
     }
 
+    // 회원 정보 수정
     @PatchMapping
     public ResponseEntity patchMember() {
         return null;
     }
 
+    // 회원 탈퇴
     @DeleteMapping("/{member-id}")
     public ResponseEntity<HttpStatus> deleteMember(@PathVariable("member-id") Long memberId) {
         memberService.deleteMember(memberId);

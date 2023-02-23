@@ -8,22 +8,19 @@ import com.pre012.server.question.entity.QuestionTag;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
-
 import java.util.List;
-
-
-import static com.pre012.server.member.dto.MemberDto.SignUpDto;
-import static com.pre012.server.member.dto.MemberDto.ProfileResponseDto;
-import static com.pre012.server.member.dto.MemberDto.MemberInfo;
-import static com.pre012.server.member.dto.MemberDto.MemberActivity;
-import static com.pre012.server.member.dto.MemberInfoDto.WriterResponse;
-import static com.pre012.server.member.dto.MemberInfoDto.MyQuestionResponse;
-import static com.pre012.server.member.dto.MemberInfoDto.QuestionResponse;
-import static com.pre012.server.member.dto.MemberInfoDto.AnswerResponse;
-import static com.pre012.server.member.dto.MemberInfoDto.MemberAnswersResponseDto;
-import static com.pre012.server.member.dto.MemberInfoDto.MemberQuestionsResponseDto;
-import static com.pre012.server.member.dto.MemberInfoDto.MemberBookmarksResponseDto;
-import static com.pre012.server.member.dto.MemberInfoDto.TagResponse;
+import com.pre012.server.member.dto.MemberDto.SignUpDto;
+import com.pre012.server.member.dto.MemberDto.ProfileResponseDto;
+import com.pre012.server.member.dto.MemberDto.MemberInfo;
+import com.pre012.server.member.dto.MemberDto.MemberSimpleInfo;
+import com.pre012.server.member.dto.MemberDto.MemberActivity;
+import com.pre012.server.member.dto.MemberInfoDto.WriterResponse;
+import com.pre012.server.member.dto.MemberInfoDto.QuestionResponse;
+import com.pre012.server.member.dto.MemberInfoDto.MemberAnswersResponseDto;
+import com.pre012.server.member.dto.MemberInfoDto.MemberQuestionsResponseDto;
+import com.pre012.server.member.dto.MemberInfoDto.MemberBookmarksResponseDto;
+import com.pre012.server.member.dto.MemberInfoDto.TagResponse;
+import com.pre012.server.member.dto.MemberInfoDto.AnswerResponse;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface MemberMapper {
@@ -32,6 +29,14 @@ public interface MemberMapper {
      */
     Member signUpDtoToMember(SignUpDto signUpDto);
 
+    // ------------------------------------------------------------------------
+
+    /*
+        -- 간단 회원 정보(가입일시, 수정일시 제외)
+     */
+    @Mapping(source = "id", target = "memberId")
+    MemberSimpleInfo memberToMemberSimpleInfoDto(Member member);
+
     /*
         -- 회원 정보(프로필) 조회
      */
@@ -39,12 +44,12 @@ public interface MemberMapper {
     @Mapping(source = "id", target = "memberId")
     @Mapping(source = "createdAt", target = "createdAt", dateFormat = "yyyy-MM-dd HH:mm")
     @Mapping(source = "modifiedAt", target = "modifiedAt", dateFormat = "yyyy-MM-dd HH:mm")
-    MemberInfo memberToProfileMemberDto(Member member);
+    MemberInfo memberToProfileMemberResponse(Member member);
 
     // 2) 최종 Response 매핑
     default ProfileResponseDto memberToProfileResponseDto(Member member) {
         ProfileResponseDto response = new ProfileResponseDto();
-        MemberInfo info = memberToProfileMemberDto(member);
+        MemberInfo info = memberToProfileMemberResponse(member);
         MemberActivity activity
                 = new MemberActivity(member.getQuestionCnt(), member.getAnswerCnt());
         response.setMember(info);
@@ -56,18 +61,25 @@ public interface MemberMapper {
         -- 회원 정보(내 질문) 조회
      */
 
-    // 1) question 매핑
+    // 1) writer(글 작성자) 매핑
+    @Mapping(source = "id", target = "memberId")
+    WriterResponse memberToQuestionWriterResponse(Member member);
+
+    // 2) question 매핑 - 답변, 북마크 매핑에도 사용
     @Mapping(source = "createdAt", target = "createdAt", dateFormat = "yyyy-MM-dd HH:mm")
     @Mapping(source = "modifiedAt", target = "modifiedAt", dateFormat = "yyyy-MM-dd HH:mm")
     @Mapping(source = "id", target = "questionId")
+    @Mapping(source = "member", target = "writer")
     @Mapping(target = "answerCnt", expression = "java(question.getAnswers() != null ? question.getAnswers().size() : 0)")
     QuestionResponse questionToQuestionResponse(Question question);
-    List<QuestionResponse> questionsToQuestionDto(List<Question> questions);
+    List<QuestionResponse> questionsToQuestionsResponse(List<Question> questions);
 
-    // 2) 최종 Response 매핑
-    default MemberQuestionsResponseDto memberToMemberAnswersDto(List<Question> questions) {
+    // 3) 최종 Response 매핑
+    default MemberQuestionsResponseDto questionsToMemberQuestionsDto(List<Question> questions) {
         MemberQuestionsResponseDto response = new MemberQuestionsResponseDto();
-        response.setQuestions(questionsToQuestionDto(questions));
+        response.setQuestions(questionsToQuestionsResponse(questions));
+        response.getQuestions().forEach(q -> q.setWriter(null));
+        response.getQuestions().forEach(q -> q.setAnswers(null));
         return response;
     }
 
@@ -78,42 +90,32 @@ public interface MemberMapper {
     // 1) 최종 Response 매핑
     default MemberBookmarksResponseDto memberToMemberBookmarksDto(List<Question> questions) {
         MemberBookmarksResponseDto response = new MemberBookmarksResponseDto();
-        response.setBookmarks(questionsToQuestionDto(questions));
+        response.setQuestions(questionsToQuestionsResponse(questions));
+        response.getQuestions().forEach(q -> q.setAnswers(null));
         return response;
     }
-
 
     /*
         -- 회원 정보(내 답변) 조회
      */
-    @Mapping(source = "id", target = "memberId")
-    WriterResponse memberToQuestionWriterDto(Member member);
 
-    // 1) question 매핑
-    @Mapping(source = "id", target = "questionId")
-    @Mapping(source = "createdAt", target = "createdAt", dateFormat = "yyyy-MM-dd HH:mm")
-    @Mapping(source = "modifiedAt", target = "modifiedAt", dateFormat = "yyyy-MM-dd HH:mm")
-    MyQuestionResponse questionToQuestionDto(Question question);
-    List<MyQuestionResponse> questionsToMyQuestionDto(List<Question> questions);
+    // 1) tag 매핑
+    @Mapping(source = "tag.id", target = "tagId")
+    @Mapping(source = "tag.name", target = "name")
+    TagResponse questionTagToTagResponse(QuestionTag tag);
 
     // 2) answer 매핑
     @Mapping(source = "id", target = "answerId")
     @Mapping(source = "createdAt", target = "createdAt", dateFormat = "yyyy-MM-dd HH:mm")
     @Mapping(source = "modifiedAt", target = "modifiedAt", dateFormat = "yyyy-MM-dd HH:mm")
-    AnswerResponse answerToAnswerDto(Answer answer);
+    AnswerResponse answerToAnswerResponse(Answer answer);
 
-    // 3) tag 매핑
-    @Mapping(source = "tag.id", target = "tagId")
-    @Mapping(source = "tag.name", target = "name")
-    TagResponse questionTagToTagResponse(QuestionTag tag);
-
-    // 4) 최종 Response 매핑
-    default MemberAnswersResponseDto memberToMemberAnswersDto(Member member) {
+    // 3) 최종 Response 매핑
+    default MemberAnswersResponseDto questionsToMemberAnswersDto(List<Question> questions) {
         MemberAnswersResponseDto response = new MemberAnswersResponseDto();
-        WriterResponse writer = memberToQuestionWriterDto(member);
-        List<MyQuestionResponse> myQuestions = questionsToMyQuestionDto(member.getQuestions());
-        response.setMember(writer);
-        response.setQuestions(myQuestions);
+        List<QuestionResponse> questionsIAnswered = questionsToQuestionsResponse(questions);
+        response.setQuestions(questionsIAnswered);
         return response;
     }
+
 }

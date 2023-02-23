@@ -16,9 +16,8 @@ public class MemberInfoDto {
     @NoArgsConstructor
     public static class MemberAnswersResponseDto {
 
-        private WriterResponse member;
-        private List<MyQuestionResponse> questions;
-        private List<TagResponse> TagResponse;
+        private MemberDto.MemberSimpleInfo member;
+        private List<QuestionResponse> questions;
     }
 
     @Getter
@@ -26,6 +25,7 @@ public class MemberInfoDto {
     @AllArgsConstructor
     @NoArgsConstructor
     public static class MemberQuestionsResponseDto {
+        private MemberDto.MemberSimpleInfo member;
         private List<QuestionResponse> questions;
     }
 
@@ -34,11 +34,12 @@ public class MemberInfoDto {
     @AllArgsConstructor
     @NoArgsConstructor
     public static class MemberBookmarksResponseDto {
-        private List<QuestionResponse> bookmarks;
+        private List<QuestionResponse> questions;
     }
     // -- 최종 ResponseDto 구성요소
 
     @Getter
+    @Setter
     @AllArgsConstructor
     public static class QuestionResponse {
         private Long questionId;
@@ -50,8 +51,9 @@ public class MemberInfoDto {
         private String createdAt;
         private String modifiedAt;
         private int answerCnt;
-        private WriterResponse member;
+        private WriterResponse writer;
         private List<TagResponse> tags;
+        private List<AnswerResponse> answers;
     }
 
     @Getter

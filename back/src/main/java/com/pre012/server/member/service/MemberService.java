@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Optional;
 
 import com.pre012.server.auth.util.CustomAuthorityUtils;
+import com.pre012.server.member.entity.Member;
+import com.pre012.server.member.repository.MemberRepository;
 import com.pre012.server.question.entity.Question;
 import com.pre012.server.question.repository.QuestionRepository;
 import org.springframework.data.domain.Page;
@@ -11,9 +13,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import com.pre012.server.member.entity.Member;
-import com.pre012.server.member.repository.MemberRepository;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
@@ -34,6 +33,7 @@ public class MemberService {
         this.authorityUtils = authorityUtils;
     }
 
+    @Transactional
     public void createMember(Member member) {
         verifyAlreadyExistsEmailOrDisplayName(member.getEmail(), member.getDisplayName());
         encryptPassword(member);
@@ -51,8 +51,10 @@ public class MemberService {
         return questionRepository.findByMemberId(memberId, pageable);
     }
 
-    public Member getMemberAnswers(Long memberId) {
-        return findVerifiedMember(memberId);
+    public Page<Question> getMemberAnsweredQuestions(Long memberId, int page) {
+        // 리팩토링 예정
+        PageRequest pageable = PageRequest.of(page - 1, 15, Sort.Direction.DESC, "createdAt");
+        return questionRepository.findByAnswersMemberId(memberId, pageable);
     }
 
     public Page<Question> getMemberBookmarks(Long memberId, int page) {
@@ -68,7 +70,7 @@ public class MemberService {
 
     public void verifyMember(Long memberId) {
         Optional<Member> member = memberRepository.findById(memberId);
-        if (member.isEmpty()) throw new RuntimeException(); // 예외처리 나중에 바꾸겠습니다 (23.02.22)
+        if (member.isEmpty()) throw new RuntimeException();
     }
 
     public Member findVerifiedMember(Long memberId) {

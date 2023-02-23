@@ -32,6 +32,10 @@ public class MemberService {
         memberRepository.save(member);
     }
 
+    public Member getMemberProfile(Long memberId) {
+        return findVerifiedMember(memberId);
+    }
+
     public void verifyMember(Long memberId) {
         Optional<Member> member = memberRepository.findById(memberId);
         if (member.isEmpty()) throw new RuntimeException(); // 예외처리 나중에 바꾸겠습니다 (23.02.22)

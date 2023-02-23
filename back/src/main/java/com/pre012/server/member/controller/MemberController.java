@@ -2,6 +2,7 @@ package com.pre012.server.member.controller;
 
 import javax.validation.Valid;
 
+import com.pre012.server.common.dto.SingleResponseDto;
 import com.pre012.server.member.entity.Member;
 import com.pre012.server.member.mapper.MemberMapper;
 import org.springframework.http.HttpStatus;
@@ -9,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import static com.pre012.server.member.dto.MemberDto.SignUpDto;
+import static com.pre012.server.member.dto.MemberDto.ProfileResponseDto;
 import com.pre012.server.member.service.MemberService;
 
 
@@ -31,9 +33,13 @@ public class MemberController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @GetMapping("/profile")
-    public ResponseEntity getMemberProfile() {
-        return null;
+    @GetMapping("/profile/{member-id}")
+    public ResponseEntity<SingleResponseDto<ProfileResponseDto>> getMemberProfile(
+            @PathVariable("member-id") Long memberId)
+    {
+        Member member = memberService.getMemberProfile(memberId);
+        ProfileResponseDto response = memberMapper.memberToProfileResponseDto(member);
+        return new ResponseEntity<>(new SingleResponseDto<>(response), HttpStatus.OK);
     }
 
     @GetMapping("/questions")

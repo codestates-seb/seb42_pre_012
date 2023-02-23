@@ -29,4 +29,10 @@ public class AnswerComment extends Auditable {
     @JoinColumn(name = "member_id")
     private Member member;
 
+    public AnswerComment(Long id, String content, Answer answer, Member member) {
+        this.id = id;
+        this.content = content;
+        this.answer = answer;
+        this.member = member;
+    }
 }

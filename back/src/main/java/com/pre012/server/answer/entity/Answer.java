@@ -29,7 +29,7 @@ public class Answer extends Auditable {
     private String content;
 
     //좋아요 수
-    @Column
+    @Column(nullable = false)
     private int likeCnt;
 
     //조회 수

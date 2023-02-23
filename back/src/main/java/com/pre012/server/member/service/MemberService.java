@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.pre012.server.member.entity.Member;
 import com.pre012.server.member.repository.MemberRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class MemberService {
@@ -30,6 +31,12 @@ public class MemberService {
         encryptPassword(member);
         assignRole(member);
         memberRepository.save(member);
+    }
+
+    @Transactional
+    public void deleteMember(Long memberId) {
+        Member member = findVerifiedMember(memberId);
+        memberRepository.delete(member);
     }
 
     public void verifyMember(Long memberId) {

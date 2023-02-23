@@ -9,10 +9,11 @@ import org.springframework.stereotype.Service;
 
 import com.pre012.server.member.entity.Member;
 import com.pre012.server.member.repository.MemberRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class MemberService {
-    
+
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
     private final CustomAuthorityUtils authorityUtils;
@@ -36,6 +37,12 @@ public class MemberService {
         return findVerifiedMember(memberId);
     }
 
+    @Transactional
+    public void deleteMember(Long memberId) {
+        Member member = findVerifiedMember(memberId);
+        memberRepository.delete(member);
+    }
+
     public void verifyMember(Long memberId) {
         Optional<Member> member = memberRepository.findById(memberId);
         if (member.isEmpty()) throw new RuntimeException(); // 예외처리 나중에 바꾸겠습니다 (23.02.22)
@@ -55,10 +62,10 @@ public class MemberService {
             throw new RuntimeException();
     }
 
-     private void encryptPassword(Member member) {
-         String encryptedPassword = passwordEncoder.encode(member.getPassword());
-         member.setPassword(encryptedPassword);
-     }
+    private void encryptPassword(Member member) {
+        String encryptedPassword = passwordEncoder.encode(member.getPassword());
+        member.setPassword(encryptedPassword);
+    }
 
     private void assignRole(Member member) {
         List<String> roles = authorityUtils.createRoles(member.getEmail());

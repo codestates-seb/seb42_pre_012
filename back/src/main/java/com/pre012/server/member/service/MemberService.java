@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.pre012.server.auth.util.CustomAuthorityUtils;
+import com.pre012.server.question.repository.QuestionRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -34,6 +35,10 @@ public class MemberService {
     }
 
     public Member getMemberProfile(Long memberId) {
+        return findVerifiedMember(memberId);
+    }
+
+    public Member getMemberAnswers(Long memberId) {
         return findVerifiedMember(memberId);
     }
 

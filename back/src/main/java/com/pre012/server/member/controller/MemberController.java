@@ -13,6 +13,7 @@ import static com.pre012.server.member.dto.MemberDto.SignUpDto;
 import static com.pre012.server.member.dto.MemberDto.ProfileResponseDto;
 import com.pre012.server.member.service.MemberService;
 
+import static com.pre012.server.member.dto.MemberAnswersDto.AnswersResponseDto;
 
 @RestController
 @RequestMapping("/members")
@@ -47,9 +48,13 @@ public class MemberController {
         return null;
     }
 
-    @GetMapping("/answers")
-    public ResponseEntity getMemberAnswers() {
-        return null;
+    @GetMapping("/answers/{member-id}")
+    public ResponseEntity<SingleResponseDto<AnswersResponseDto>> getMemberAnswers(
+            @PathVariable("member-id") Long memberId)
+    {
+        Member member = memberService.getMemberAnswers(memberId);
+        AnswersResponseDto response = memberMapper.memberToAnswersResponseDto(member);
+        return new ResponseEntity<>(new SingleResponseDto<>(response), HttpStatus.OK);
     }
 
     @GetMapping("/bookmark")

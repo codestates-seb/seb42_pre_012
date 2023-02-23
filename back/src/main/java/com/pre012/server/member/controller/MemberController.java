@@ -2,18 +2,24 @@ package com.pre012.server.member.controller;
 
 import javax.validation.Valid;
 
+import com.pre012.server.common.dto.MultiResponseDto;
 import com.pre012.server.common.dto.SingleResponseDto;
 import com.pre012.server.member.entity.Member;
 import com.pre012.server.member.mapper.MemberMapper;
+import com.pre012.server.member.service.MemberService;
+import com.pre012.server.question.entity.Question;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import static com.pre012.server.member.dto.MemberDto.SignUpDto;
 import static com.pre012.server.member.dto.MemberDto.ProfileResponseDto;
-import com.pre012.server.member.service.MemberService;
 
 import com.pre012.server.member.dto.MemberInfoDto.MemberAnswersResponseDto;
+import com.pre012.server.member.dto.MemberInfoDto.QuestionResponse;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/members")
@@ -43,9 +49,14 @@ public class MemberController {
         return new ResponseEntity<>(new SingleResponseDto<>(response), HttpStatus.OK);
     }
 
-    @GetMapping("/questions")
-    public ResponseEntity getMemberQuestions() {
-        return null;
+    @GetMapping("/questions/{member-id}")
+    public ResponseEntity<MultiResponseDto<QuestionResponse, Question>> getMemberQuestions(
+            @PathVariable("member-id") Long memberId,
+            @RequestParam("page") int page)
+    {
+        Page<Question> questions = memberService.getMemberQuestions(memberId, page);
+        List<QuestionResponse> response = memberMapper.memberToMemberAnswersDto(questions.getContent()).getQuestions();
+        return new ResponseEntity<>(new MultiResponseDto<>(response, questions), HttpStatus.OK);
     }
 
     @GetMapping("/answers/{member-id}")

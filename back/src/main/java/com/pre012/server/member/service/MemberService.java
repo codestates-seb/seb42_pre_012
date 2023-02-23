@@ -4,7 +4,11 @@ import java.util.List;
 import java.util.Optional;
 
 import com.pre012.server.auth.util.CustomAuthorityUtils;
+import com.pre012.server.question.entity.Question;
 import com.pre012.server.question.repository.QuestionRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -16,13 +20,16 @@ import org.springframework.transaction.annotation.Transactional;
 public class MemberService {
 
     private final MemberRepository memberRepository;
+    private final QuestionRepository questionRepository;
     private final PasswordEncoder passwordEncoder;
     private final CustomAuthorityUtils authorityUtils;
 
     public MemberService(MemberRepository memberRepository,
+                         QuestionRepository questionRepository,
                          PasswordEncoder passwordEncoder,
                          CustomAuthorityUtils authorityUtils) {
         this.memberRepository = memberRepository;
+        this.questionRepository = questionRepository;
         this.passwordEncoder = passwordEncoder;
         this.authorityUtils = authorityUtils;
     }
@@ -36,6 +43,12 @@ public class MemberService {
 
     public Member getMemberProfile(Long memberId) {
         return findVerifiedMember(memberId);
+    }
+
+    public Page<Question> getMemberQuestions(Long memberId, int page) {
+        // 리팩토링 예정
+        PageRequest pageable = PageRequest.of(page - 1, 15, Sort.Direction.DESC, "createdAt");
+        return questionRepository.findByMemberId(memberId, pageable);
     }
 
     public Member getMemberAnswers(Long memberId) {

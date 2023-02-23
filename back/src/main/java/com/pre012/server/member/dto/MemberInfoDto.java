@@ -8,6 +8,8 @@ import lombok.Setter;
 import java.util.List;
 
 public class MemberInfoDto {
+    // -- 최종 Response Dto
+
     @Getter
     @Setter
     @AllArgsConstructor
@@ -20,12 +22,45 @@ public class MemberInfoDto {
     }
 
     @Getter
+    @Setter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class MemberQuestionsResponseDto {
+        private List<QuestionResponse> questions;
+    }
+
+    // -- 최종 ResponseDto 구성요소
+
+    @Getter
+    @AllArgsConstructor
+    public static class QuestionResponse {
+        private Long questionId;
+        private String title;
+        private String content;
+        private String imagePath;
+        private int viewCnt;
+        private int likeCnt;
+        private String createdAt;
+        private String modifiedAt;
+        private int answerCnt;
+        private WriterResponse member;
+        private List<TagResponse> tags;
+    }
+
+    @Getter
     @AllArgsConstructor
     public static class WriterResponse {
         private Long memberId;
         private String email;
         private String displayName;
         private String profileImagePath;
+    }
+
+    @Getter
+    @AllArgsConstructor
+    public static class TagResponse {
+        private Long tagId;
+        private String name;
     }
 
     @Getter
@@ -52,13 +87,6 @@ public class MemberInfoDto {
         private int likeCnt;
         private String createdAt;
         private String modifiedAt;
-    }
-
-    @Getter
-    @AllArgsConstructor
-    public static class TagResponse {
-        private Long tagId;
-        private String name;
     }
 
 }

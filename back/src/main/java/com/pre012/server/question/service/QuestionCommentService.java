@@ -1,5 +1,6 @@
 package com.pre012.server.question.service;
 
+import com.pre012.server.member.entity.Member;
 import com.pre012.server.question.entity.QuestionComment;
 import com.pre012.server.question.repository.QuestionCommentRepository;
 import org.springframework.stereotype.Service;
@@ -27,11 +28,16 @@ public class QuestionCommentService {
     /**
      * 댓글 수정
      */
-    public void updateComment(QuestionComment questionComment) {
+    public void updateComment(QuestionComment questionComment, Member member) {
         QuestionComment findComment = findVerifyComment(questionComment.getId());
-        findComment.setContent(findComment.getContent());
 
-        repository.save(findComment);
+        if (findComment.getMember().getId() != member.getId()) {
+            throw new RuntimeException("작성자가 아닌 사람이 댓글 수정하려고 함");
+        }
+
+        findComment.setContent(questionComment.getContent());
+
+//        repository.save(findComment); save 안해도 저장됨.
     }
 
     /**
@@ -56,7 +62,5 @@ public class QuestionCommentService {
 
         return findComment;
     }
-
-
 
 }

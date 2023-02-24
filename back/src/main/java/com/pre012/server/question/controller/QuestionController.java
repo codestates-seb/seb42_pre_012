@@ -2,23 +2,19 @@ package com.pre012.server.question.controller;
 
 import com.pre012.server.common.dto.MultiResponseDto;
 import com.pre012.server.member.entity.Member;
-import com.pre012.server.member.entity.QuestionLike;
 import com.pre012.server.member.service.MemberService;
 import com.pre012.server.question.dto.QuestionCommentDto;
 import com.pre012.server.question.dto.QuestionDto;
 import com.pre012.server.question.entity.Question;
-import com.pre012.server.question.entity.QuestionComment;
 import com.pre012.server.question.mapper.QuestionCommentMapper;
 import com.pre012.server.question.mapper.QuestionMapper;
 import com.pre012.server.question.service.QuestionService;
-import com.pre012.server.tag.entity.Tag;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/questions")
@@ -37,11 +33,11 @@ public class QuestionController {
 
     /**
      * 질문 등록
-     * 이미지 관련 내용 수정 필요 (DTO 도)
+     * 이미지 관련 내용 수정 필요
      * 태그 관련 내용 수정 필요
      */
     @PostMapping
-    public ResponseEntity postQuestion(@RequestBody QuestionDto.Post requestBody) {
+    public ResponseEntity postQuestion(@RequestBody QuestionDto.Request requestBody) {
         // tag 조회 -> 있는 거면 그 태그랑 질문이랑 매핑?
         // tagService.findByName(tag) 이런 식으로 가져와서 이 question 의 List<QuestionTag> tags 에 넣기?
 
@@ -62,15 +58,14 @@ public class QuestionController {
      */
     @PatchMapping("/{question-id}")
     public ResponseEntity patchQuestion(@PathVariable("question-id") Long questionId,
-                                        @RequestBody QuestionDto.Patch requestBody) {
-        requestBody.setQuestionId(questionId);
-        Question question = mapper.questionPatchToQuestion(requestBody);
+                                        @RequestBody QuestionDto.Request requestBody) {
+        Question question = mapper.questionPostToQuestion(requestBody);
+        question.setId(questionId);
 
         // 검증된 member 찾아서 넣기
         Member member = memberService.findVerifiedMember(requestBody.getMemberId());
-        question.setMember(member);
 
-        Question updatedQuestion = questionService.updateQuestion(question);
+        Question updatedQuestion = questionService.updateQuestion(question, member);
 
         return new ResponseEntity(HttpStatus.OK);
 
@@ -99,14 +94,15 @@ public class QuestionController {
 
         return new ResponseEntity<>(
                 new MultiResponseDto<>(
-                    mapper.questionsToSearchResponses(questions),
-                    pageQuestions),
+                        mapper.questionsToSearchResponses(questions),
+                        pageQuestions),
                 HttpStatus.OK);
     }
 
 
     /**
      * 질문 상세 조회
+     *
      * @return question / question_comment / member_question_like / tag
      */
     @GetMapping("/{question-id}")
@@ -183,13 +179,13 @@ public class QuestionController {
 
 
         // 조회를 했는데 데이터가 없는 경우
-            // 1. no_content status를 보냄. (body == null)
-            // 2. multiResponseDTO 형태인데 데이터만 빈 어레이로 보내기
+        // 1. no_content status를 보냄. (body == null)
+        // 2. multiResponseDTO 형태인데 데이터만 빈 어레이로 보내기
         return questions.size() == 0 ?
                 new ResponseEntity<>(HttpStatus.NO_CONTENT)
                 : new ResponseEntity<>(new MultiResponseDto<>(
-                        mapper.questionsToSearchResponses(questions),
-                        pageQuestions),
+                mapper.questionsToSearchResponses(questions),
+                pageQuestions),
                 HttpStatus.OK);
 
     }

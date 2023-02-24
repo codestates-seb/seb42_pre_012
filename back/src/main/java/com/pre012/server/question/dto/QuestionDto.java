@@ -11,30 +11,18 @@ import java.util.List;
 
 public class QuestionDto {
 
+    /**
+     * post, patch DTO
+     */
     @Getter
     @AllArgsConstructor
-    public static class Post {
+    public static class Request {
         private Long memberId;
         private String title;
         private String content;
 //        private List<TagDto> tags; // 수정 필요
     }
 
-    @Getter
-    @AllArgsConstructor
-    public static class Patch {
-        private Long memberId;
-        private String title;
-        private String content;
-//        private List<QuestionTag> tag; // DTO로 받기 수정 필요
-
-        private Long questionId;
-
-        public void setQuestionId(Long questionId) {
-            this.questionId = questionId;
-        }
-
-    }
 
     @Getter
     @AllArgsConstructor
@@ -45,8 +33,8 @@ public class QuestionDto {
         private String imagePath;
         private int viewCnt;
         private int likeCnt;
-        private LocalDateTime createdAt;
-        private LocalDateTime modifiedAt;
+        private String createdAt;
+        private String modifiedAt;
     }
 
     /**

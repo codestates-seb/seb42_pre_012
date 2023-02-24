@@ -42,19 +42,23 @@ public class QuestionService {
     /**
      * 질문 수정
      */
-    public Question updateQuestion(Question question) {
+    public Question updateQuestion(Question question, Member member) {
         // DB 에서 Question 가져오기
         Question findQuestion = findVerifyQuestion(question.getId());
+
+        if (findQuestion.getMember().getId() != member.getId()) {
+            throw new RuntimeException("작성자가 아닌 사람이 질문 수정하려고 함");
+        }
 
         findQuestion.setTitle(question.getTitle());
         findQuestion.setContent(question.getContent());
 
-        // for 문 vs 스트림 고민해보기
-        question.getTags()
-                .stream()
-                .forEach(tag -> findQuestion.setTags(tag));
+        // tag 관련 내용
+//        question.getTags()
+//                .stream()
+//                .forEach(tag -> findQuestion.setTags(tag));
 
-        return questionRepository.save(findQuestion);
+        return findQuestion;
 
     }
 
@@ -82,27 +86,31 @@ public class QuestionService {
      * Hot : answerCnt 많은 순
      */
     public Page<Question> findQuestions(int page, String sortedBy) {
+        // 필터 조건 대문자로 변경
+        sortedBy = sortedBy.toUpperCase();
 
-        if (sortedBy.equals("Unanswered")) {
-            return questionRepository.findByAnswerCnt(0,PageRequest.of(page, 15));
-        } else if (sortedBy.equals("Interesting")) {
+        if (sortedBy.equals("UNANSWERED")) {
+            return questionRepository.findByAnswerCnt(0, PageRequest.of(page, 15));
+
+        } else if (sortedBy.equals("INTERESTING")) {
             return questionRepository.findAll(PageRequest.of(page, 15,
                     Sort.by("viewCnt").descending()));
-        } else if (sortedBy.equals("Hot")) {
+
+        } else if (sortedBy.equals("HOT")) {
             return questionRepository.findAll(PageRequest.of(page, 15,
                     Sort.by("answerCnt").descending()));
+
+        } else {
+
+            // Default : NEWEST (최신 등록순)
+            return questionRepository.findAll(PageRequest.of(page, 15,
+                    Sort.by("createdAt").descending()));
         }
-
-        // Default : Newest (최신 등록순)
-        return questionRepository.findAll(PageRequest.of(page, 15,
-                Sort.by("createdAt").descending()));
-
     }
 
     /**
      * 질문 상세 조회
      * viewCnt + 1
-     *
      */
     public Question findQuestion(Long questionId) {
         Question findQuestion = findVerifyQuestion(questionId);
@@ -202,22 +210,21 @@ public class QuestionService {
      * Tag : 태그 (2순위)
      */
     public Page<Question> searchQuestions(int page, String keyword, String type) {
+        // 타입 대문자로 변경
+        type = type.toUpperCase();
+
         if (type.equals("USER")) {
             Long memberId = Long.valueOf(keyword);
             return questionRepository.findByMemberId(memberId, PageRequest.of(page, 15));
+        } else {
+
+            // 키워드가 포함된 글들 가져오기 위해서 키워드의 양 옆에 % 추가
+            keyword = "%" + keyword + "%";
+
+            // Default 검색
+            return questionRepository.findByTitleLikeOrContentLike(keyword, keyword, PageRequest.of(page, 15));
         }
-//        else if (type.equals("TAG")) {
-//
-//        }
-
-        // Default 검색
-        return questionRepository.findByTitleLikeOrContentLike(keyword, keyword, PageRequest.of(page, 15));
-
     }
-
-
-
-    //verifyBookmark
 
 
     // 검증된 question 레포에서 찾기
@@ -239,7 +246,7 @@ public class QuestionService {
     public LikeType getLikeStatus(Long memberId, Long questionId) {
         Optional<QuestionLike> optionalQuestionLike = questionLikeRepository.findByMemberIdAndQuestionId(memberId, questionId);
 
-        if (optionalQuestionLike.isPresent()){
+        if (optionalQuestionLike.isPresent()) {
             return optionalQuestionLike.get().getLikeType();
         } else {
             return null;

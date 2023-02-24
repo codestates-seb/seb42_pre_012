@@ -16,9 +16,8 @@ import java.util.stream.Collectors;
 @Mapper(componentModel = "spring")
 public interface QuestionMapper {
 
-    Question questionPostToQuestion(QuestionDto.Post requestBody);
+    Question questionPostToQuestion(QuestionDto.Request requestBody);
 
-    Question questionPatchToQuestion(QuestionDto.Patch requestBody);
 
     @Mapping(source = "id", target = "questionId")
     @Mapping(source = "createdAt", target = "createdAt", dateFormat = "yyyy-MM-dd HH:mm")

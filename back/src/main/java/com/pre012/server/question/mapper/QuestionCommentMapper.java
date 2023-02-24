@@ -11,8 +11,7 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface QuestionCommentMapper {
 
-    QuestionComment questionCommentPostToQuestionComment(QuestionCommentDto.Post requestBody);
-    QuestionComment questionCommentPatchToQuestionComment(QuestionCommentDto.Patch requestBody);
+    QuestionComment questionCommentRequestToQuestionComment(QuestionCommentDto.Request requestBody);
 
 
     /**

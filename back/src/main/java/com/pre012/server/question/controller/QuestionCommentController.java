@@ -35,9 +35,9 @@ public class QuestionCommentController {
 
     @PostMapping("/{question-id}")
     public ResponseEntity postQuestionComment(@PathVariable("question-id") Long questionId,
-                                              @RequestBody QuestionCommentDto.Post requestBody) {
+                                              @RequestBody QuestionCommentDto.Request requestBody) {
 
-        QuestionComment questionComment = mapper.questionCommentPostToQuestionComment(requestBody);
+        QuestionComment questionComment = mapper.questionCommentRequestToQuestionComment(requestBody);
 
         // 입력 받은 questionId 로 question 찾아서 questionComment 에 넣음
         Question findQuestion = questionService.findVerifyQuestion(questionId);
@@ -58,11 +58,13 @@ public class QuestionCommentController {
      */
     @PatchMapping("/{comment-id}")
     public ResponseEntity patchQuestionComment(@PathVariable("comment-id") Long commentId,
-                                               @RequestBody QuestionCommentDto.Patch requestBody) {
-        requestBody.setCommentId(commentId);
-        QuestionComment questionComment = mapper.questionCommentPatchToQuestionComment(requestBody);
+                                               @RequestBody QuestionCommentDto.Request requestBody) {
+        QuestionComment questionComment = mapper.questionCommentRequestToQuestionComment(requestBody);
+        questionComment.setId(commentId);
 
-        questionCommentService.updateComment(questionComment);
+        Member findMember = memberService.findVerifiedMember(requestBody.getMemberId());
+
+        questionCommentService.updateComment(questionComment, findMember);
 
         return new ResponseEntity(HttpStatus.OK);
     }

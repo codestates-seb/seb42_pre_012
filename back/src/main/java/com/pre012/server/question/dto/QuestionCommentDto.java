@@ -7,24 +7,15 @@ import java.time.LocalDateTime;
 
 public class QuestionCommentDto {
 
+    /**
+     * post, patch DTO
+     */
     @Getter
     @AllArgsConstructor
-    public static class Post {
+    public static class Request {
         private Long memberId;
         private String content;
 
-    }
-
-    @Getter
-    @AllArgsConstructor
-    public static class Patch {
-        private Long memberId;
-        private Long commentId;
-        private String content;
-
-        public void setCommentId(Long commentId) {
-            this.commentId = commentId;
-        }
     }
 
     /**

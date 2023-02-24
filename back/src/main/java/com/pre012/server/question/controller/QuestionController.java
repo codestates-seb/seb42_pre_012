@@ -181,15 +181,5 @@ public class QuestionController {
                     pageQuestions),
                 HttpStatus.OK);
 
-        // 조회를 했는데 데이터가 없는 경우 2가지 방법
-        // 1. no_content status 를 보냄. (body == null)
-        // 2. multiResponseDTO 형태인데 데이터만 빈 어레이로 보내기
-//        return questions.size() == 0 ?
-//                new ResponseEntity<>(HttpStatus.NO_CONTENT)
-//                : new ResponseEntity<>(new MultiResponseDto<>(
-//                mapper.questionsToSearchResponses(questions),
-//                pageQuestions),
-//                HttpStatus.OK);
-
     }
 }

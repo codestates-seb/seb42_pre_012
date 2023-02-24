@@ -1,6 +1,5 @@
 package com.pre012.server.question.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.pre012.server.member.dto.MemberInfoDto;
 import com.pre012.server.member.enums.LikeType;
 import lombok.AllArgsConstructor;

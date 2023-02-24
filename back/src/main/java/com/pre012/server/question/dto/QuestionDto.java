@@ -1,6 +1,8 @@
 package com.pre012.server.question.dto;
 
 import com.pre012.server.member.dto.MemberDto;
+import com.pre012.server.member.dto.MemberInfoDto;
+import com.pre012.server.member.enums.LikeType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -56,7 +58,7 @@ public class QuestionDto {
     @AllArgsConstructor
     public static class searchResponse {
         private Response questions;
-        private MemberDto.SimpleInfo member;
+        private MemberInfoDto.WriterResponse member;
         private int answerCnt;
 //        private TagDto.Response tags;
     }
@@ -70,9 +72,9 @@ public class QuestionDto {
     public static class getResponse {
         private Response question;
         private List<QuestionCommentDto.Response> comments;
-        private MemberDto.SimpleInfo member;
+        private MemberInfoDto.WriterResponse member;
         private boolean isBookmarked;
-        private String likeStatus;
+        private LikeType likeStatus;
 //        private TagDto.Response tags;
     }
 

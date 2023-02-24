@@ -236,11 +236,11 @@ public class QuestionService {
     }
 
     // like status 찾기
-    public String getLikeStatus(Long memberId, Long questionId) {
+    public LikeType getLikeStatus(Long memberId, Long questionId) {
         Optional<QuestionLike> optionalQuestionLike = questionLikeRepository.findByMemberIdAndQuestionId(memberId, questionId);
 
         if (optionalQuestionLike.isPresent()){
-            return optionalQuestionLike.get().getLikeType().toString();
+            return optionalQuestionLike.get().getLikeType();
         } else {
             return null;
         }

@@ -125,8 +125,9 @@ public class QuestionController {
         return new ResponseEntity(response, HttpStatus.OK);
     }
 
+
     /**
-     * 질문 좋아요 (완성)
+     * 질문 좋아요
      */
     @PostMapping("/like/{question-id}")
     public ResponseEntity postQuestionLike(@PathVariable("question-id") Long questionId,
@@ -141,7 +142,7 @@ public class QuestionController {
     }
 
     /**
-     * 질문 싫어요 (완성)
+     * 질문 싫어요
      */
     @PostMapping("/unlike/{question-id}")
     public ResponseEntity postQuestionUnlike(@PathVariable("question-id") Long questionId,
@@ -156,7 +157,7 @@ public class QuestionController {
     }
 
     /**
-     * 질문 북마크 (완성)
+     * 질문 북마크
      */
     @PostMapping("/bookmark/{question-id}")
     public ResponseEntity postBookmark(@PathVariable("question-id") Long questionId,
@@ -170,7 +171,7 @@ public class QuestionController {
     }
 
     /**
-     * 질문 검색
+     * 질문 키워드로 검색
      */
     @GetMapping("/search")
     public ResponseEntity searchQuestions(@RequestParam String keyword,

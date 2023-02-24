@@ -24,4 +24,10 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
     // memberId 로 찾기
     Page<Question> findByMemberId(Long memberId, Pageable pageable);
 
+    // memberId 가 북마크한 질문 찾기
+    Page<Question> findByBookmarksMemberId(Long memberId, Pageable pageable);
+
+    // memberId 가 답변한 질문 찾기
+    Page<Question> findByAnswersMemberId(Long memberId, Pageable pageable);
+
 }

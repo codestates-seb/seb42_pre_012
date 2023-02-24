@@ -3,7 +3,7 @@ package com.pre012.server.question.dto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 public class QuestionCommentDto {
 
@@ -28,7 +28,7 @@ public class QuestionCommentDto {
     }
 
     /**
-     * 작성자 정보는 필요 없나요?
+     * 질문 상세 조회에 보낼 comment Response DTO
      */
     @Getter
     @AllArgsConstructor
@@ -36,7 +36,7 @@ public class QuestionCommentDto {
         private Long commentId;
         private String content;
         private String commentWriter;
-        private Date createdAt;
+        private String createdAt;
     }
 
 }

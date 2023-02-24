@@ -69,7 +69,7 @@ public class QuestionService {
     public void deleteQuestion(Long questionId, Long memberId) {
         Question findQuestion = findVerifyQuestion(questionId);
 
-        // answer 지우는 메소드 추가 - answerRepository.deleteByQuestionId() 이런 거 만들 수 있나..?
+        // answer 지우는 메소드 추가 - answerRepository.deleteByQuestionId() 이런거
 
         // question 에 저장된 memberId 와 쿼리스트링으로 받은 memberId 비교
         if (!findQuestion.getMember().getId().equals(memberId)) {
@@ -148,8 +148,6 @@ public class QuestionService {
 
             findQuestion.setLikeCnt(likeCnt + 1);
         }
-
-//        questionRepository.save(findQuestion);
     }
 
     /**
@@ -200,7 +198,6 @@ public class QuestionService {
 
             bookmarkRepository.save(bookmark);
         }
-
     }
 
     /**

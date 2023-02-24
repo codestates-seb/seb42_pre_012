@@ -3,7 +3,6 @@ package com.pre012.server.question.mapper;
 import com.pre012.server.question.dto.QuestionCommentDto;
 import com.pre012.server.question.entity.QuestionComment;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 
 import java.time.format.DateTimeFormatter;
 import java.util.List;

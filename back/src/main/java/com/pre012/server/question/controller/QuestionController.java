@@ -38,8 +38,6 @@ public class QuestionController {
      */
     @PostMapping
     public ResponseEntity postQuestion(@RequestBody QuestionDto.Request requestBody) {
-        // tag 조회 -> 있는 거면 그 태그랑 질문이랑 매핑?
-        // tagService.findByName(tag) 이런 식으로 가져와서 이 question 의 List<QuestionTag> tags 에 넣기?
 
         Question question = mapper.questionPostToQuestion(requestBody);
 
@@ -102,8 +100,6 @@ public class QuestionController {
 
     /**
      * 질문 상세 조회
-     *
-     * @return question / question_comment / member_question_like / tag
      */
     @GetMapping("/{question-id}")
     public ResponseEntity getQuestion(@PathVariable("question-id") Long questionId,
@@ -178,17 +174,22 @@ public class QuestionController {
         List<Question> questions = pageQuestions.getContent();
 
 
-        // 조회를 했는데 데이터가 없는 경우
-        // 1. no_content status를 보냄. (body == null)
-        // 2. multiResponseDTO 형태인데 데이터만 빈 어레이로 보내기
-        return questions.size() == 0 ?
-                new ResponseEntity<>(HttpStatus.NO_CONTENT)
-                : new ResponseEntity<>(new MultiResponseDto<>(
-                mapper.questionsToSearchResponses(questions),
-                pageQuestions),
+
+        return new ResponseEntity<>(
+                new MultiResponseDto<>(
+                    mapper.questionsToSearchResponses(questions),
+                    pageQuestions),
                 HttpStatus.OK);
 
+        // 조회를 했는데 데이터가 없는 경우 2가지 방법
+        // 1. no_content status 를 보냄. (body == null)
+        // 2. multiResponseDTO 형태인데 데이터만 빈 어레이로 보내기
+//        return questions.size() == 0 ?
+//                new ResponseEntity<>(HttpStatus.NO_CONTENT)
+//                : new ResponseEntity<>(new MultiResponseDto<>(
+//                mapper.questionsToSearchResponses(questions),
+//                pageQuestions),
+//                HttpStatus.OK);
+
     }
-
-
 }

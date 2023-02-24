@@ -3,8 +3,6 @@ package com.pre012.server.question.dto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import java.time.LocalDateTime;
-
 public class QuestionCommentDto {
 
     /**

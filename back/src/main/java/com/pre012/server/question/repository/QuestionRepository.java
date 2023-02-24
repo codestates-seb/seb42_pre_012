@@ -4,14 +4,13 @@ import com.pre012.server.question.entity.Question;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-
-import java.util.Optional;
 
 public interface QuestionRepository extends JpaRepository<Question, Long> {
 
-    // Unanswered
-    Page<Question> findByAnswerCnt(int answerCnt,Pageable pageable);
+    /**
+     * 질문 목록 조회 및 필터링 - Unanswered
+     */
+    Page<Question> findByAnswerCnt(int answerCnt, Pageable pageable);
 
 
     /**

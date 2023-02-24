@@ -53,7 +53,6 @@ public class QuestionCommentService {
     }
 
 
-
     private QuestionComment findVerifyComment(Long questionCommentId) {
         Optional<QuestionComment> optionalComment = repository.findById(questionCommentId);
 

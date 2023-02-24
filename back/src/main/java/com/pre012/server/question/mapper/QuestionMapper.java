@@ -1,6 +1,5 @@
 package com.pre012.server.question.mapper;
 
-import com.pre012.server.member.dto.MemberDto;
 import com.pre012.server.member.dto.MemberInfoDto;
 import com.pre012.server.member.entity.Member;
 import com.pre012.server.member.enums.LikeType;

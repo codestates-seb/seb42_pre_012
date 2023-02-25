@@ -1,5 +1,6 @@
 package com.pre012.server.answer.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.pre012.server.common.audit.Auditable;
 import com.pre012.server.member.entity.Member;
 import lombok.Getter;
@@ -14,18 +15,19 @@ import javax.persistence.*;
 @Entity
 public class AnswerComment extends Auditable {
     @Id
-    @Column(name = "answer_comment_id")
+    @Column(name = "comment_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column
     private String content;
 
-    @ManyToOne
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "answer_id")
     private Answer answer;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "member_id")
     private Member member;
 

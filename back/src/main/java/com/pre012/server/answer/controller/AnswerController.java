@@ -11,6 +11,7 @@ import com.pre012.server.answer.service.AnswerService;
 import com.pre012.server.member.entity.AnswerLike;
 import com.pre012.server.question.entity.Question;
 import org.hibernate.validator.constraints.ParameterScriptAssert;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -55,7 +56,6 @@ public class AnswerController {
 //        return ResponseEntity.ok(response);
     }
 
-    //숫자만 열거하면 이상하니 구분용 엔드포인트를 추가하면 어떨지?
     //질문에 해당하는 특정 답변 업데이트
     @PatchMapping("/{answer-id}")
     public ResponseEntity patchAnswer(@PathVariable("answer-id") @Positive Long answer_id,
@@ -63,18 +63,17 @@ public class AnswerController {
         requestbody.setAnswer_id(answer_id);
 
         Answer answer = answerMapper.answerPatchDtoToAnswer(requestbody);
-        answerService.updateAnswer(answer,answer.getMember().getId());
+        answer = answerService.updateAnswer(answer,answer.getMember().getId());
         /*
          1. question이 있는지?
          2. answer이 있는지?
          -> 서비스 클래스 내에서 해결 완
          */
-
         return new ResponseEntity<>(answerMapper.answerToAnswerResponseDto(answer), HttpStatus.OK);
     }
     //질문에 해당하는 답변 가져오기
-    @GetMapping("/{question_id}")
-    public ResponseEntity getAnswer(@PathVariable("question_id") @Positive Long question_id,
+    @GetMapping("/{question-id}")
+    public ResponseEntity getAnswer(@PathVariable("question-id") @Positive Long question_id,
                                     @RequestParam @Positive int page,
                                     @RequestParam (required = false, defaultValue="likeCnt") String sortedBy){
         //페이지네이션 처리할지?
@@ -83,12 +82,20 @@ public class AnswerController {
          question이 가진 List<Answer>을 가져옴
          이후 Answer이 가진 List<AnswerComment>가져옴
          */
+        Question stubQuestion = new Question("안녕하세요","url","나 어떡하지",0,0);
+        Answer stubAnswer1 = new Answer("그러게요",0,"url2");
+        Answer stubAnswer2 = new Answer("맞아요",0,"url3");
+        answerService.createAnswer(stubAnswer1,1L);
+        answerService.createAnswer(stubAnswer2,1L);
+        //테스트용 데이터
 
-        return ResponseEntity.ok(null);
+        Page<Answer> pageAnswer = answerService.findAnswers(question_id,page-1,sortedBy);
+        List<Answer> answers = pageAnswer.getContent();
+        return new ResponseEntity<>(answerMapper.answersToAnswerMultiResponseDtos(answers),HttpStatus.OK);
     }
     //질문에 해당하는 특정 답변 삭제
     @DeleteMapping("/{answer-id}")
-    public ResponseEntity deleteAnswer(@PathVariable("answer_id")@Positive Long answer_id,
+    public ResponseEntity deleteAnswer(@PathVariable("answer-id")@Positive Long answer_id,
                                        @RequestParam @Positive Long member_id){
         //question 하나당 아이디가 생기는지 아니면 그냥 answer id가 question과 상관없이 중복으로 생기는지?
         answerService.deleteAnswer(answer_id,member_id);
@@ -114,8 +121,7 @@ public class AnswerController {
         requestbody.setComment_id(comment_id);
 
         AnswerComment answerComment = answerCommentMapper.answerCommentPatchDtoToAnswerComment(requestbody);
-        answerService.updateAnswerComment(answerComment, answerComment.getMember().getId());
-
+        answerComment= answerService.updateAnswerComment(answerComment, answerComment.getMember().getId());
         return new ResponseEntity<>(answerCommentMapper.answerCommentToAnswerCommentResponseDto(answerComment), HttpStatus.OK);
 
     }
@@ -132,7 +138,7 @@ public class AnswerController {
     이후 추가될 post는 좋아요 증감 관련
      */
 
-    @PostMapping("/like/{answer_id}/")
+    @PostMapping("/like/{answer_id}")
     public ResponseEntity like(@PathVariable("answer_id") @Positive Long answer_id,
                                @RequestParam @Positive Long member_id){
         Answer answer = answerService.findVerifiedAnswer(answer_id);
@@ -140,7 +146,7 @@ public class AnswerController {
         return new ResponseEntity<>(answer.getLikeCnt(),HttpStatus.OK);
     }
 
-    @PostMapping("/unlike/{answer_id}/")
+    @PostMapping("/unlike/{answer_id}")
     public ResponseEntity unLike(@PathVariable("answer_id") @Positive Long answer_id,
                                  @RequestParam @Positive Long member_id){
         Answer answer = answerService.findVerifiedAnswer(answer_id);

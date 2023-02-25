@@ -4,10 +4,14 @@ import com.pre012.server.answer.dto.*;
 import com.pre012.server.answer.entity.Answer;
 import com.pre012.server.answer.entity.AnswerComment;
 import com.pre012.server.member.entity.Member;
+import org.mapstruct.Mapper;
+import org.mapstruct.ReportingPolicy;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
+@Mapper(componentModel = "spring",unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface AnswerCommentMapper {
     default AnswerComment answerCommentPostDtoToAnswerComment(AnswerCommentPostDto answerCommentPostDto){
         if(answerCommentPostDto==null){
@@ -31,6 +35,7 @@ public interface AnswerCommentMapper {
         member.setId(answerCommentPatchDto.getMember_id());
 
         AnswerComment answerComment = new AnswerComment();
+        answerComment.setId(answerCommentPatchDto.getComment_id());
         answerComment.setMember(member);
         answerComment.setContent(answerCommentPatchDto.getContent());
 
@@ -41,14 +46,26 @@ public interface AnswerCommentMapper {
             return null;
         }
         Long member_id = answerComment.getMember().getId();
-        Long answer_id = answerComment.getId();
+        Long answer_id = answerComment.getAnswer().getId();
+        Long comment_id = answerComment.getId();
         String content = answerComment.getContent();
         LocalDateTime createdAt = answerComment.getCreatedAt();
         LocalDateTime modifiedAt = answerComment.getModifiedAt();
-        Member member = answerComment.getMember();
-        Answer answer = answerComment.getAnswer();
+        String displayName = answerComment.getMember().getDisplayName();
+        String email = answerComment.getMember().getEmail();
+        String profileImagePath = answerComment.getMember().getProfileImagePath();
 
-        AnswerCommentResponseDto answerCommentResponseDto = new AnswerCommentResponseDto(content,answer,member,createdAt,modifiedAt);
+        AnswerCommentResponseDto answerCommentResponseDto = new AnswerCommentResponseDto(member_id,answer_id,comment_id,content,createdAt,modifiedAt,
+                displayName,email,profileImagePath);
         return answerCommentResponseDto;
+    }
+
+    default List<AnswerCommentResponseDto> answerCommentsToAnswerCommentResponseDtos(List<AnswerComment> comments) {
+        List<AnswerCommentResponseDto> list = new ArrayList<>( comments.size() );
+        for ( AnswerComment comment : comments ) {
+            list.add( answerCommentToAnswerCommentResponseDto(comment) );
+        }
+
+        return list;
     }
 }

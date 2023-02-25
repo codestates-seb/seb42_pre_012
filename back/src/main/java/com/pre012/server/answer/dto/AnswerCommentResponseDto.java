@@ -2,6 +2,7 @@ package com.pre012.server.answer.dto;
 
 import com.pre012.server.answer.entity.Answer;
 import com.pre012.server.member.entity.Member;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,24 +13,16 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
+@AllArgsConstructor
 public class AnswerCommentResponseDto {
 
+    private Long member_id;
+    private Long answer_id;
+    private Long comment_id;
     private String content;
-
-    private Answer answer;
-
-    private Member member;
-
     private LocalDateTime createdAt;
-
     private LocalDateTime modifiedAt;
-
-    public AnswerCommentResponseDto(String content, Answer answer, Member member, LocalDateTime createdAt, LocalDateTime modifiedAt) {
-        this.content = content;
-        this.answer = answer;
-        this.member = member;
-        this.createdAt = createdAt;
-        this.modifiedAt = modifiedAt;
-    }
-
+    private String email;
+    private String displayName;
+    private String profileImagePath;
 }

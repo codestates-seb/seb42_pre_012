@@ -1,5 +1,6 @@
 package com.pre012.server.answer.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.pre012.server.common.audit.Auditable;
 import com.pre012.server.member.entity.AnswerLike;
 import com.pre012.server.member.entity.Member;
@@ -32,33 +33,24 @@ public class Answer extends Auditable {
     @Column(nullable = false)
     private int likeCnt;
 
-    //조회 수
-    @Column
-    private int viewCnt;
-    
-    @OneToMany(mappedBy = "answer",cascade = CascadeType.ALL)
-    private List<AnswerComment> comments = new ArrayList<>();
-
-    @OneToMany(mappedBy = "answer",cascade = CascadeType.ALL)
-    private List<AnswerLike> like = new ArrayList<>();
-
     //이미지 가져오는 법 확인
     @Column(length = 200)
-    private String image_path;    
+    private String image_path;
 
     @Setter(AccessLevel.NONE)
     @OneToMany(mappedBy = "answer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<AnswerComment> comments = new ArrayList<>();
 
+
     @Setter(AccessLevel.NONE)
     @OneToMany(mappedBy = "answer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<AnswerLike> memberLikes = new ArrayList<>();
+    private List<AnswerLike> AnswerLikes = new ArrayList<>();
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "question_id")
     private Question question;
 
@@ -70,10 +62,20 @@ public class Answer extends Auditable {
         }
     }
 
-    public void setMemberLikes(AnswerLike memberAnswerLike) {
-        this.memberLikes.add(memberAnswerLike);
-        if (memberAnswerLike.getAnswer() != this) {
-            memberAnswerLike.setAnswer(this);
+    public void setAnswerLikes(AnswerLike answerLike) {
+        this.AnswerLikes.add(answerLike);
+        if (answerLike.getAnswer() != this) {
+            answerLike.setAnswer(this);
         }
+    }
+
+    /*
+    stub용 임시
+     */
+
+    public Answer(String content, int likeCnt, String image_path) {
+        this.content = content;
+        this.likeCnt = likeCnt;
+        this.image_path = image_path;
     }
 }

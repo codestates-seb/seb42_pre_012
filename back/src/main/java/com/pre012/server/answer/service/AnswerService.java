@@ -49,9 +49,8 @@ public class AnswerService {
            2. answer 엔티티에 question_id를 통해 찾은 question 부여 / set
            3. answer 엔티티에 멤버 부여
          */
-        Question question = new Question();
-        Member member = new Member("a@ma.com","asdfasdf","park", MemberStatus.MEMBER_ACTIVE,"asdfsf");
-        //memberService.verifyMember(answer.getMember().getId());
+        Question question = questionService.findQuestion(question_id);
+        Member member = memberService.findVerifiedMember(answer.getMember().getId());
         answer.setQuestion(question);
         answer.setMember(member);
         //좋아요 수 초기값 설정
@@ -76,7 +75,7 @@ public class AnswerService {
 
         answerRepository.delete(answer);
     }
-    //넘겨줄 데이터 임의로 설정한 상태
+
     public Page<Answer> findAnswers (Long question_id,int page,String sortedBy) {
         if (sortedBy.equals("createdAt")) {
             return answerRepository.findByQuestion_Id(question_id,PageRequest.of(page, size,
@@ -90,7 +89,7 @@ public class AnswerService {
         }
     }
     public Answer findVerifiedAnswer(Long answer_id){
-        //cascade가 어떻게 적용될지 모르니 각각 해봐야할듯 검사를? (question과 같이)
+
         Optional<Answer> optionalAnswer =
                 answerRepository.findById(answer_id);
         Answer findAnswer=
@@ -98,7 +97,7 @@ public class AnswerService {
                         new BusinessLogicException(ExceptionCode.ANSWER_NOT_FOUND));
         return findAnswer;
     }
-    //임시용 권한 확인 메서드
+
     public void verifiedAuthorization(Answer answer, Long member_id) {
         if (!Objects.equals(member_id, answer.getMember().getId()))
             throw new BusinessLogicException(ExceptionCode.UNAUTHORIZED_USER);
@@ -111,22 +110,21 @@ public class AnswerService {
 
 
     public AnswerComment createAnswerComment(AnswerComment answerComment,Long answer_id){
-        //존재하는 유저인지 검증 구현
         Answer findAnswer = findVerifiedAnswer(answer_id);
         answerComment.setAnswer(findAnswer);
-        Member member = new Member("b@ma.com","asdfasdf","kim", MemberStatus.MEMBER_ACTIVE,"asdfsf");
+        Member member = memberService.findVerifiedMember(answerComment.getMember().getId());
         answerComment.setMember(member);
         return answerCommentRepository.save(answerComment);
     }
 
     public AnswerComment updateAnswerComment(AnswerComment answerComment, Long member_id){
         AnswerComment findAnswerComment = findVerifiedAnswerComment(answerComment.getId());
-            verifiedAuthorization(findAnswerComment,member_id);
+        verifiedAuthorization(findAnswerComment,member_id);
 
-            Optional.ofNullable(answerComment.getContent())
-                    .ifPresent(content->findAnswerComment.setContent(content));
+        Optional.ofNullable(answerComment.getContent())
+                .ifPresent(content->findAnswerComment.setContent(content));
 
-            return answerCommentRepository.save(findAnswerComment);
+        return answerCommentRepository.save(findAnswerComment);
         }
     public void deleteAnswerComment(Long comment_id, Long member_id){
         AnswerComment answerComment = findVerifiedAnswerComment(comment_id);
@@ -146,7 +144,9 @@ public class AnswerService {
         return findAnswerComment;
     }
 
-    @Transactional
+    /**
+    한번 더 save를 안하면 db에 반영이 안되서 일단은 넣어놨는데, tranjaction 처리로 해결하면 된다고 하셨는데, 정확히 이해가 안가 일단 그대로 두었습니다.
+     */
     public void like(Long answer_id,Long member_id){
         Answer answer = findVerifiedAnswer(answer_id);
         Member member = memberService.findVerifiedMember(member_id);
@@ -177,12 +177,6 @@ public class AnswerService {
                 answerRepository.save(answer);
             }
         }
-        //List<AnswerLike> answerLikes = answer.getMemberLikes();
-        //member_id로 member조회 후, answerLike repo에서 조회
-        /*
-        1.answerLike에서 find를 함 멤버를 --> 만약에 없으면 로직 실행
-        2.해당 멤버의 likeType을 바꿈 --> 이걸 어케할까?
-         */
     }
 
     public void unlike(Long answer_id,Long member_id){
@@ -223,15 +217,4 @@ public class AnswerService {
                 optionalAnswerLike.orElse(null);
         return findAnswerLike.getLikeType();
     }
-
-//    public boolean didLiked(Answer answer,Long member_id){
-//        //member_id로 찾은 member 객체를 넣어야하는지?
-//        if(answer.getMemberLikes().contains(member_id)){
-//            return true;
-//        }
-//        else
-//        {
-//            return false;
-//        }
-//    }
 }

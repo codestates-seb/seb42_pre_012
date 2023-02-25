@@ -109,16 +109,4 @@ public class Member extends Auditable {
             answerLike.setMember(this);
         }
     }
-
-    /*
-    테스트를 위한 stub 데이터
-     */
-
-    public Member(String email, String password, String displayName, MemberStatus memberStatus, String profileImagePath) {
-        this.email = email;
-        this.password = password;
-        this.displayName = displayName;
-        this.memberStatus = memberStatus;
-        this.profileImagePath = profileImagePath;
-    }
 }

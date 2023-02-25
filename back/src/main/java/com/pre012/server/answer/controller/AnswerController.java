@@ -3,13 +3,13 @@ package com.pre012.server.answer.controller;
 import com.pre012.server.answer.dto.*;
 import com.pre012.server.answer.entity.Answer;
 import com.pre012.server.answer.entity.AnswerComment;
-import com.pre012.server.answer.enums.sortedBy;
 import com.pre012.server.answer.mapper.AnswerCommentMapper;
 import com.pre012.server.answer.mapper.AnswerMapper;
 import com.pre012.server.answer.repository.AnswerCommentRepository;
 import com.pre012.server.answer.service.AnswerService;
 import com.pre012.server.member.entity.AnswerLike;
 import com.pre012.server.question.entity.Question;
+import com.pre012.server.question.service.QuestionService;
 import org.hibernate.validator.constraints.ParameterScriptAssert;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -26,11 +26,13 @@ public class AnswerController {
     private final AnswerMapper answerMapper;
     private final AnswerService answerService;
     private final AnswerCommentMapper answerCommentMapper;
+    private final QuestionService questionService;
 
-    public AnswerController(AnswerMapper answerMapper, AnswerService answerService, AnswerCommentMapper answerCommentMapper) {
+    public AnswerController(AnswerMapper answerMapper, AnswerService answerService, AnswerCommentMapper answerCommentMapper,QuestionService questionService) {
         this.answerMapper = answerMapper;
         this.answerService = answerService;
         this.answerCommentMapper = answerCommentMapper;
+        this.questionService = questionService;
     }
 
     //질문에 따른 답변 작성
@@ -39,21 +41,12 @@ public class AnswerController {
                                      @RequestBody AnswerPostDto requestbody){
         Answer answer = answerMapper.answerPostDtoToAnswer(requestbody);
         answer = answerService.createAnswer(answer,question_id);
-        /*질문 서비스 구현시 추가예정
-        / why?
-        -> 생성한 answer을 question이 가지고 있는 list<answer>에 포함시킴
 
-        멤버에는 포함시키지 않는 이유?
-        -> 멤버를 통해 답변만 볼일이 없음. ex) 멤버 프로필에서 답변만 조회하는 경우
-           우린 멤버를 통해 질문글만 조회하기로 합의.
+        Question question = questionService.findQuestion(question_id);
+        question.setAnswer(answer);
 
-        Question question = questionService.~(question_id)
-        question.addAnswer(answer);
-        */
 
-        return new ResponseEntity<>(answerMapper.answerToAnswerResponseDto(answer), HttpStatus.CREATED);
-//        AnswerResponseDto response = new AnswerResponseDto(1L,1L,1L,"안녕하세요!",0);
-//        return ResponseEntity.ok(response);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     //질문에 해당하는 특정 답변 업데이트
@@ -69,25 +62,20 @@ public class AnswerController {
          2. answer이 있는지?
          -> 서비스 클래스 내에서 해결 완
          */
-        return new ResponseEntity<>(answerMapper.answerToAnswerResponseDto(answer), HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
+
+
     //질문에 해당하는 답변 가져오기
+    /*
+    response에 member 정보가 하나만 포함되서 정은님 코드 참고해서 comment에는 따로 responseDto에 필드 추가해서 멤버관련 정보 실어두었고,
+    api 요청서 response에 member 부분은 answer 멤버 정보라고 생각하여 따로 빼뒀습니다. likeStatus는 제가 그때 바로 말씀드렸어야했는데, 로그인한 멤버의 liketype이 필요하다면,
+    request로 멤버id 따로 받아서 새로 추가하겠습니다. 너무 두서없이 코드 작성하고 pr 던지는 것 같아 정말 죄송할따름입니다. 일요일 저녁쯤 메세지 볼 수 있으면 바로 보고 답장하도록 할께요!
+     */
     @GetMapping("/{question-id}")
     public ResponseEntity getAnswer(@PathVariable("question-id") @Positive Long question_id,
                                     @RequestParam @Positive int page,
                                     @RequestParam (required = false, defaultValue="likeCnt") String sortedBy){
-        //페이지네이션 처리할지?
-        /*Question 서비스<- question_id를 통해
-         Question question = 값 추출
-         question이 가진 List<Answer>을 가져옴
-         이후 Answer이 가진 List<AnswerComment>가져옴
-         */
-        Question stubQuestion = new Question("안녕하세요","url","나 어떡하지",0,0);
-        Answer stubAnswer1 = new Answer("그러게요",0,"url2");
-        Answer stubAnswer2 = new Answer("맞아요",0,"url3");
-        answerService.createAnswer(stubAnswer1,1L);
-        answerService.createAnswer(stubAnswer2,1L);
-        //테스트용 데이터
 
         Page<Answer> pageAnswer = answerService.findAnswers(question_id,page-1,sortedBy);
         List<Answer> answers = pageAnswer.getContent();
@@ -104,7 +92,7 @@ public class AnswerController {
     }
 
     /*
-    답변코멘트 관리하는 컨트롤러도 구현 요망 (post,patch,delete)
+    답변 post, patch, delete
      */
     @PostMapping("/comments/{answer-id}")
     public ResponseEntity postAnswerComment(@PathVariable("answer-id")@Positive Long answer_id,

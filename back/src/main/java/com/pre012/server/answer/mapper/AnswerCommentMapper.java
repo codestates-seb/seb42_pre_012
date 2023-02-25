@@ -41,6 +41,7 @@ public interface AnswerCommentMapper {
 
         return answerComment;
     }
+
     default AnswerCommentResponseDto answerCommentToAnswerCommentResponseDto(AnswerComment answerComment) {
         if ( answerComment == null ) {
             return null;

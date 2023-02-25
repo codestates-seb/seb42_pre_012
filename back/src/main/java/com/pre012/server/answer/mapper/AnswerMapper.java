@@ -4,6 +4,7 @@ import com.pre012.server.answer.controller.AnswerController;
 import com.pre012.server.answer.dto.*;
 import com.pre012.server.answer.entity.Answer;
 import com.pre012.server.answer.entity.AnswerComment;
+import com.pre012.server.member.dto.MemberInfoDto;
 import com.pre012.server.member.entity.Member;
 import com.pre012.server.question.entity.Question;
 import org.mapstruct.Mapper;
@@ -105,6 +106,12 @@ public interface AnswerMapper {
                 member.getProfileImagePath()
         );
     }
+
+    /**
+    얘는 왜 이걸 또 추가한거야? -> 제가 너무나도 무능력하여.. 머리를 싸매보고 정은님 pr올리신 것도 참고해서 response를 만들려다보니
+    answerCommentmapper의 기능을 여기서 이용해야 했습니다..
+    그래서 여기 한번 더 정의해둔겁니다. 너무 지저분하게 코드가 짜여져서 정말 죄송합니다.
+     */
     default AnswerCommentResponseDto answerCommentToAnswerCommentResponseDto(AnswerComment answerComment) {
         if ( answerComment == null ) {
             return null;

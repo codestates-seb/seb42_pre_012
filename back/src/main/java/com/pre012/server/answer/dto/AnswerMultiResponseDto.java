@@ -1,5 +1,6 @@
 package com.pre012.server.answer.dto;
 
+import com.pre012.server.member.dto.MemberInfoDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;

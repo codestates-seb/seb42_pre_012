@@ -108,18 +108,4 @@ public class Question extends Auditable {
             bookmark.setQuestion(this);
         }
     }
-
-
-
-    /*
-    테스트를 위한 stub 데이터 생성
-     */
-
-    public Question(String title, String image_path, String content, int viewCnt, int likeCnt) {
-        this.title = title;
-        this.image_path = image_path;
-        this.content = content;
-        this.viewCnt = viewCnt;
-        this.likeCnt = likeCnt;
-    }
 }

@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 @Mapper(componentModel = "spring")
 public interface QuestionMapper {
 
-    Question questionPostToQuestion(QuestionDto.Request requestBody);
+    Question questionRequestToQuestion(QuestionDto.Request requestBody);
 
 
     @Mapping(source = "id", target = "questionId")
@@ -30,17 +30,15 @@ public interface QuestionMapper {
      */
     default List<QuestionDto.searchResponse> questionsToSearchResponses(List<Question> questions) {
         return questions.stream()
-                .map(q ->
-                {
-                    QuestionDto.searchResponse s = new QuestionDto.searchResponse(
+                .map(q -> {
+                    QuestionDto.searchResponse sr = new QuestionDto.searchResponse(
                             questionToQuestionResponse(q),
                             questionToMemberResponse(q),
                             q.getAnswerCnt()
                     );
-                    return s;
+                    return sr;
                 })
                 .collect(Collectors.toList());
-
     }
 
     /**

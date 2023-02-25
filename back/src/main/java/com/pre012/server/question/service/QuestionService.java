@@ -7,13 +7,17 @@ import com.pre012.server.member.enums.LikeType;
 import com.pre012.server.member.repository.BookmarkRepository;
 import com.pre012.server.member.repository.QuestionLikeRepository;
 import com.pre012.server.question.entity.Question;
+import com.pre012.server.question.entity.QuestionTag;
 import com.pre012.server.question.repository.QuestionRepository;
+import com.pre012.server.question.repository.QuestionTagRepository;
+import com.pre012.server.tag.entity.Tag;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Transactional
@@ -22,11 +26,13 @@ public class QuestionService {
     private final QuestionRepository questionRepository;
     private final QuestionLikeRepository questionLikeRepository;
     private final BookmarkRepository bookmarkRepository;
+    private final QuestionTagRepository questionTagRepository;
 
-    public QuestionService(QuestionRepository questionRepository, QuestionLikeRepository questionLikeRepository, BookmarkRepository bookmarkRepository) {
+    public QuestionService(QuestionRepository questionRepository, QuestionLikeRepository questionLikeRepository, BookmarkRepository bookmarkRepository, QuestionTagRepository questionTagRepository) {
         this.questionRepository = questionRepository;
         this.questionLikeRepository = questionLikeRepository;
         this.bookmarkRepository = bookmarkRepository;
+        this.questionTagRepository = questionTagRepository;
     }
 
     /**
@@ -42,11 +48,11 @@ public class QuestionService {
     /**
      * 질문 수정
      */
-    public Question updateQuestion(Question question, Member member) {
+    public Question updateQuestion(Question question) {
         // DB 에서 Question 가져오기
         Question findQuestion = findVerifyQuestion(question.getId());
 
-        if (findQuestion.getMember().getId() != member.getId()) {
+        if (findQuestion.getMember().getId() != question.getMember().getId()) {
             throw new RuntimeException("작성자가 아닌 사람이 질문 수정하려고 함");
         }
 
@@ -248,6 +254,19 @@ public class QuestionService {
         } else {
             return null;
         }
+    }
+
+    public void addQuestionTagsToQuestion(Question question, List<Tag> tags) {
+        tags.stream()
+                .forEach(tag -> {
+                    QuestionTag qt = new QuestionTag();
+                    qt.setQuestion(question);
+                    qt.setTag(tag);
+
+                    questionTagRepository.save(qt);
+
+                    });
+
     }
 
 }

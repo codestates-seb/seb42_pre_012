@@ -2,6 +2,7 @@ package com.pre012.server.question.dto;
 
 import com.pre012.server.member.dto.MemberInfoDto;
 import com.pre012.server.member.enums.LikeType;
+import com.pre012.server.tag.dto.TagDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -18,7 +19,7 @@ public class QuestionDto {
         private Long memberId;
         private String title;
         private String content;
-//        private List<TagDto> tags; // 수정 필요
+        private List<TagDto.Request> tags;
     }
 
 
@@ -37,7 +38,6 @@ public class QuestionDto {
 
     /**
      * 질문 목록 조회 및 필터링 & 질문 검색 결과 DTO
-     *
      * @tags 부분 수정 필요
      */
 
@@ -52,7 +52,6 @@ public class QuestionDto {
 
     /**
      * 질문 상세 조회 결과 DTO
-     *
      * @tags 수정 필요
      */
     @Getter

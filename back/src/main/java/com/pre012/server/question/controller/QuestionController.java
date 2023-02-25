@@ -9,6 +9,9 @@ import com.pre012.server.question.entity.Question;
 import com.pre012.server.question.mapper.QuestionCommentMapper;
 import com.pre012.server.question.mapper.QuestionMapper;
 import com.pre012.server.question.service.QuestionService;
+import com.pre012.server.tag.entity.Tag;
+import com.pre012.server.tag.mapper.TagMapper;
+import com.pre012.server.tag.service.TagService;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,31 +24,38 @@ import java.util.List;
 public class QuestionController {
     private final QuestionService questionService;
     private final MemberService memberService;
+    private final TagService tagService;
+
     private final QuestionMapper mapper;
     private final QuestionCommentMapper commentMapper;
+    private final TagMapper tagMapper;
 
-    public QuestionController(QuestionService questionService, MemberService memberService, QuestionMapper mapper, QuestionCommentMapper commentMapper) {
+    public QuestionController(QuestionService questionService, MemberService memberService, TagService tagService, QuestionMapper mapper, QuestionCommentMapper commentMapper, TagMapper tagMapper) {
         this.questionService = questionService;
         this.memberService = memberService;
+        this.tagService = tagService;
         this.mapper = mapper;
         this.commentMapper = commentMapper;
+        this.tagMapper = tagMapper;
     }
 
     /**
      * 질문 등록
-     * 이미지 관련 내용 수정 필요
-     * 태그 관련 내용 수정 필요
      */
     @PostMapping
     public ResponseEntity postQuestion(@RequestBody QuestionDto.Request requestBody) {
 
-        Question question = mapper.questionPostToQuestion(requestBody);
+        Question question = mapper.questionRequestToQuestion(requestBody);
 
         // 검증된 member 찾아서 넣기
-        Member member = memberService.findVerifiedMember(requestBody.getMemberId());
-        question.setMember(member);
+        addMemberToQuestion(requestBody, question);
 
         Question savedQuestion = questionService.createQuestion(question);
+
+        // List<QuestionTag> 넣기 <- questionId 가 필요해서 question 생성 후 해야 함.
+        List<Tag> findTags = tagService.findVerifyTags(
+                tagMapper.tagRequestDtosToTagList(requestBody.getTags()));
+        questionService.addQuestionTagsToQuestion(question, findTags);
 
         return new ResponseEntity(HttpStatus.CREATED);
     }
@@ -57,13 +67,13 @@ public class QuestionController {
     @PatchMapping("/{question-id}")
     public ResponseEntity patchQuestion(@PathVariable("question-id") Long questionId,
                                         @RequestBody QuestionDto.Request requestBody) {
-        Question question = mapper.questionPostToQuestion(requestBody);
+        Question question = mapper.questionRequestToQuestion(requestBody);
         question.setId(questionId);
 
         // 검증된 member 찾아서 넣기
-        Member member = memberService.findVerifiedMember(requestBody.getMemberId());
+        addMemberToQuestion(requestBody,question);
 
-        Question updatedQuestion = questionService.updateQuestion(question, member);
+        Question updatedQuestion = questionService.updateQuestion(question);
 
         return new ResponseEntity(HttpStatus.OK);
 
@@ -106,11 +116,9 @@ public class QuestionController {
                                       @RequestParam Long memberId) {
         Question question = questionService.findQuestion(questionId);
 
-        List<QuestionCommentDto.Response> commentResponses = commentMapper.commentToQuestionCommentResponses(question.getComments());
-
 
         QuestionDto.getResponse response = mapper.questionToGetResponse(question,
-                commentResponses,
+                commentMapper.commentToQuestionCommentResponses(question.getComments()),
                 questionService.getBookmarked(memberId, questionId),
                 questionService.getLikeStatus(memberId, questionId));
 
@@ -163,7 +171,7 @@ public class QuestionController {
     }
 
     /**
-     * 질문 키워드로 검색
+     * 질문 검색
      */
     @GetMapping("/search")
     public ResponseEntity searchQuestions(@RequestParam String keyword,
@@ -173,13 +181,17 @@ public class QuestionController {
         Page<Question> pageQuestions = questionService.searchQuestions(page - 1, keyword, type);
         List<Question> questions = pageQuestions.getContent();
 
-
-
         return new ResponseEntity<>(
                 new MultiResponseDto<>(
                     mapper.questionsToSearchResponses(questions),
                     pageQuestions),
                 HttpStatus.OK);
 
+    }
+
+    // 검증된 member 찾아서 Question 에 set 하기.
+    private void addMemberToQuestion(QuestionDto.Request requestBody, Question question) {
+        Member member = memberService.findVerifiedMember(requestBody.getMemberId());
+        question.setMember(member);
     }
 }

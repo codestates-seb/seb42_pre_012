@@ -10,7 +10,7 @@ public class TagDto {
     @Getter
     @AllArgsConstructor
     public static class Request {
-        private int id; // 그냥 순서대로 보내주는 id 값
+        private int id;
         private String name;
     }
 

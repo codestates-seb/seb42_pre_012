@@ -95,10 +95,10 @@ public class Question extends Auditable {
         }
     }
 
-    public void setQuestionTags(QuestionTag tag) {
-        this.questionTags.add(tag);
-        if (tag.getQuestion() != this) {
-            tag.setQuestion(this);
+    public void setQuestionTags(QuestionTag questionTag) {
+        this.questionTags.add(questionTag);
+        if (questionTag.getQuestion() != this) {
+            questionTag.setQuestion(this);
         }
     }
 

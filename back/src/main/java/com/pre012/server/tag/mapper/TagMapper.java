@@ -11,6 +11,6 @@ public interface TagMapper {
 
     Tag tagRequestDtoToTag(TagDto.Request requestBody);
 
-    List<Tag> tagRequestDtosToTagList (List<TagDto.Request> requests);
+    List<Tag> tagRequestDtosToTags(List<TagDto.Request> requests);
 
 }

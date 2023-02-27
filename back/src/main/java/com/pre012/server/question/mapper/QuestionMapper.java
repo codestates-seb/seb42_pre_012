@@ -6,6 +6,7 @@ import com.pre012.server.member.enums.LikeType;
 import com.pre012.server.question.dto.QuestionCommentDto;
 import com.pre012.server.question.dto.QuestionDto;
 import com.pre012.server.question.entity.Question;
+import com.pre012.server.tag.dto.TagDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -26,7 +27,6 @@ public interface QuestionMapper {
 
     /**
      * 질문 목록 조회 및 필터링 & 질문 검색 결과 Response 로 변환해주는 mapper
-     * tagResponse (2순위) <- 추가 필요 @@
      */
     default List<QuestionDto.searchResponse> questionsToSearchResponses(List<Question> questions) {
         return questions.stream()
@@ -34,6 +34,7 @@ public interface QuestionMapper {
                     QuestionDto.searchResponse sr = new QuestionDto.searchResponse(
                             questionToQuestionResponse(q),
                             questionToMemberResponse(q),
+                            questionToTagResponses(q),
                             q.getAnswerCnt()
                     );
                     return sr;
@@ -43,11 +44,11 @@ public interface QuestionMapper {
 
     /**
      * 질문 상세 조회 Response 로 변환해주는 mapper
-     * tagResponse (2순위)
      */
     default QuestionDto.getResponse questionToGetResponse(Question question, List<QuestionCommentDto.Response> commentResponses, boolean isBookmarked, LikeType likeStatus) {
         return new QuestionDto.getResponse(
                 questionToQuestionResponse(question),
+                questionToTagResponses(question),
                 commentResponses,
                 questionToMemberResponse(question),
                 isBookmarked,
@@ -67,6 +68,21 @@ public interface QuestionMapper {
                 member.getDisplayName(),
                 member.getProfileImagePath()
         );
+    }
+
+    /**
+     * Question 에 있는 tag 의 Resposne DTO 를 만들어주는 mapper
+     */
+    default List<TagDto.Response> questionToTagResponses(Question question) {
+        return question.getQuestionTags().stream()
+                .map(questionTag -> {
+                    TagDto.Response response = new TagDto.Response(
+                            questionTag.getTag().getId(),
+                            questionTag.getTag().getName()
+                    );
+                    return response;
+                })
+                .collect(Collectors.toList());
     }
 
 }

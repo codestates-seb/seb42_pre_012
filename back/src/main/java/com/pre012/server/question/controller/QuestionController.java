@@ -1,14 +1,15 @@
 package com.pre012.server.question.controller;
 
 import com.pre012.server.common.dto.MultiResponseDto;
+import com.pre012.server.common.dto.SingleResponseDto;
 import com.pre012.server.member.entity.Member;
 import com.pre012.server.member.service.MemberService;
-import com.pre012.server.question.dto.QuestionCommentDto;
 import com.pre012.server.question.dto.QuestionDto;
 import com.pre012.server.question.entity.Question;
 import com.pre012.server.question.mapper.QuestionCommentMapper;
 import com.pre012.server.question.mapper.QuestionMapper;
 import com.pre012.server.question.service.QuestionService;
+import com.pre012.server.question.service.QuestionTagService;
 import com.pre012.server.tag.entity.Tag;
 import com.pre012.server.tag.mapper.TagMapper;
 import com.pre012.server.tag.service.TagService;
@@ -25,15 +26,17 @@ public class QuestionController {
     private final QuestionService questionService;
     private final MemberService memberService;
     private final TagService tagService;
+    private final QuestionTagService questionTagService;
 
     private final QuestionMapper mapper;
     private final QuestionCommentMapper commentMapper;
     private final TagMapper tagMapper;
 
-    public QuestionController(QuestionService questionService, MemberService memberService, TagService tagService, QuestionMapper mapper, QuestionCommentMapper commentMapper, TagMapper tagMapper) {
+    public QuestionController(QuestionService questionService, MemberService memberService, TagService tagService, QuestionTagService questionTagService, QuestionMapper mapper, QuestionCommentMapper commentMapper, TagMapper tagMapper) {
         this.questionService = questionService;
         this.memberService = memberService;
         this.tagService = tagService;
+        this.questionTagService = questionTagService;
         this.mapper = mapper;
         this.commentMapper = commentMapper;
         this.tagMapper = tagMapper;
@@ -52,17 +55,18 @@ public class QuestionController {
 
         Question savedQuestion = questionService.createQuestion(question);
 
-        // List<QuestionTag> 넣기 <- questionId 가 필요해서 question 생성 후 해야 함.
+        // 검증된 List<Tag> 찾기
         List<Tag> findTags = tagService.findVerifyTags(
-                tagMapper.tagRequestDtosToTagList(requestBody.getTags()));
-        questionService.addQuestionTagsToQuestion(question, findTags);
+                tagMapper.tagRequestDtosToTags(requestBody.getTags()));
+
+        // 새 QuestionTag 만들어서 setTag, setQuestion 해줌 <- questionId 가 필요해서 question 생성 후 해야 함.
+        questionTagService.createQuestionTags(question, findTags);
 
         return new ResponseEntity(HttpStatus.CREATED);
     }
 
     /**
      * 질문 수정 ( 제목, 본문, 태그 수정 )
-     * 태그 관련 내용 수정 필요
      */
     @PatchMapping("/{question-id}")
     public ResponseEntity patchQuestion(@PathVariable("question-id") Long questionId,
@@ -71,7 +75,13 @@ public class QuestionController {
         question.setId(questionId);
 
         // 검증된 member 찾아서 넣기
-        addMemberToQuestion(requestBody,question);
+        addMemberToQuestion(requestBody, question);
+
+        // 검증된 tag 찾기
+        List<Tag> findTags = tagService.findVerifyTags(
+                tagMapper.tagRequestDtosToTags(requestBody.getTags()));
+
+        questionTagService.updateQuestionTags(question, findTags);
 
         Question updatedQuestion = questionService.updateQuestion(question);
 
@@ -100,6 +110,7 @@ public class QuestionController {
         Page<Question> pageQuestions = questionService.findQuestions(page - 1, sortedBy);
         List<Question> questions = pageQuestions.getContent();
 
+
         return new ResponseEntity<>(
                 new MultiResponseDto<>(
                         mapper.questionsToSearchResponses(questions),
@@ -109,7 +120,7 @@ public class QuestionController {
 
 
     /**
-     * 질문 상세 조회
+     * 질문 상세 조회 -> data Multi
      */
     @GetMapping("/{question-id}")
     public ResponseEntity getQuestion(@PathVariable("question-id") Long questionId,
@@ -122,7 +133,7 @@ public class QuestionController {
                 questionService.getBookmarked(memberId, questionId),
                 questionService.getLikeStatus(memberId, questionId));
 
-        return new ResponseEntity(response, HttpStatus.OK);
+        return new ResponseEntity(new SingleResponseDto<>(response), HttpStatus.OK);
     }
 
 
@@ -183,8 +194,8 @@ public class QuestionController {
 
         return new ResponseEntity<>(
                 new MultiResponseDto<>(
-                    mapper.questionsToSearchResponses(questions),
-                    pageQuestions),
+                        mapper.questionsToSearchResponses(questions),
+                        pageQuestions),
                 HttpStatus.OK);
 
     }

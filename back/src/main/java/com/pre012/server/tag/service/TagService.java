@@ -18,27 +18,29 @@ public class TagService {
         this.tagRepository = tagRepository;
     }
 
-    /**
-     * 질문 등록, 질문 수정 시 태그 저장
-     */
+    // Tag 새로 만드는 메서드
+    private Tag createTag(Tag tag) {
+        Tag createdTag = new Tag();
+        createdTag.setName(tag.getName().toLowerCase());
 
-    // tag 이름으로 repo에서 찾고 없으면 새로 태그 저장한 값 리턴.
+        return tagRepository.save(createdTag);
+    }
+
+    // Repository 에 있는 Tag 인지 확인하는 메서드
+    private Tag verifyExistsTag(Tag tag) {
+        Optional<Tag> optionalTag = tagRepository.findByName(tag.getName());
+        if (optionalTag.isPresent()) {
+            return optionalTag.get();
+        } else {
+            return createTag(tag);     // repo 에 없으면 태그 새로 만듦.
+        }
+    }
+
+    // 검증된 Tag 리스트를 반환하는 메서드
     public List<Tag> findVerifyTags(List<Tag> tags) {
         return tags.stream()
-                .map(tag -> {
-                   Tag resultTag = tagRepository.findByName(tag.getName())
-                                        .orElse(createTag(tag));
-
-                   return resultTag;
-                }).collect(Collectors.toList());
+                .map(tag -> verifyExistsTag(tag)
+                )
+                .collect(Collectors.toList());
     }
-
-    // 이름만 있는 태그 repo에 저장
-    private Tag createTag(Tag tag) {
-        return tagRepository.save(tag);
-    }
-
-
-
-
 }

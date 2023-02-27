@@ -26,7 +26,7 @@ public class AuthController {
     // 로그아웃
     @PostMapping("/logout")
     public ResponseEntity<HttpStatus> logout(@Valid @RequestBody LogoutDto logoutDto) {
-        // 토큰이랑 같이 구현 예정, Entity 추가 필요 예상,,
+        tokenService.changeTokenValid(logoutDto.getMemberId());
         return new ResponseEntity<>(HttpStatus.OK);
     }
     // Access Token 재발급

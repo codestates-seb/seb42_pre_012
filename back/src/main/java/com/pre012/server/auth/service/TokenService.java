@@ -38,6 +38,12 @@ public class TokenService {
         throw new RuntimeException("만료");
     }
 
+    @Transactional
+    public void changeTokenValid(Long memberId) {
+        Token token = tokenRepository.findByMemberId(memberId).orElseThrow(RuntimeException::new);
+        token.setValid(false);
+    }
+
     public Token findValidToken(String refreshToken) {
         return tokenRepository.findByRefreshTokenAndValid(refreshToken, true).orElseThrow(RuntimeException::new);
     }

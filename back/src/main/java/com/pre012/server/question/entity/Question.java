@@ -50,7 +50,7 @@ public class Question extends Auditable {
 
     // 1 : N
     @Setter(AccessLevel.NONE)
-    @OneToMany(mappedBy = "question")
+    @OneToMany(mappedBy = "question",fetch = FetchType.LAZY)
     private List<Answer> answers = new ArrayList<>();
 
     @Setter(AccessLevel.NONE)

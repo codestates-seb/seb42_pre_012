@@ -6,6 +6,7 @@ import java.util.List;
 import javax.persistence.*;
 
 import com.pre012.server.answer.entity.Answer;
+import com.pre012.server.auth.entity.Token;
 import com.pre012.server.common.audit.Auditable;
 import com.pre012.server.member.enums.MemberStatus;
 import com.pre012.server.question.entity.Question;
@@ -51,6 +52,9 @@ public class Member extends Auditable {
 
     @Formula("(SELECT count(1) FROM answer a WHERE a.member_id = member_id)")
     private int answerCnt;
+
+    @OneToOne(mappedBy = "member")
+    private Token token;
 
     @Setter(AccessLevel.NONE)
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)

@@ -98,7 +98,6 @@ public class QuestionController {
 
     /**
      * 질문 삭제
-     * answer 지우는 메소드 추가하기
      */
     @DeleteMapping("{question-id}")
     public ResponseEntity deleteQuestion(@PathVariable("question-id") @Positive Long questionId,

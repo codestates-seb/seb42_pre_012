@@ -1,5 +1,6 @@
 package com.pre012.server.question.service;
 
+import com.pre012.server.answer.repository.AnswerRepository;
 import com.pre012.server.member.entity.Bookmark;
 import com.pre012.server.member.entity.Member;
 import com.pre012.server.member.entity.QuestionLike;
@@ -29,13 +30,15 @@ public class QuestionService {
     private final BookmarkRepository bookmarkRepository;
     private final QuestionTagRepository questionTagRepository;
     private final TagRepository tagRepository;
+    private final AnswerRepository answerRepository;
 
-    public QuestionService(QuestionRepository questionRepository, QuestionLikeRepository questionLikeRepository, BookmarkRepository bookmarkRepository, QuestionTagRepository questionTagRepository, TagRepository tagRepository) {
+    public QuestionService(QuestionRepository questionRepository, QuestionLikeRepository questionLikeRepository, BookmarkRepository bookmarkRepository, QuestionTagRepository questionTagRepository, TagRepository tagRepository, AnswerRepository answerRepository) {
         this.questionRepository = questionRepository;
         this.questionLikeRepository = questionLikeRepository;
         this.bookmarkRepository = bookmarkRepository;
         this.questionTagRepository = questionTagRepository;
         this.tagRepository = tagRepository;
+        this.answerRepository = answerRepository;
     }
 
     /**
@@ -68,17 +71,17 @@ public class QuestionService {
 
     /**
      * 질문 삭제
-     * 답변 삭제 메소드 추가 필요!!!
      */
     public void deleteQuestion(Long questionId, Long memberId) {
         Question findQuestion = findVerifyQuestion(questionId);
-
-        // answer 지우는 메소드 추가 - answerRepository.deleteByQuestionId() 이런거
 
         // question 에 저장된 memberId 와 쿼리스트링으로 받은 memberId 비교
         if (!findQuestion.getMember().getId().equals(memberId)) {
             throw new RuntimeException("다른 아이디가 지우려고 함");  // 비즈니스 예외 넣기
         }
+
+        // answer 지우는 메소드
+        answerRepository.deleteByQuestionId(findQuestion.getId());
 
         questionRepository.deleteById(questionId);
     }

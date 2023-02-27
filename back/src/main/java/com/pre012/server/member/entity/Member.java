@@ -38,7 +38,7 @@ public class Member extends Auditable {
     private MemberStatus memberStatus = MemberStatus.MEMBER_ACTIVE;
 
     @Column(length = 200)
-    private String profileImagePath;
+    private String profileImage;
 
     // DB에 member_role 저장, @OneToMany로 관리
     @ElementCollection(fetch = FetchType.EAGER)

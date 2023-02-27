@@ -1,34 +1,38 @@
 package com.pre012.server.auth.util;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
 
+import com.pre012.server.exception.ExceptionCode;
+import io.jsonwebtoken.*;
+import io.jsonwebtoken.security.SignatureException;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.io.Encoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.Getter;
+
+import javax.servlet.http.HttpServletResponse;
 
 /*
  * JWT 생성 담당
  */
 @Component
 public class JWTTokenizer {
-    
-    
+
+
     @Getter
     @Value("${jwt.key}")
     private String secretKey;
     // 1) JWT 생성 및 검증 시 사용되는 Secret Key 정보
-    
+
     @Getter
     @Value("${jwt.access-token-expiration-minutes}")
     private int accessTokenExpirationMinutes;
@@ -37,19 +41,18 @@ public class JWTTokenizer {
     @Getter
     @Value("${jwt.refresh-token-expiration-minutes}")
     private int refreshTokenExpirationMinutes;
-    // 3) Refesh Token 유효 시간
-    
+    // 3) Refresh Token 유효 시간
+
     // Secret Key byte[] -> Base64 인코딩
     public String encodeBase64SecretKey(String secretKey) {
         return Encoders.BASE64.encode(secretKey.getBytes(StandardCharsets.UTF_8));
     }
 
     // AccessToken 생성
-    public String generateAccessToken(Map<String, Object> claims, 
-                                      String subject, 
-                                      Date expirationDate, 
-                                      String encodedSecretKey) 
-    {
+    public String generateAccessToken(Map<String, Object> claims,
+                                      String subject,
+                                      Date expirationDate,
+                                      String encodedSecretKey) {
         Key secretKey = getKeyFromBase64EncodedKey(encodedSecretKey);
 
         return Jwts.builder()
@@ -72,31 +75,36 @@ public class JWTTokenizer {
                 .signWith(key)
                 .compact();
     }
-        
+
     // JWT 서명에 사용할 SecretKey 생성
     private Key getKeyFromBase64EncodedKey(String encodedSecretKey) {
         // 1. Base64 -> byte[] 디코딩
         byte[] keyBytes = Decoders.BASE64.decode(encodedSecretKey);
-        // 2. 적절한 HMAC 알고리즘을 적용한 SecretKey
+        // 2. 적절한 HMAC 알고리즘을 적용한 SecretKey 생성
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    // claim 파싱
-    public Jws<Claims> getClaims(String jws, String base64EncodedSecretKey) {
+    // 토큰 유효성 검사 & claim 파싱
+    public Jws<Claims> getClaims(String jws,
+                                 String base64EncodedSecretKey,
+                                 HttpServletResponse response) throws IOException {
         Key key = getKeyFromBase64EncodedKey(base64EncodedSecretKey);
-        Jws<Claims> claims = Jwts.parserBuilder()
-                                .setSigningKey(key)
-                                .build()
-                                .parseClaimsJws(jws);
-        return claims;
+        try { // token 파싱 시 발생하는 exception catch
+            return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(jws);
+        } catch (SignatureException | MalformedJwtException e) {
+            ErrorResponder.sendErrorResponse(response, HttpStatus.UNAUTHORIZED, ExceptionCode.TOKEN_DAMAGED);
+        } catch (JwtException e) {
+            ErrorResponder.sendErrorResponse(response, HttpStatus.UNAUTHORIZED, ExceptionCode.TOKEN_EXPIRED);
+        } catch (Exception e) {
+            ErrorResponder.sendErrorResponse(response, HttpStatus.UNAUTHORIZED, ExceptionCode.SYSTEM_ERROR);
+        }
+        return null;
     }
 
     // JWT 만료 일시 지정
     public Date getTokenExpirationDate(int expirationMinutes) {
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.MINUTE, expirationMinutes);
-        Date expirationDate = calendar.getTime();
-
-        return expirationDate;
+        return calendar.getTime();
     }
 }

@@ -1,4 +1,4 @@
-package com.pre012.server.auth.handler.memberAuthentication;
+package com.pre012.server.auth.handler;
 
 import java.io.IOException;
 import java.util.Date;
@@ -26,11 +26,11 @@ import static com.pre012.server.auth.dto.AuthDto.LoginResponse;
  * 인증 성공 핸들러
  */
 @Slf4j
-public class SuccessHandler implements AuthenticationSuccessHandler{
+public class MemberAuthenticationSuccessHandler implements AuthenticationSuccessHandler{
 
     private final JWTTokenizer tokenizer;
 
-    public SuccessHandler(JWTTokenizer tokenizer) {
+    public MemberAuthenticationSuccessHandler(JWTTokenizer tokenizer) {
         this.tokenizer = tokenizer;
     }
 
@@ -49,7 +49,7 @@ public class SuccessHandler implements AuthenticationSuccessHandler{
         String refreshToken = delegateRefreshToken(member);
 
         Gson gson = new Gson();
-        String imgPath = member.getProfileImagePath() != null ? member.getProfileImagePath() : "";
+        String imgPath = member.getProfileImage() != null ? member.getProfileImage() : "";
         LoginResponse memberInfo = new LoginResponse(member.getId(), imgPath);
         SingleResponseDto<LoginResponse> responseDto = new SingleResponseDto<>(memberInfo);
 
@@ -69,18 +69,16 @@ public class SuccessHandler implements AuthenticationSuccessHandler{
         String subject = member.getEmail();
         Date expirationDate = tokenizer.getTokenExpirationDate(tokenizer.getAccessTokenExpirationMinutes());
         String base64EncodedSecretKey = tokenizer.encodeBase64SecretKey(tokenizer.getSecretKey());
-        String accessToken = tokenizer.generateAccessToken(claims, subject, expirationDate, base64EncodedSecretKey);
 
-        return accessToken;  
+        return tokenizer.generateAccessToken(claims, subject, expirationDate, base64EncodedSecretKey);
     }
 
-    // Access Token 발급 
+    // Refresh Token 발급
     private String delegateRefreshToken(Member member) { 
         String subject = member.getEmail();
         Date expirationDate = tokenizer.getTokenExpirationDate(tokenizer.getRefreshTokenExpirationMinutes());
         String base64EncodedSecretKey = tokenizer.encodeBase64SecretKey(tokenizer.getSecretKey());
-        String refreshToken = tokenizer.generateRefreshToken(subject, expirationDate, base64EncodedSecretKey);
 
-        return refreshToken;
+        return tokenizer.generateRefreshToken(subject, expirationDate, base64EncodedSecretKey);
     }
 }

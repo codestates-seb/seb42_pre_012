@@ -62,7 +62,7 @@ public class MemberInfoDto {
         private Long memberId;
         private String email;
         private String displayName;
-        private String profileImagePath;
+        private String profileImage;
     }
 
     @Getter

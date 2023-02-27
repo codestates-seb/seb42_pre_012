@@ -32,7 +32,7 @@ public class AuthDto {
     @NoArgsConstructor
     public static class LoginResponse {
         private Long memberId;
-        private String profileImagePath;
+        private String profileImage;
     }
 
 }

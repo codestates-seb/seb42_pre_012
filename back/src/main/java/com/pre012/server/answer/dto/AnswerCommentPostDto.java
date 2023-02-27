@@ -9,7 +9,7 @@ import javax.validation.constraints.NotNull;
 @Setter
 public class AnswerCommentPostDto {
     @NotNull
-    private Long member_id;
+    private Long memberId;
 
     @NotNull
     private String content;

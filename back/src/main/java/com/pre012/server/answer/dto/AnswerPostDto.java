@@ -10,7 +10,7 @@ import javax.validation.constraints.NotNull;
 @Setter
 public class AnswerPostDto {
     @NotNull
-    private Long member_id;
+    private Long memberId;
 
     @NotNull
     private String content;

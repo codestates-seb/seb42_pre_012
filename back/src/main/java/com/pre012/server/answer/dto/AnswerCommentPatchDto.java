@@ -6,7 +6,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class AnswerCommentPatchDto {
-    private Long member_id;
-    private Long comment_id;
+    private Long memberId;
+    private Long commentId;
     private String content;
 }

@@ -19,7 +19,7 @@ public interface AnswerCommentMapper {
         }
 
         Member member = new Member();
-        member.setId(answerCommentPostDto.getMember_id());
+        member.setId(answerCommentPostDto.getMemberId());
 
         AnswerComment answerComment = new AnswerComment();
         answerComment.setMember(member);
@@ -32,10 +32,10 @@ public interface AnswerCommentMapper {
             return null;
         }
         Member member = new Member();
-        member.setId(answerCommentPatchDto.getMember_id());
+        member.setId(answerCommentPatchDto.getMemberId());
 
         AnswerComment answerComment = new AnswerComment();
-        answerComment.setId(answerCommentPatchDto.getComment_id());
+        answerComment.setId(answerCommentPatchDto.getCommentId());
         answerComment.setMember(member);
         answerComment.setContent(answerCommentPatchDto.getContent());
 
@@ -46,18 +46,17 @@ public interface AnswerCommentMapper {
         if ( answerComment == null ) {
             return null;
         }
-        Long member_id = answerComment.getMember().getId();
-        Long answer_id = answerComment.getAnswer().getId();
-        Long comment_id = answerComment.getId();
+//        Long member_id = answerComment.getMember().getId();
+//        Long answer_id = answerComment.getAnswer().getId();
+        Long commentId = answerComment.getId();
         String content = answerComment.getContent();
         LocalDateTime createdAt = answerComment.getCreatedAt();
-        LocalDateTime modifiedAt = answerComment.getModifiedAt();
+//        LocalDateTime modifiedAt = answerComment.getModifiedAt();
         String displayName = answerComment.getMember().getDisplayName();
-        String email = answerComment.getMember().getEmail();
-        String profileImagePath = answerComment.getMember().getProfileImagePath();
+//        String email = answerComment.getMember().getEmail();
+//        String profileImagePath = answerComment.getMember().getProfileImagePath();
 
-        AnswerCommentResponseDto answerCommentResponseDto = new AnswerCommentResponseDto(member_id,answer_id,comment_id,content,createdAt,modifiedAt,
-                displayName,email,profileImagePath);
+        AnswerCommentResponseDto answerCommentResponseDto = new AnswerCommentResponseDto(commentId,content,createdAt,displayName);
         return answerCommentResponseDto;
     }
 

@@ -35,7 +35,7 @@ public class Answer extends Auditable {
 
     //이미지 가져오는 법 확인
     @Column(length = 200)
-    private String image_path;
+    private String imagePath;
 
     @Setter(AccessLevel.NONE)
     @OneToMany(mappedBy = "answer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
@@ -46,11 +46,11 @@ public class Answer extends Auditable {
     @OneToMany(mappedBy = "answer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<AnswerLike> AnswerLikes = new ArrayList<>();
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "question_id")
     private Question question;
 
@@ -73,9 +73,9 @@ public class Answer extends Auditable {
     stub용 임시
      */
 
-    public Answer(String content, int likeCnt, String image_path) {
+    public Answer(String content, int likeCnt, String imagePath) {
         this.content = content;
         this.likeCnt = likeCnt;
-        this.image_path = image_path;
+        this.imagePath = imagePath;
     }
 }

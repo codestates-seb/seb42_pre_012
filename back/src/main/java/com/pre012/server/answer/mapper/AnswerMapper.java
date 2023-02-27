@@ -4,8 +4,11 @@ import com.pre012.server.answer.controller.AnswerController;
 import com.pre012.server.answer.dto.*;
 import com.pre012.server.answer.entity.Answer;
 import com.pre012.server.answer.entity.AnswerComment;
+import com.pre012.server.answer.repository.AnswerLikeRepository;
 import com.pre012.server.member.dto.MemberInfoDto;
+import com.pre012.server.member.entity.AnswerLike;
 import com.pre012.server.member.entity.Member;
+import com.pre012.server.member.enums.LikeType;
 import com.pre012.server.question.entity.Question;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
@@ -22,7 +25,7 @@ public interface AnswerMapper {
         }
 
         Member member = new Member();
-        member.setId(answerPostDto.getMember_id());
+        member.setId(answerPostDto.getMemberId());
 
         Answer answer = new Answer();
         answer.setMember(member);
@@ -35,10 +38,10 @@ public interface AnswerMapper {
             return null;
         }
         Member member = new Member();
-        member.setId(answerPatchDto.getMember_id());
+        member.setId(answerPatchDto.getMemberId());
 
         Answer answer = new Answer();
-        answer.setId(answerPatchDto.getAnswer_id());
+        answer.setId(answerPatchDto.getAnswerId());
         answer.setMember(member);
         answer.setContent(answerPatchDto.getContent());
 
@@ -48,17 +51,17 @@ public interface AnswerMapper {
         if ( answer == null ) {
             return null;
         }
-        Long member_id = answer.getMember().getId();
-        Long question_id = answer.getQuestion().getId();
+//        Long member_id = answer.getMember().getId();
+//        Long question_id = answer.getQuestion().getId();
         Long answer_id = answer.getId();
         String content = answer.getContent();
         int likeCnt = answer.getLikeCnt();
-        String image_path = answer.getImage_path();
+        String imagePath = answer.getImagePath();
         LocalDateTime createdAt = answer.getCreatedAt();
         LocalDateTime modifiedAt = answer.getModifiedAt();
 
-        AnswerResponseDto answerResponseDto = new AnswerResponseDto( member_id, question_id, answer_id,
-                content, likeCnt,image_path,createdAt,modifiedAt);
+        AnswerResponseDto answerResponseDto = new AnswerResponseDto(answer_id,
+                content, likeCnt,imagePath,createdAt,modifiedAt);
 
         return answerResponseDto;
     }
@@ -75,15 +78,21 @@ public interface AnswerMapper {
         return list;
     }
 
-    default AnswerMultiResponseDto answerToMultiResponseDto(Answer answer, List<AnswerCommentResponseDto> comments){
+    default AnswerMultiResponseDto answerToMultiResponseDto(Answer answer, List<AnswerCommentResponseDto> comments, LikeType likeType ){
         AnswerMultiResponseDto answerMultiResponseDto = new AnswerMultiResponseDto();
-        answerMultiResponseDto.setAnswer(answerToAnswerResponseDto(answer));
+        answerMultiResponseDto.setAnswerId(answer.getId());
+        answerMultiResponseDto.setContent(answer.getContent());
+        answerMultiResponseDto.setLikeCnt(answer.getLikeCnt());
+        answerMultiResponseDto.setImagePath(answer.getImagePath());
+        answerMultiResponseDto.setCreatedAt(answer.getCreatedAt());
+        answerMultiResponseDto.setModifiedAt(answer.getModifiedAt());
+        answerMultiResponseDto.setLikeStatus(likeType);
         answerMultiResponseDto.setComments(comments);
-        answerMultiResponseDto.setMember(answerToMemberResponse(answer));
+        answerMultiResponseDto.setWriter(answerToMemberResponse(answer));
         return answerMultiResponseDto;
     }
 
-    default List<AnswerMultiResponseDto> answersToAnswerMultiResponseDtos(List<Answer> answers){
+    default List<AnswerMultiResponseDto> answersToAnswerMultiResponseDtos(List<Answer> answers,Long memberId){
         if ( answers == null ) {
             return null;
         }
@@ -91,10 +100,16 @@ public interface AnswerMapper {
         List<AnswerMultiResponseDto> list = new ArrayList<>( answers.size() );
         for ( Answer answer : answers ) {
             List<AnswerComment> comments = answer.getComments();
-            list.add( answerToMultiResponseDto( answer, answerCommentsToAnswerCommentResponseDtos(comments)));
+            List<AnswerLike> answerLikes = answer.getAnswerLikes();
+            AnswerLike answerLike = answerLikes.stream().filter(answerLike1 -> answerLike1.getMember().getId()==memberId).findFirst().orElseGet(AnswerLike::new);
+            list.add( answerToMultiResponseDto( answer, answerCommentsToAnswerCommentResponseDtos(comments),answerLike.getLikeType()));
         }
 
         return list;
+    }
+
+    default AnswerGetResponseDto answerMultiToAnswerGetResponseDto(List<AnswerMultiResponseDto> answers){
+        return new AnswerGetResponseDto(answers);
     }
 
     default MemberInfoDto.WriterResponse answerToMemberResponse(Answer answer) {
@@ -116,18 +131,17 @@ public interface AnswerMapper {
         if ( answerComment == null ) {
             return null;
         }
-        Long member_id = answerComment.getMember().getId();
-        Long answer_id = answerComment.getAnswer().getId();
-        Long comment_id = answerComment.getId();
+//        Long member_id = answerComment.getMember().getId();
+//        Long answer_id = answerComment.getAnswer().getId();
+        Long commentId = answerComment.getId();
         String content = answerComment.getContent();
         LocalDateTime createdAt = answerComment.getCreatedAt();
-        LocalDateTime modifiedAt = answerComment.getModifiedAt();
+//        LocalDateTime modifiedAt = answerComment.getModifiedAt();
         String displayName = answerComment.getMember().getDisplayName();
-        String email = answerComment.getMember().getEmail();
-        String profileImagePath = answerComment.getMember().getProfileImagePath();
+//        String email = answerComment.getMember().getEmail();
+//        String profileImagePath = answerComment.getMember().getProfileImagePath();
 
-        AnswerCommentResponseDto answerCommentResponseDto = new AnswerCommentResponseDto(member_id,answer_id,comment_id,content,createdAt,modifiedAt,
-                displayName,email,profileImagePath);
+        AnswerCommentResponseDto answerCommentResponseDto = new AnswerCommentResponseDto(commentId,content,createdAt,displayName);
         return answerCommentResponseDto;
     }
     default List<AnswerCommentResponseDto> answerCommentsToAnswerCommentResponseDtos(List<AnswerComment> comments) {

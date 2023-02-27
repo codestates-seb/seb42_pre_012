@@ -7,6 +7,8 @@ import com.pre012.server.answer.mapper.AnswerCommentMapper;
 import com.pre012.server.answer.mapper.AnswerMapper;
 import com.pre012.server.answer.repository.AnswerCommentRepository;
 import com.pre012.server.answer.service.AnswerService;
+import com.pre012.server.common.dto.MultiObjectResponseDto;
+import com.pre012.server.common.dto.MultiResponseDto;
 import com.pre012.server.member.entity.AnswerLike;
 import com.pre012.server.question.entity.Question;
 import com.pre012.server.question.service.QuestionService;
@@ -37,12 +39,12 @@ public class AnswerController {
 
     //질문에 따른 답변 작성
     @PostMapping("/{question-id}")
-    public ResponseEntity postAnswer(@PathVariable("question-id") @Positive Long question_id,
+    public ResponseEntity postAnswer(@PathVariable("question-id") @Positive Long questionId,
                                      @RequestBody AnswerPostDto requestbody){
         Answer answer = answerMapper.answerPostDtoToAnswer(requestbody);
-        answer = answerService.createAnswer(answer,question_id);
+        answer = answerService.createAnswer(answer,questionId);
 
-        Question question = questionService.findQuestion(question_id);
+        Question question = questionService.findQuestion(questionId);
         question.setAnswer(answer);
 
 
@@ -51,9 +53,9 @@ public class AnswerController {
 
     //질문에 해당하는 특정 답변 업데이트
     @PatchMapping("/{answer-id}")
-    public ResponseEntity patchAnswer(@PathVariable("answer-id") @Positive Long answer_id,
+    public ResponseEntity patchAnswer(@PathVariable("answer-id") @Positive Long answerId,
                                       @RequestBody AnswerPatchDto requestbody){
-        requestbody.setAnswer_id(answer_id);
+        requestbody.setAnswerId(answerId);
 
         Answer answer = answerMapper.answerPatchDtoToAnswer(requestbody);
         answer = answerService.updateAnswer(answer,answer.getMember().getId());
@@ -73,20 +75,21 @@ public class AnswerController {
     request로 멤버id 따로 받아서 새로 추가하겠습니다. 너무 두서없이 코드 작성하고 pr 던지는 것 같아 정말 죄송할따름입니다. 일요일 저녁쯤 메세지 볼 수 있으면 바로 보고 답장하도록 할께요!
      */
     @GetMapping("/{question-id}")
-    public ResponseEntity getAnswer(@PathVariable("question-id") @Positive Long question_id,
+    public ResponseEntity getAnswer(@PathVariable("question-id") @Positive Long questionId,
+                                    @RequestParam @Positive Long memberId,
                                     @RequestParam @Positive int page,
                                     @RequestParam (required = false, defaultValue="likeCnt") String sortedBy){
 
-        Page<Answer> pageAnswer = answerService.findAnswers(question_id,page-1,sortedBy);
+        Page<Answer> pageAnswer = answerService.findAnswers(questionId,page-1,sortedBy);
         List<Answer> answers = pageAnswer.getContent();
-        return new ResponseEntity<>(answerMapper.answersToAnswerMultiResponseDtos(answers),HttpStatus.OK);
+        return new ResponseEntity<>(new MultiObjectResponseDto<>((answerMapper.answerMultiToAnswerGetResponseDto(answerMapper.answersToAnswerMultiResponseDtos(answers,memberId))),pageAnswer),HttpStatus.OK);
     }
     //질문에 해당하는 특정 답변 삭제
     @DeleteMapping("/{answer-id}")
-    public ResponseEntity deleteAnswer(@PathVariable("answer-id")@Positive Long answer_id,
-                                       @RequestParam @Positive Long member_id){
-        //question 하나당 아이디가 생기는지 아니면 그냥 answer id가 question과 상관없이 중복으로 생기는지?
-        answerService.deleteAnswer(answer_id,member_id);
+    public ResponseEntity deleteAnswer(@PathVariable("answer-id")@Positive Long answerId,
+                                       @RequestParam @Positive Long memberId){
+
+        answerService.deleteAnswer(answerId,memberId);
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
@@ -100,24 +103,24 @@ public class AnswerController {
         AnswerComment answerComment = answerCommentMapper.answerCommentPostDtoToAnswerComment(requestbody);
         answerComment=answerService.createAnswerComment(answerComment,answer_id);
 
-        return new ResponseEntity<>(answerCommentMapper.answerCommentToAnswerCommentResponseDto(answerComment),HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PatchMapping("/comments/{comment-id}")
-    public ResponseEntity patchAnswerComment(@PathVariable("comment-id")@Positive Long comment_id,
+    public ResponseEntity patchAnswerComment(@PathVariable("comment-id")@Positive Long commentId,
                                              @RequestBody AnswerCommentPatchDto requestbody){
-        requestbody.setComment_id(comment_id);
+        requestbody.setCommentId(commentId);
 
         AnswerComment answerComment = answerCommentMapper.answerCommentPatchDtoToAnswerComment(requestbody);
         answerComment= answerService.updateAnswerComment(answerComment, answerComment.getMember().getId());
-        return new ResponseEntity<>(answerCommentMapper.answerCommentToAnswerCommentResponseDto(answerComment), HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
 
     }
 
     @DeleteMapping("/comments/{comment-id}")
-    public ResponseEntity deleteAnswerComment(@PathVariable("comment-id")@Positive Long comment_id,
+    public ResponseEntity deleteAnswerComment(@PathVariable("comment-id")@Positive Long commentId,
                                               @RequestParam @Positive Long member_id){
-        answerService.deleteAnswerComment(comment_id,member_id);
+        answerService.deleteAnswerComment(commentId,member_id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
@@ -126,19 +129,19 @@ public class AnswerController {
     이후 추가될 post는 좋아요 증감 관련
      */
 
-    @PostMapping("/like/{answer_id}")
-    public ResponseEntity like(@PathVariable("answer_id") @Positive Long answer_id,
-                               @RequestParam @Positive Long member_id){
-        Answer answer = answerService.findVerifiedAnswer(answer_id);
-        answerService.like(answer_id,member_id);
-        return new ResponseEntity<>(answer.getLikeCnt(),HttpStatus.OK);
+    @PostMapping("/like/{answer-id}")
+    public ResponseEntity like(@PathVariable("answer-id") @Positive Long answerId,
+                               @RequestParam @Positive Long memberId){
+        Answer answer = answerService.findVerifiedAnswer(answerId);
+        answerService.like(answerId,memberId);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PostMapping("/unlike/{answer_id}")
-    public ResponseEntity unLike(@PathVariable("answer_id") @Positive Long answer_id,
-                                 @RequestParam @Positive Long member_id){
-        Answer answer = answerService.findVerifiedAnswer(answer_id);
-        answerService.unlike(answer_id,member_id);
-        return new ResponseEntity<>(answer.getLikeCnt(),HttpStatus.OK);
+    @PostMapping("/unlike/{answer-id}")
+    public ResponseEntity unLike(@PathVariable("answer-id") @Positive Long answerId,
+                                 @RequestParam @Positive Long memberId){
+        Answer answer = answerService.findVerifiedAnswer(answerId);
+        answerService.unlike(answerId,memberId);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

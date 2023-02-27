@@ -44,12 +44,12 @@ public class AnswerService {
         this.questionService = questionService;
     }
 
-    public Answer createAnswer(Answer answer, Long question_id){
+    public Answer createAnswer(Answer answer, Long questionId){
         /* 1. 멤버 id가 존재하는지 확인 / answerPostDto내에 있는 member_id를 통해
            2. answer 엔티티에 question_id를 통해 찾은 question 부여 / set
            3. answer 엔티티에 멤버 부여
          */
-        Question question = questionService.findQuestion(question_id);
+        Question question = questionService.findQuestion(questionId);
         Member member = memberService.findVerifiedMember(answer.getMember().getId());
         answer.setQuestion(question);
         answer.setMember(member);
@@ -59,9 +59,9 @@ public class AnswerService {
         return answerRepository.save(answer);
     }
 
-    public Answer updateAnswer(Answer answer,Long member_id) {
+    public Answer updateAnswer(Answer answer,Long memberId) {
         Answer findAnswer = findVerifiedAnswer(answer.getId());
-        verifiedAuthorization(findAnswer,member_id);
+        verifiedAuthorization(findAnswer,memberId);
 
         Optional.ofNullable(answer.getContent())
                 .ifPresent(content->findAnswer.setContent(content));
@@ -69,75 +69,75 @@ public class AnswerService {
         return answerRepository.save(findAnswer);
     }
 
-    public void deleteAnswer(Long answer_id,Long member_id) {
-        Answer answer = findVerifiedAnswer(answer_id);
-        verifiedAuthorization(answer,member_id);
+    public void deleteAnswer(Long answerId,Long memberId) {
+        Answer answer = findVerifiedAnswer(answerId);
+        verifiedAuthorization(answer,memberId);
 
         answerRepository.delete(answer);
     }
 
-    public Page<Answer> findAnswers (Long question_id,int page,String sortedBy) {
+    public Page<Answer> findAnswers (Long questionId,int page,String sortedBy) {
         if (sortedBy.equals("createdAt")) {
-            return answerRepository.findByQuestion_Id(question_id,PageRequest.of(page, size,
+            return answerRepository.findByQuestion_Id(questionId,PageRequest.of(page, size,
                     Sort.by("createdAt").descending()));
         } else if (sortedBy.equals("modifiedAt")) {
-            return answerRepository.findByQuestion_Id(question_id,PageRequest.of(page, size,
+            return answerRepository.findByQuestion_Id(questionId,PageRequest.of(page, size,
                     Sort.by("modifiedAt").descending()));
         } else {
-            return answerRepository.findByQuestion_Id(question_id,PageRequest.of(page, size,
+            return answerRepository.findByQuestion_Id(questionId,PageRequest.of(page, size,
                     Sort.by("likeCnt").descending()));
         }
     }
-    public Answer findVerifiedAnswer(Long answer_id){
+    public Answer findVerifiedAnswer(Long answerId){
 
         Optional<Answer> optionalAnswer =
-                answerRepository.findById(answer_id);
+                answerRepository.findById(answerId);
         Answer findAnswer=
                 optionalAnswer.orElseThrow(()->
                         new BusinessLogicException(ExceptionCode.ANSWER_NOT_FOUND));
         return findAnswer;
     }
 
-    public void verifiedAuthorization(Answer answer, Long member_id) {
-        if (!Objects.equals(member_id, answer.getMember().getId()))
+    public void verifiedAuthorization(Answer answer, Long memberId) {
+        if (!Objects.equals(memberId, answer.getMember().getId()))
             throw new BusinessLogicException(ExceptionCode.UNAUTHORIZED_USER);
     }
 
-    public void verifiedAuthorization(AnswerComment answerComment, Long member_id) {
-        if (!Objects.equals(member_id, answerComment.getMember().getId()))
+    public void verifiedAuthorization(AnswerComment answerComment, Long memberId) {
+        if (!Objects.equals(memberId, answerComment.getMember().getId()))
             throw new BusinessLogicException(ExceptionCode.UNAUTHORIZED_USER);
     }
 
 
-    public AnswerComment createAnswerComment(AnswerComment answerComment,Long answer_id){
-        Answer findAnswer = findVerifiedAnswer(answer_id);
+    public AnswerComment createAnswerComment(AnswerComment answerComment,Long answerId){
+        Answer findAnswer = findVerifiedAnswer(answerId);
         answerComment.setAnswer(findAnswer);
         Member member = memberService.findVerifiedMember(answerComment.getMember().getId());
         answerComment.setMember(member);
         return answerCommentRepository.save(answerComment);
     }
 
-    public AnswerComment updateAnswerComment(AnswerComment answerComment, Long member_id){
+    public AnswerComment updateAnswerComment(AnswerComment answerComment, Long memberId){
         AnswerComment findAnswerComment = findVerifiedAnswerComment(answerComment.getId());
-        verifiedAuthorization(findAnswerComment,member_id);
+        verifiedAuthorization(findAnswerComment,memberId);
 
         Optional.ofNullable(answerComment.getContent())
                 .ifPresent(content->findAnswerComment.setContent(content));
 
         return answerCommentRepository.save(findAnswerComment);
         }
-    public void deleteAnswerComment(Long comment_id, Long member_id){
-        AnswerComment answerComment = findVerifiedAnswerComment(comment_id);
-        verifiedAuthorization(answerComment,member_id);
+    public void deleteAnswerComment(Long commentId, Long memberId){
+        AnswerComment answerComment = findVerifiedAnswerComment(commentId);
+        verifiedAuthorization(answerComment,memberId);
 
         answerCommentRepository.delete(answerComment);
     }
 
 
-    public AnswerComment findVerifiedAnswerComment(Long comment_id){
+    public AnswerComment findVerifiedAnswerComment(Long commentId){
         //cascade가 어떻게 적용될지 모르니 각각 해봐야할듯 검사를? (question과 같이)
         Optional<AnswerComment> optionalAnswerComment =
-                answerCommentRepository.findById(comment_id);
+                answerCommentRepository.findById(commentId);
         AnswerComment findAnswerComment=
                 optionalAnswerComment.orElseThrow(()->
                         new BusinessLogicException(ExceptionCode.COMMENT_NOT_FOUND));
@@ -147,13 +147,13 @@ public class AnswerService {
     /**
     한번 더 save를 안하면 db에 반영이 안되서 일단은 넣어놨는데, tranjaction 처리로 해결하면 된다고 하셨는데, 정확히 이해가 안가 일단 그대로 두었습니다.
      */
-    public void like(Long answer_id,Long member_id){
-        Answer answer = findVerifiedAnswer(answer_id);
-        Member member = memberService.findVerifiedMember(member_id);
+    public void like(Long answerId,Long memberId){
+        Answer answer = findVerifiedAnswer(answerId);
+        Member member = memberService.findVerifiedMember(memberId);
         AnswerLike answerLike = new AnswerLike();
         answerLike.setMember(member);
         answerLike.setAnswer(answer);
-        Optional<AnswerLike> optionalAnswerLike = answerLikeRepository.findByMemberAndAnswer(member_id,answer_id);
+        Optional<AnswerLike> optionalAnswerLike = answerLikeRepository.findByMemberAndAnswer(memberId,answerId);
         int likeCnt = answer.getLikeCnt();
         if(optionalAnswerLike.isEmpty()){
             answerLike.setLikeType(LikeType.LIKE);
@@ -179,13 +179,13 @@ public class AnswerService {
         }
     }
 
-    public void unlike(Long answer_id,Long member_id){
-        Answer answer = findVerifiedAnswer(answer_id);
-        Member member = memberService.findVerifiedMember(member_id);
+    public void unlike(Long answerId,Long memberId){
+        Answer answer = findVerifiedAnswer(answerId);
+        Member member = memberService.findVerifiedMember(memberId);
         AnswerLike answerLike = new AnswerLike();
         answerLike.setMember(member);
         answerLike.setAnswer(answer);
-        Optional<AnswerLike> optionalAnswerLike = answerLikeRepository.findByMemberAndAnswer(member_id,answer_id);
+        Optional<AnswerLike> optionalAnswerLike = answerLikeRepository.findByMemberAndAnswer(memberId,answerId);
         int likeCnt = answer.getLikeCnt();
         if(optionalAnswerLike.isEmpty()){
             answerLike.setLikeType(LikeType.UNLIKE);

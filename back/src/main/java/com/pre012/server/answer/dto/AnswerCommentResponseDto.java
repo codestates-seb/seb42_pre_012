@@ -16,13 +16,13 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class AnswerCommentResponseDto {
 
-    private Long member_id;
-    private Long answer_id;
-    private Long comment_id;
+    //private Long memberId;
+    //private Long answerId;
+    private Long commentId;
     private String content;
     private LocalDateTime createdAt;
-    private LocalDateTime modifiedAt;
-    private String email;
+    //private LocalDateTime modifiedAt;
+    //private String email;
     private String displayName;
-    private String profileImagePath;
+    //private String profileImagePath;
 }

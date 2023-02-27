@@ -63,7 +63,7 @@ public class Question extends Auditable {
 
     @Setter(AccessLevel.NONE)
     @OneToMany(mappedBy = "question", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<QuestionTag> tags = new ArrayList<>();
+    private List<QuestionTag> questionTags = new ArrayList<>();
 
     @Setter(AccessLevel.NONE)
     @OneToMany(mappedBy = "question", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
@@ -95,10 +95,10 @@ public class Question extends Auditable {
         }
     }
 
-    public void setTags(QuestionTag tag) {
-        this.tags.add(tag);
-        if (tag.getQuestion() != this) {
-            tag.setQuestion(this);
+    public void setQuestionTags(QuestionTag questionTag) {
+        this.questionTags.add(questionTag);
+        if (questionTag.getQuestion() != this) {
+            questionTag.setQuestion(this);
         }
     }
 

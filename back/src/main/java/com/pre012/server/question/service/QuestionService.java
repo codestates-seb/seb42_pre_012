@@ -8,13 +8,18 @@ import com.pre012.server.member.repository.BookmarkRepository;
 import com.pre012.server.member.repository.QuestionLikeRepository;
 import com.pre012.server.question.entity.Question;
 import com.pre012.server.question.repository.QuestionRepository;
+import com.pre012.server.question.repository.QuestionTagRepository;
+import com.pre012.server.tag.entity.Tag;
+import com.pre012.server.tag.repository.TagRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Transactional
 @Service
@@ -22,11 +27,15 @@ public class QuestionService {
     private final QuestionRepository questionRepository;
     private final QuestionLikeRepository questionLikeRepository;
     private final BookmarkRepository bookmarkRepository;
+    private final QuestionTagRepository questionTagRepository;
+    private final TagRepository tagRepository;
 
-    public QuestionService(QuestionRepository questionRepository, QuestionLikeRepository questionLikeRepository, BookmarkRepository bookmarkRepository) {
+    public QuestionService(QuestionRepository questionRepository, QuestionLikeRepository questionLikeRepository, BookmarkRepository bookmarkRepository, QuestionTagRepository questionTagRepository, TagRepository tagRepository) {
         this.questionRepository = questionRepository;
         this.questionLikeRepository = questionLikeRepository;
         this.bookmarkRepository = bookmarkRepository;
+        this.questionTagRepository = questionTagRepository;
+        this.tagRepository = tagRepository;
     }
 
     /**
@@ -42,11 +51,11 @@ public class QuestionService {
     /**
      * 질문 수정
      */
-    public Question updateQuestion(Question question, Member member) {
+    public Question updateQuestion(Question question) {
         // DB 에서 Question 가져오기
         Question findQuestion = findVerifyQuestion(question.getId());
 
-        if (findQuestion.getMember().getId() != member.getId()) {
+        if (findQuestion.getMember().getId() != question.getMember().getId()) {
             throw new RuntimeException("작성자가 아닌 사람이 질문 수정하려고 함");
         }
 
@@ -204,7 +213,7 @@ public class QuestionService {
      * 질문 검색 (태그 부분 빼면 완성)
      * Default : 제목 + 내용
      * User : 회원 번호
-     * Tag : 태그 (2순위)
+     * Tag : 태그 - 검색한 태그가 없을 때 예외 처리 필요 @@@
      */
     public Page<Question> searchQuestions(int page, String keyword, String type) {
         // 타입 대문자로 변경
@@ -213,8 +222,18 @@ public class QuestionService {
         if (type.equals("USER")) {
             Long memberId = Long.valueOf(keyword);
             return questionRepository.findByMemberId(memberId, PageRequest.of(page, 15));
-        } else {
+        } else if (type.equals("TAG")) {
+            keyword = keyword.toUpperCase();
 
+            Tag tag = tagRepository.findByName(keyword).get();  // 검색한 태그가 없을 때 예외처리 필요
+
+            List<Long> questionIds = tag.getQuestionTags().stream()
+                    .map(questionTag -> questionTag.getQuestion().getId())
+                    .collect(Collectors.toList());
+
+            return questionRepository.findByIdIn(questionIds, PageRequest.of(page, 15));
+
+        } else {
             // 키워드가 포함된 글들 가져오기 위해서 키워드의 양 옆에 % 추가
             keyword = "%" + keyword + "%";
 
@@ -228,7 +247,7 @@ public class QuestionService {
     public Question findVerifyQuestion(Long questionId) {
         Optional<Question> optionalQuestion = questionRepository.findById(questionId);
         Question findQuestion = optionalQuestion
-                .orElseThrow(() -> new RuntimeException("잘못된 커피쓰")); // 비즈니스 예외처리 넣기
+                .orElseThrow(() -> new RuntimeException("잘못된 질문 아이디")); // 비즈니스 예외처리 넣기
 
         return findQuestion;
     }

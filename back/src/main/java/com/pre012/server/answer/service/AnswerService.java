@@ -166,10 +166,8 @@ public class AnswerService {
         {
             AnswerLike findAnswerLike = optionalAnswerLike.get();
             LikeType likeType = findAnswerLike.getLikeType();
-            if(likeType.equals(LikeType.LIKE)) {
 
-            }
-            else if(likeType.equals(LikeType.UNLIKE)){
+            if(likeType.equals(LikeType.UNLIKE)){
                 likeCnt+=2;
                 answer.setLikeCnt(likeCnt);
                 findAnswerLike.setLikeType(LikeType.LIKE);
@@ -186,6 +184,7 @@ public class AnswerService {
         answerLike.setAnswer(answer);
         Optional<AnswerLike> optionalAnswerLike = answerLikeRepository.findByMemberAndAnswer(memberId,answerId);
         int likeCnt = answer.getLikeCnt();
+
         if(optionalAnswerLike.isEmpty()){
             answerLike.setLikeType(LikeType.UNLIKE);
             likeCnt--;
@@ -197,10 +196,7 @@ public class AnswerService {
         {
             AnswerLike findAnswerLike = optionalAnswerLike.get();
             LikeType likeType = findAnswerLike.getLikeType();
-            if(likeType.equals(LikeType.UNLIKE)) {
-
-            }
-            else if(likeType.equals(LikeType.LIKE)){
+            if(likeType.equals(LikeType.LIKE)){
                 likeCnt-=2;
                 answer.setLikeCnt(likeCnt);
                 findAnswerLike.setLikeType(LikeType.UNLIKE);

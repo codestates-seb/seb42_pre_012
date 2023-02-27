@@ -7,7 +7,7 @@ import com.pre012.server.answer.entity.AnswerComment;
 import com.pre012.server.answer.repository.AnswerCommentRepository;
 import com.pre012.server.answer.repository.AnswerLikeRepository;
 import com.pre012.server.answer.repository.AnswerRepository;
-import com.pre012.server.exception.BusinessLogicException;
+import com.pre012.server.exception.ErrorResponseDto;
 import com.pre012.server.exception.ExceptionCode;
 import com.pre012.server.member.entity.AnswerLike;
 import com.pre012.server.member.entity.Member;
@@ -94,18 +94,18 @@ public class AnswerService {
                 answerRepository.findById(answerId);
         Answer findAnswer=
                 optionalAnswer.orElseThrow(()->
-                        new BusinessLogicException(ExceptionCode.ANSWER_NOT_FOUND));
+                        new RuntimeException("a"));
         return findAnswer;
     }
 
     public void verifiedAuthorization(Answer answer, Long memberId) {
         if (!Objects.equals(memberId, answer.getMember().getId()))
-            throw new BusinessLogicException(ExceptionCode.UNAUTHORIZED_USER);
+            throw new RuntimeException("a");
     }
 
     public void verifiedAuthorization(AnswerComment answerComment, Long memberId) {
         if (!Objects.equals(memberId, answerComment.getMember().getId()))
-            throw new BusinessLogicException(ExceptionCode.UNAUTHORIZED_USER);
+            throw new RuntimeException("a");
     }
 
 
@@ -140,7 +140,7 @@ public class AnswerService {
                 answerCommentRepository.findById(commentId);
         AnswerComment findAnswerComment=
                 optionalAnswerComment.orElseThrow(()->
-                        new BusinessLogicException(ExceptionCode.COMMENT_NOT_FOUND));
+                        new RuntimeException("a"));
         return findAnswerComment;
     }
 
@@ -173,7 +173,6 @@ public class AnswerService {
                 likeCnt+=2;
                 answer.setLikeCnt(likeCnt);
                 findAnswerLike.setLikeType(LikeType.LIKE);
-                answerLikeRepository.save(answerLike);
                 answerRepository.save(answer);
             }
         }
@@ -204,8 +203,7 @@ public class AnswerService {
             else if(likeType.equals(LikeType.LIKE)){
                 likeCnt-=2;
                 answer.setLikeCnt(likeCnt);
-                findAnswerLike.setLikeType(LikeType.LIKE);
-                answerLikeRepository.save(answerLike);
+                findAnswerLike.setLikeType(LikeType.UNLIKE);
                 answerRepository.save(answer);
             }
         }

@@ -8,7 +8,6 @@ import lombok.Getter;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Positive;
 import java.util.List;
@@ -29,7 +28,7 @@ public class QuestionDto {
         // test title(O), test  title(X), 1. test (O), test1- title(O), ...
         //  특수문자로 시작해도 괜찮나요? @@@@@@@@@@@@@@@
         @Pattern(regexp = "^(\\S)+(\\s?\\S)*$",
-                    message = "질문 제목은 공백이 아니어야 합니다.")
+                message = "질문 제목은 공백이 아니어야 합니다.")
         private String title;
 
         @NotBlank(message = "질문 내용은 공백이 아니어야 합니다.")

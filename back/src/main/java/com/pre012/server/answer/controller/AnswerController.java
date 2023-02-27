@@ -115,8 +115,8 @@ public class AnswerController {
 
     @DeleteMapping("/comments/{comment-id}")
     public ResponseEntity deleteAnswerComment(@PathVariable("comment-id")@Positive Long commentId,
-                                              @RequestParam @Positive Long member_id){
-        answerService.deleteAnswerComment(commentId,member_id);
+                                              @RequestParam @Positive Long memberId){
+        answerService.deleteAnswerComment(commentId,memberId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 

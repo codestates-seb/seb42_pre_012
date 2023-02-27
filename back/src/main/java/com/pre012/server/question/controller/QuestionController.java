@@ -1,5 +1,6 @@
 package com.pre012.server.question.controller;
 
+import com.pre012.server.common.dto.MultiObjectResponseDto;
 import com.pre012.server.common.dto.MultiResponseDto;
 import com.pre012.server.common.dto.SingleResponseDto;
 import com.pre012.server.member.entity.Member;
@@ -108,19 +109,20 @@ public class QuestionController {
     public ResponseEntity getQuestions(@RequestParam int page,
                                        @RequestParam String sortedBy) {
         Page<Question> pageQuestions = questionService.findQuestions(page - 1, sortedBy);
-        List<Question> questions = pageQuestions.getContent();
+        List<Question> questionList = pageQuestions.getContent();
 
+        List<QuestionDto.searchResponse> searchResponses = mapper.questionsToSearchResponses(questionList);
 
         return new ResponseEntity<>(
-                new MultiResponseDto<>(
-                        mapper.questionsToSearchResponses(questions),
+                new MultiObjectResponseDto<>(
+                        mapper.resultResponses(searchResponses),
                         pageQuestions),
                 HttpStatus.OK);
     }
 
 
     /**
-     * 질문 상세 조회 -> data Multi
+     * 질문 상세 조회
      */
     @GetMapping("/{question-id}")
     public ResponseEntity getQuestion(@PathVariable("question-id") Long questionId,
@@ -190,11 +192,13 @@ public class QuestionController {
                                           @RequestParam int page) {
 
         Page<Question> pageQuestions = questionService.searchQuestions(page - 1, keyword, type);
-        List<Question> questions = pageQuestions.getContent();
+        List<Question> questionList = pageQuestions.getContent();
+
+        List<QuestionDto.searchResponse> searchResponses = mapper.questionsToSearchResponses(questionList);
 
         return new ResponseEntity<>(
-                new MultiResponseDto<>(
-                        mapper.questionsToSearchResponses(questions),
+                new MultiObjectResponseDto<>(
+                        mapper.resultResponses(searchResponses),
                         pageQuestions),
                 HttpStatus.OK);
 

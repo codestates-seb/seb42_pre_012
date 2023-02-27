@@ -10,6 +10,7 @@ import com.pre012.server.tag.dto.TagDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,18 +29,29 @@ public interface QuestionMapper {
     /**
      * 질문 목록 조회 및 필터링 & 질문 검색 결과 Response 로 변환해주는 mapper
      */
-    default List<QuestionDto.searchResponse> questionsToSearchResponses(List<Question> questions) {
-        return questions.stream()
-                .map(q -> {
-                    QuestionDto.searchResponse sr = new QuestionDto.searchResponse(
-                            questionToQuestionResponse(q),
-                            questionToMemberResponse(q),
-                            questionToTagResponses(q),
-                            q.getAnswerCnt()
-                    );
-                    return sr;
-                })
-                .collect(Collectors.toList());
+    default QuestionDto.searchResponse questionToSearchResponse(Question question){
+        return new QuestionDto.searchResponse(
+                question.getId(),
+                question.getTitle(),
+                question.getContent(),
+                question.getImage_path(),
+                question.getViewCnt(),
+                question.getLikeCnt(),
+                question.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")),
+                question.getModifiedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")),
+                question.getAnswerCnt(),
+                questionToMemberResponse(question),
+                questionToTagResponses(question)
+        );
+    }
+
+    List<QuestionDto.searchResponse> questionsToSearchResponses(List<Question> questions);
+
+
+    default QuestionDto.resultResponse resultResponses(List<QuestionDto.searchResponse> searchResponses){
+        return new QuestionDto.resultResponse(
+                searchResponses
+        );
     }
 
     /**

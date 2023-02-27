@@ -38,23 +38,32 @@ public class QuestionDto {
 
     /**
      * 질문 목록 조회 및 필터링 & 질문 검색 결과 DTO
-     *
-     * @tags 부분 수정 필요
      */
 
     @Getter
     @AllArgsConstructor
     public static class searchResponse {
-        private Response questions;
+        private Long questionId;
+        private String title;
+        private String content;
+        private String imagePath;
+        private int viewCnt;
+        private int likeCnt;
+        private String createdAt;
+        private String modifiedAt;
+        private int answerCnt;
         private MemberInfoDto.WriterResponse member;
         private List<TagDto.Response> tags;
-        private int answerCnt;
+    }
+
+    @Getter
+    @AllArgsConstructor
+    public static class resultResponse {
+        private List<searchResponse> questions;
     }
 
     /**
      * 질문 상세 조회 결과 DTO
-     *
-     * @tags 수정 필요
      */
     @Getter
     @AllArgsConstructor

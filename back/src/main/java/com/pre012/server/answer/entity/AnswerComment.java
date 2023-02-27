@@ -15,7 +15,7 @@ import javax.persistence.*;
 @Entity
 public class AnswerComment extends Auditable {
     @Id
-    @Column(name = "comment_id")
+    @Column(name = "answer_comment_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 

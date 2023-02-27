@@ -44,10 +44,6 @@ public class AnswerController {
         Answer answer = answerMapper.answerPostDtoToAnswer(requestbody);
         answer = answerService.createAnswer(answer,questionId);
 
-        Question question = questionService.findQuestion(questionId);
-        question.setAnswer(answer);
-
-
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 

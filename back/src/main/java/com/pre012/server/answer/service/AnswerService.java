@@ -49,13 +49,13 @@ public class AnswerService {
            2. answer 엔티티에 question_id를 통해 찾은 question 부여 / set
            3. answer 엔티티에 멤버 부여
          */
-        Question question = questionService.findQuestion(questionId);
+        Question question = questionService.findVerifyQuestion(questionId);
         Member member = memberService.findVerifiedMember(answer.getMember().getId());
         answer.setQuestion(question);
         answer.setMember(member);
         //좋아요 수 초기값 설정
         answer.setLikeCnt(0);
-
+        question.setAnswer(answer);
         return answerRepository.save(answer);
     }
 

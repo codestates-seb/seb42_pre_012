@@ -32,13 +32,13 @@ public class Question extends Auditable {
     @Column(length = 200)
     private String image_path;
 
-    @Column
+    @Column(nullable = false)
     private String content;
 
-    @Column
+    @Column(nullable = false)
     private int viewCnt = 0;
 
-    @Column
+    @Column(nullable = false)
     private int likeCnt = 0;
 
     @Formula("(SELECT COUNT(1) FROM ANSWER a WHERE a.question_id = question_id)")

@@ -6,6 +6,11 @@ import com.pre012.server.tag.dto.TagDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Positive;
 import java.util.List;
 
 public class QuestionDto {
@@ -16,9 +21,20 @@ public class QuestionDto {
     @Getter
     @AllArgsConstructor
     public static class Request {
+        @Positive
         private Long memberId;
+
+        @NotBlank
+        // 질문 앞 뒤에 공백있을 때, 단어 사이에 연속 공백 2개 이상일 때 유효성 검증 실패
+        //  특수문자? 로 시작해도 괜찮나요? @@@@@@@@@@@@@@@2
+        @Pattern(regexp = "^(\\S)*(\\s?\\S)*$",
+                    message = "질문 제목은 공백이 아니어야 합니다.")
         private String title;
+
+        @NotBlank(message = "질문 내용은 공백이 아니어야 합니다.")
         private String content;
+
+        @Valid
         private List<TagDto.Request> tags;
     }
 

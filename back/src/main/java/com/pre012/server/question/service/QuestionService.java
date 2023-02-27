@@ -56,16 +56,11 @@ public class QuestionService {
         Question findQuestion = findVerifyQuestion(question.getId());
 
         if (findQuestion.getMember().getId() != question.getMember().getId()) {
-            throw new RuntimeException("작성자가 아닌 사람이 질문 수정하려고 함");
+            throw new RuntimeException("작성자가 아닌 사람이 질문 수정하려고 함");  // 수정 필요 @@@
         }
 
         findQuestion.setTitle(question.getTitle());
         findQuestion.setContent(question.getContent());
-
-        // tag 관련 내용
-//        question.getTags()
-//                .stream()
-//                .forEach(tag -> findQuestion.setTags(tag));
 
         return findQuestion;
 

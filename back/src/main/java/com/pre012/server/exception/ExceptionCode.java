@@ -10,6 +10,10 @@ public enum ExceptionCode {
     TOKEN_DAMAGED(4002, "손상된 ACCESS TOKEN 입니다."),
 
     SYSTEM_ERROR(5000, "시스템 오류가 발생했습니다."),
+
+
+
+
     ;
 
     @Getter

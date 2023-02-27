@@ -5,6 +5,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
+
 public interface QuestionRepository extends JpaRepository<Question, Long> {
 
     /**
@@ -19,6 +21,9 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
 
     // title & content 키워드로 질문 찾기
     Page<Question> findByTitleLikeOrContentLike(String title, String content, Pageable pageable);
+
+    // tag 로 질문 찾기에 사용
+    Page<Question> findByIdIn(List<Long> Ids, Pageable pageable);
 
     // memberId 로 찾기
     Page<Question> findByMemberId(Long memberId, Pageable pageable);

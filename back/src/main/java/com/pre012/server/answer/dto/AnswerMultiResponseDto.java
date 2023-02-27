@@ -16,8 +16,8 @@ public class AnswerMultiResponseDto {
     private String content;
     private int likeCnt;
     private String imagePath;
-    private LocalDateTime createdAt;
-    private LocalDateTime modifiedAt;
+    private String createdAt;
+    private String modifiedAt;
     private LikeType likeStatus;
     private MemberInfoDto.WriterResponse writer;
     private List<AnswerCommentResponseDto> comments;

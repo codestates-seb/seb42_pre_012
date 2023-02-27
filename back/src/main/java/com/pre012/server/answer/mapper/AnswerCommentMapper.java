@@ -8,6 +8,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,7 +51,7 @@ public interface AnswerCommentMapper {
 //        Long answer_id = answerComment.getAnswer().getId();
         Long commentId = answerComment.getId();
         String content = answerComment.getContent();
-        LocalDateTime createdAt = answerComment.getCreatedAt();
+        String createdAt = answerComment.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
 //        LocalDateTime modifiedAt = answerComment.getModifiedAt();
         String displayName = answerComment.getMember().getDisplayName();
 //        String email = answerComment.getMember().getEmail();

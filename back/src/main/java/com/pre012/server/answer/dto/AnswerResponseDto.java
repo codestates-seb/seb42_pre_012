@@ -15,10 +15,10 @@ public class AnswerResponseDto {
     private String content;
     private int likeCnt;
     private String imagePath;
-    private LocalDateTime createdAt;
-    private LocalDateTime modifiedAt;
+    private String createdAt;
+    private String modifiedAt;
 
-    public AnswerResponseDto(Long answerId, String content, int likeCnt,String imagePath, LocalDateTime createdAt, LocalDateTime modifiedAt) {
+    public AnswerResponseDto(Long answerId, String content, int likeCnt,String imagePath, String createdAt, String modifiedAt) {
 //        this.memberId = memberId;
 //        this.questionId = questionId;
         this.answerId = answerId;

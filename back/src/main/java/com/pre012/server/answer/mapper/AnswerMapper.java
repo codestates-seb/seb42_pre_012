@@ -14,6 +14,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,8 +58,8 @@ public interface AnswerMapper {
         String content = answer.getContent();
         int likeCnt = answer.getLikeCnt();
         String imagePath = answer.getImagePath();
-        LocalDateTime createdAt = answer.getCreatedAt();
-        LocalDateTime modifiedAt = answer.getModifiedAt();
+        String createdAt = answer.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+        String modifiedAt = answer.getModifiedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
 
         AnswerResponseDto answerResponseDto = new AnswerResponseDto(answer_id,
                 content, likeCnt,imagePath,createdAt,modifiedAt);
@@ -84,8 +85,8 @@ public interface AnswerMapper {
         answerMultiResponseDto.setContent(answer.getContent());
         answerMultiResponseDto.setLikeCnt(answer.getLikeCnt());
         answerMultiResponseDto.setImagePath(answer.getImagePath());
-        answerMultiResponseDto.setCreatedAt(answer.getCreatedAt());
-        answerMultiResponseDto.setModifiedAt(answer.getModifiedAt());
+        answerMultiResponseDto.setCreatedAt(answer.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")));
+        answerMultiResponseDto.setModifiedAt(answer.getModifiedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")));
         answerMultiResponseDto.setLikeStatus(likeType);
         answerMultiResponseDto.setComments(comments);
         answerMultiResponseDto.setWriter(answerToMemberResponse(answer));
@@ -118,7 +119,7 @@ public interface AnswerMapper {
                 member.getId(),
                 member.getEmail(),
                 member.getDisplayName(),
-                member.getProfileImagePath()
+                member.getProfileImage()
         );
     }
 
@@ -135,7 +136,7 @@ public interface AnswerMapper {
 //        Long answer_id = answerComment.getAnswer().getId();
         Long commentId = answerComment.getId();
         String content = answerComment.getContent();
-        LocalDateTime createdAt = answerComment.getCreatedAt();
+        String createdAt = answerComment.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
 //        LocalDateTime modifiedAt = answerComment.getModifiedAt();
         String displayName = answerComment.getMember().getDisplayName();
 //        String email = answerComment.getMember().getEmail();

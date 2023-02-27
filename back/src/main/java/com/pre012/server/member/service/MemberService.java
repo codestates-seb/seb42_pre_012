@@ -92,7 +92,7 @@ public class MemberService {
     }
 
     public void verifyAlreadyExistsEmailOrDisplayName(String email, String displayName) {
-        Member member = memberRepository.findByEmailOrDisplayName(email, displayName).orElse(null);
+        Member member = memberRepository.findFirstByEmailOrDisplayName(email, displayName).orElse(null);
 
         if (member != null && member.getEmail().equals(email))
             throw new BusinessLogicException(ExceptionCode.EMAIL_ALREADY_EXISTS);

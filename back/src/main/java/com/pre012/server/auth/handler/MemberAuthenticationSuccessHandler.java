@@ -49,7 +49,7 @@ public class MemberAuthenticationSuccessHandler implements AuthenticationSuccess
         String refreshToken = delegateRefreshToken(member);
 
         Gson gson = new Gson();
-        String imgPath = member.getProfileImagePath() != null ? member.getProfileImagePath() : "";
+        String imgPath = member.getProfileImage() != null ? member.getProfileImage() : "";
         LoginResponse memberInfo = new LoginResponse(member.getId(), imgPath);
         SingleResponseDto<LoginResponse> responseDto = new SingleResponseDto<>(memberInfo);
 

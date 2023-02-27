@@ -78,7 +78,7 @@ public interface QuestionMapper {
                 member.getId(),
                 member.getEmail(),
                 member.getDisplayName(),
-                member.getProfileImagePath()
+                member.getProfileImage()
         );
     }
 

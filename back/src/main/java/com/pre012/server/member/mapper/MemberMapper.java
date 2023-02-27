@@ -76,6 +76,7 @@ public interface MemberMapper {
     @Mapping(source = "modifiedAt", target = "modifiedAt", dateFormat = "yyyy-MM-dd HH:mm")
     @Mapping(source = "id", target = "questionId")
     @Mapping(source = "member", target = "writer")
+    @Mapping(source = "questionTags", target = "tags")
     @Mapping(target = "answerCnt", expression = "java(question.getAnswers() != null ? question.getAnswers().size() : 0)")
     QuestionResponse questionToQuestionResponse(Question question);
     List<QuestionResponse> questionsToQuestionsResponse(List<Question> questions);

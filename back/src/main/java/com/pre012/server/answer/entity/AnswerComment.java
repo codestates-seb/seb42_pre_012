@@ -1,5 +1,6 @@
 package com.pre012.server.answer.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.pre012.server.common.audit.Auditable;
 import com.pre012.server.member.entity.Member;
 import lombok.Getter;
@@ -21,12 +22,19 @@ public class AnswerComment extends Auditable {
     @Column
     private String content;
 
-    @ManyToOne
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "answer_id")
     private Answer answer;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "member_id")
     private Member member;
 
+    public AnswerComment(Long id, String content, Answer answer, Member member) {
+        this.id = id;
+        this.content = content;
+        this.answer = answer;
+        this.member = member;
+    }
 }

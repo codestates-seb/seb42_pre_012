@@ -10,6 +10,7 @@ import com.pre012.server.auth.util.CustomAuthorityUtils;
 import com.pre012.server.auth.util.JWTTokenizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -26,11 +27,14 @@ public class SecurityConfiguration {
 
     private final JWTTokenizer jwtTokenizer;
     private final CustomAuthorityUtils authorityUtils;
+    private final MemberAuthenticationSuccessHandler authenticationSuccessHandler;
 
     public SecurityConfiguration(JWTTokenizer jwtTokenizer,
-                          CustomAuthorityUtils authorityUtils) {
+                                 CustomAuthorityUtils authorityUtils,
+                                 MemberAuthenticationSuccessHandler authenticationSuccessHandler) {
         this.jwtTokenizer = jwtTokenizer;
         this.authorityUtils = authorityUtils;
+        this.authenticationSuccessHandler = authenticationSuccessHandler;
     }
 
     @Bean
@@ -88,7 +92,7 @@ public class SecurityConfiguration {
             jwtAuthenticationFilter.setFilterProcessesUrl("/auth/login");
             // SuccessHandler, FailureHandler 각각 구현 클래스 생성 -> DI가 아닌 new도 무방하다
             jwtAuthenticationFilter.setAuthenticationSuccessHandler(
-                    new MemberAuthenticationSuccessHandler(jwtTokenizer));
+                    authenticationSuccessHandler);
             jwtAuthenticationFilter.setAuthenticationFailureHandler(
                     new MemberAuthenticationFailureHandler());
 

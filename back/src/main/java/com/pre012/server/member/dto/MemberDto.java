@@ -14,6 +14,8 @@ public class MemberDto {
         private String email;
         private String password;
         private String displayName;
+        // 프로필 이미지 대체
+        private String profileImage;
     }
 
     @Getter
@@ -39,7 +41,7 @@ public class MemberDto {
         private Long memberId;
         private String email;
         private String displayName;
-        private String profileImagePath;
+        private String profileImage; // 변경 가능성
         private String createdAt;
         private String modifiedAt;
     }
@@ -57,7 +59,7 @@ public class MemberDto {
         private Long memberId;
         private String email;
         private String displayName;
-        private String profileImagePath;
+        private String profileImage;
     }
 
 }

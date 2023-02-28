@@ -10,10 +10,15 @@ import com.pre012.server.question.service.QuestionCommentService;
 import com.pre012.server.question.service.QuestionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
+import javax.validation.constraints.Positive;
 
 @RestController
 @RequestMapping("/questions/comments")
+@Validated
 public class QuestionCommentController {
 
     // DI
@@ -34,8 +39,8 @@ public class QuestionCommentController {
      */
 
     @PostMapping("/{question-id}")
-    public ResponseEntity postQuestionComment(@PathVariable("question-id") Long questionId,
-                                              @RequestBody QuestionCommentDto.Request requestBody) {
+    public ResponseEntity postQuestionComment(@PathVariable("question-id") @Positive Long questionId,
+                                              @Valid @RequestBody QuestionCommentDto.Request requestBody) {
 
         QuestionComment questionComment = mapper.questionCommentRequestToQuestionComment(requestBody);
 
@@ -57,8 +62,8 @@ public class QuestionCommentController {
      * 댓글 수정
      */
     @PatchMapping("/{comment-id}")
-    public ResponseEntity patchQuestionComment(@PathVariable("comment-id") Long commentId,
-                                               @RequestBody QuestionCommentDto.Request requestBody) {
+    public ResponseEntity patchQuestionComment(@PathVariable("comment-id") @Positive Long commentId,
+                                               @Valid @RequestBody QuestionCommentDto.Request requestBody) {
         QuestionComment questionComment = mapper.questionCommentRequestToQuestionComment(requestBody);
         questionComment.setId(commentId);
 
@@ -73,8 +78,8 @@ public class QuestionCommentController {
      * 댓글 삭제
      */
     @DeleteMapping("/{comment-id}")
-    public ResponseEntity deleteQuestionComment(@PathVariable("comment-id") Long commentId,
-                                                @RequestParam Long memberId) {
+    public ResponseEntity deleteQuestionComment(@PathVariable("comment-id") @Positive Long commentId,
+                                                @Positive @RequestParam Long memberId) {
 
         questionCommentService.deleteComment(commentId, memberId);
 

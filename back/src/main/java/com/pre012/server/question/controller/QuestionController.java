@@ -84,13 +84,13 @@ public class QuestionController {
         // 검증된 member 찾아서 넣기
         addMemberToQuestion(requestBody, question);
 
+        Question updatedQuestion = questionService.updateQuestion(question);
+
         // 검증된 tag 찾기
         List<Tag> findTags = tagService.findVerifyTags(
                 tagMapper.tagRequestDtosToTags(requestBody.getTags()));
 
         questionTagService.updateQuestionTags(question, findTags);
-
-        Question updatedQuestion = questionService.updateQuestion(question);
 
         return new ResponseEntity(HttpStatus.OK);
 

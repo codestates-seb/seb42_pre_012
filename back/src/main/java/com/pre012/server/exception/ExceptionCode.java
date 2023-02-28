@@ -16,6 +16,10 @@ public enum ExceptionCode {
     MEMBER_NOT_FOUND(4007, "유효하지 않은 회원 입니다."),
 
     SYSTEM_ERROR(5000, "시스템 오류가 발생했습니다."),
+
+
+
+
     ;
 
     @Getter

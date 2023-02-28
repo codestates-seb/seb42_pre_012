@@ -33,7 +33,10 @@ public class MemberDto {
     @AllArgsConstructor
     @NoArgsConstructor
     public static class ModifyDto {
+        @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{4,}$",
+                message = "비밀번호는 최소 4자 이상, 숫자와 영문자의 조합으로 이루어져야 합니다.")
         private String password;
+        @NotBlank(message = "닉네임은 필수 입력값입니다.")
         private String displayName;
     }
 

@@ -9,6 +9,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Formula;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -31,14 +32,17 @@ public class Question extends Auditable {
     @Column(length = 200)
     private String image_path;
 
-    @Column
+    @Column(nullable = false)
     private String content;
 
-    @Column
-    private int viewCnt;
+    @Column(nullable = false)
+    private int viewCnt = 0;
 
-    @Column
-    private int likeCnt;
+    @Column(nullable = false)
+    private int likeCnt = 0;
+
+    @Formula("(SELECT COUNT(1) FROM ANSWER a WHERE a.question_id = question_id)")
+    private int answerCnt;
 
     @ManyToOne
     @JoinColumn(name = "member_id")
@@ -46,7 +50,7 @@ public class Question extends Auditable {
 
     // 1 : N
     @Setter(AccessLevel.NONE)
-    @OneToMany(mappedBy = "question")
+    @OneToMany(mappedBy = "question",fetch = FetchType.LAZY)
     private List<Answer> answers = new ArrayList<>();
 
     @Setter(AccessLevel.NONE)
@@ -59,7 +63,7 @@ public class Question extends Auditable {
 
     @Setter(AccessLevel.NONE)
     @OneToMany(mappedBy = "question", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<QuestionTag> tags = new ArrayList<>();
+    private List<QuestionTag> questionTags = new ArrayList<>();
 
     @Setter(AccessLevel.NONE)
     @OneToMany(mappedBy = "question", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
@@ -91,10 +95,10 @@ public class Question extends Auditable {
         }
     }
 
-    public void setTags(QuestionTag tag) {
-        this.tags.add(tag);
-        if (tag.getQuestion() != this) {
-            tag.setQuestion(this);
+    public void setQuestionTags(QuestionTag questionTag) {
+        this.questionTags.add(questionTag);
+        if (questionTag.getQuestion() != this) {
+            questionTag.setQuestion(this);
         }
     }
 

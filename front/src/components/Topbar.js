@@ -1,5 +1,7 @@
 import styled from "styled-components";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+
 import { GrSearch } from "react-icons/gr";
 import { FaUser } from "react-icons/fa";
 import { IoMailOpen } from "react-icons/io5";
@@ -7,10 +9,9 @@ import { ImTrophy } from "react-icons/im";
 import { BsQuestionCircleFill } from "react-icons/bs";
 import { RiLogoutBoxRLine } from "react-icons/ri";
 
-import StackOverflowlogo from "../assets/StackOverflowlogo.png";
+import stackOverflowlogo from "../assets/stackOverflowlogo.png";
 
 const TopbarContainer = styled.div`
-  background-color: aqua;
   width: 100vw;
   height: 50px;
   box-sizing: border-box;
@@ -93,7 +94,6 @@ const TopbarSearchContainer = styled.div`
 `;
 
 const TopbarRightSideNotLogin = styled.div`
-  display: none;
   width: 215px;
   margin-left: 20px;
 
@@ -132,7 +132,6 @@ const TopbarRightSideNotLogin = styled.div`
 const TopbarRightSideLogin = styled.div`
   display: flex;
   align-items: center;
-  /* display: none; */
   width: 215px;
   margin-left: 7px;
 
@@ -198,25 +197,26 @@ const Keyword = styled.div`
   position: absolute;
   display: flex;
   flex-direction: column;
-  width: 53.8%;
+  background-color: white;
+  width: 53.6%;
   height: 182px;
   top: 50px;
-  left: 337px;
+  left: 334px;
   border-radius: 5px;
   box-shadow: rgba(60, 64, 67, 0.3) 0px 0px 2px 0px,
     rgba(60, 64, 67, 0.15) 0px 0px 6px 0px;
 
   .textBubbleArrow {
     position: absolute;
-    width: 11px;
-    height: 11px;
-    background-color: RGB(248, 249, 249);
-    left: 382px;
+    width: 10px;
+    height: 10px;
+    background-color: RGB(255, 255, 255);
+    left: 380px;
     transform: rotate(45deg);
     border-radius: 1px;
     border-top: 1px solid RGB(209, 209, 209);
     border-left: 1px solid RGB(209, 209, 209);
-    top: -7px;
+    top: -6px;
     box-shadow: rgba(60, 64, 67, 0.3) 0px 0px 3px 0px,
       rgba(60, 64, 67, 0.15) 0px 0px -1px 0px;
   }
@@ -238,7 +238,7 @@ const Keyword = styled.div`
   }
 
   span {
-    letter-spacing: 1.5px;
+    letter-spacing: 1.2px;
     color: black;
   }
 
@@ -269,8 +269,9 @@ const Keyword = styled.div`
   }
 `;
 
-function Topbar() {
+function Topbar({ login, onLogin }) {
   const [searchFocus, setSearchFocus] = useState(false);
+  const navigate = useNavigate();
 
   function handleFocus() {
     setSearchFocus(!searchFocus);
@@ -280,11 +281,27 @@ function Topbar() {
     setSearchFocus(!searchFocus);
   }
 
+  function navigateToHome() {
+    navigate("/");
+  }
+
+  function navigateToUsers() {
+    navigate("/users");
+  }
+
+  function navigateToLogin() {
+    navigate("/login");
+  }
+
+  function navigateToSignup() {
+    navigate("/signup");
+  }
+
   return (
     <TopbarContainer>
       <div className="topbarLeftBlank" />
       <div className="StackOverflowlogoContainer">
-        <img src={StackOverflowlogo} alt="" />
+        <img onClick={navigateToHome} src={stackOverflowlogo} alt="" />
       </div>
       <span className="productsText">Products</span>
       <TopbarSearchContainer>
@@ -295,21 +312,34 @@ function Topbar() {
         />
         <GrSearch className="searchIcon" />
       </TopbarSearchContainer>
-      <TopbarRightSideNotLogin>
-        <input className="loginButton" type={"button"} value="Log in" />
-        <input className="signupButton" type={"button"} value="Sign up" />
-      </TopbarRightSideNotLogin>
-      <TopbarRightSideLogin>
-        <div className="userIconContainer">
-          <FaUser className="userIcon" />
-        </div>
-        <IoMailOpen className="mailIcon" />
-        <ImTrophy className="trophyIcon" />
-        <BsQuestionCircleFill className="questionIcon" />
-        <div className="logoutIconContainer">
-          <RiLogoutBoxRLine className="logoutIcon" />
-        </div>
-      </TopbarRightSideLogin>
+      {login ? (
+        <TopbarRightSideLogin>
+          <div className="userIconContainer">
+            <FaUser onClick={navigateToUsers} className="userIcon" />
+          </div>
+          <IoMailOpen className="mailIcon" />
+          <ImTrophy className="trophyIcon" />
+          <BsQuestionCircleFill className="questionIcon" />
+          <div className="logoutIconContainer">
+            <RiLogoutBoxRLine onClick={onLogin} className="logoutIcon" />
+          </div>
+        </TopbarRightSideLogin>
+      ) : (
+        <TopbarRightSideNotLogin>
+          <input
+            onClick={navigateToLogin}
+            className="loginButton"
+            type={"button"}
+            value="Log in"
+          />
+          <input
+            onClick={navigateToSignup}
+            className="signupButton"
+            type={"button"}
+            value="Sign up"
+          />
+        </TopbarRightSideNotLogin>
+      )}
       <div className="topbarRightBlank" />
       {searchFocus ? (
         <Keyword>

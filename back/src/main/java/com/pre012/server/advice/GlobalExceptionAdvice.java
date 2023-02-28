@@ -41,4 +41,13 @@ public class GlobalExceptionAdvice {
         return new ResponseEntity<>(new SingleResponseDto<>(response), HttpStatus.EXPECTATION_FAILED);
     }
 
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<SingleResponseDto<ErrorResponseDto>> handleNullPointerException(
+            NullPointerException e) {
+        final ErrorResponseDto response = ErrorResponseDto.of(ExceptionCode.PARAMETER_NOT_VALID);
+
+        return new ResponseEntity<>(new SingleResponseDto<>(response), HttpStatus.EXPECTATION_FAILED);
+    }
+
 }

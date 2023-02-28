@@ -26,9 +26,8 @@ public class QuestionDto {
         @NotBlank
         // 질문 앞 뒤에 공백있을 때, 단어 사이에 연속 공백 2개 이상일 때 유효성 검증 실패
         // test title(O), test  title(X), 1. test (O), test1- title(O), ...
-        //  특수문자로 시작해도 괜찮나요? @@@@@@@@@@@@@@@
         @Pattern(regexp = "^(\\S)+(\\s?\\S)*$",
-                message = "질문 제목은 공백이 아니어야 합니다.")
+                message = "질문 제목은 공백이 아니어야 하고, 공백으로 시작 또는 끝날 수 없습니다.")
         private String title;
 
         @NotBlank(message = "질문 내용은 공백이 아니어야 합니다.")

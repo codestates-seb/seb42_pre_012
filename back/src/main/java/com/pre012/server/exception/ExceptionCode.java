@@ -17,7 +17,6 @@ public enum ExceptionCode {
 
     SYSTEM_ERROR(5000, "시스템 오류가 발생했습니다."),
 
-
     QUESTION_NOT_FOUND(6000, "유효하지 않은 질문입니다."),
     QUESTION_TAG_NOT_FOUND(6001, "유효하지 않은 코멘트입니다."),
     TAG_NOT_FOUND(7000, "유효하지 않은 태그입니다."),

@@ -31,7 +31,7 @@ public class GlobalExceptionAdvice {
         return new ResponseEntity<>(new SingleResponseDto<>(response), HttpStatus.BAD_REQUEST);
     }
 
-    // 질문 검색 - USER 에서 user 아이디값이 숫자가 아닐 때 에ㄸ 발생
+    // 질문 검색 - USER 에서 user 아이디값이 숫자가 아닐 때 에러 발생
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<SingleResponseDto<ErrorResponseDto>> handleNumberFormatException(

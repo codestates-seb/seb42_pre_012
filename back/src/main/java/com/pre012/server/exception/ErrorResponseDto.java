@@ -24,9 +24,4 @@ public class ErrorResponseDto {
         return new ErrorResponseDto(exceptionCode.getStatus(), exceptionCode.getMessage());
     }
 
-    public static ErrorResponseDto of(String message) {
-        int status = ExceptionCode.PARAMETER_NOT_VALID.getStatus();
-        return new ErrorResponseDto(status, message);
-    }
-
 }

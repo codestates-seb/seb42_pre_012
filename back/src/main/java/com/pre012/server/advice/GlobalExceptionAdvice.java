@@ -3,6 +3,7 @@ package com.pre012.server.advice;
 import com.pre012.server.common.dto.SingleResponseDto;
 import com.pre012.server.exception.BusinessLogicException;
 import com.pre012.server.exception.ErrorResponseDto;
+import com.pre012.server.exception.ExceptionCode;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -30,12 +31,12 @@ public class GlobalExceptionAdvice {
         return new ResponseEntity<>(new SingleResponseDto<>(response), HttpStatus.BAD_REQUEST);
     }
 
-    // 질문 검색 - USER 에서 user 아이디값이 숫자가 아닐 때 에러 발생
+    // 질문 검색 - USER 에서 user 아이디값이 숫자가 아닐 때 에ㄸ 발생
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<SingleResponseDto<ErrorResponseDto>> handleNumberFormatException(
             NumberFormatException e) {
-        final ErrorResponseDto response = ErrorResponseDto.of(e.getMessage()); // 어떻게 하는게 좋을까요?
+        final ErrorResponseDto response = ErrorResponseDto.of(ExceptionCode.PARAMETER_NOT_VALID);
 
         return new ResponseEntity<>(new SingleResponseDto<>(response), HttpStatus.EXPECTATION_FAILED);
     }

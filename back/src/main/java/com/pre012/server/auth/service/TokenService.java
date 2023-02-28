@@ -3,6 +3,8 @@ package com.pre012.server.auth.service;
 import com.pre012.server.auth.entity.Token;
 import com.pre012.server.auth.repository.TokenRepository;
 import com.pre012.server.auth.util.JWTTokenizer;
+import com.pre012.server.exception.BusinessLogicException;
+import com.pre012.server.exception.ExceptionCode;
 import com.pre012.server.member.entity.Member;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,17 +37,19 @@ public class TokenService {
             response.put("refreshToken", delegateRefreshToken(member));
             return response;
         }
-        throw new RuntimeException("만료");
+        throw new BusinessLogicException(ExceptionCode.TOKEN_EXPIRED);
     }
 
     @Transactional
     public void changeTokenValid(Long memberId) {
-        Token token = tokenRepository.findByMemberId(memberId).orElseThrow(RuntimeException::new);
+        Token token = tokenRepository.findByMemberId(memberId)
+                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.TOKEN_NOT_VALID));
         token.setValid(false);
     }
 
     public Token findValidToken(String refreshToken) {
-        return tokenRepository.findByRefreshTokenAndValid(refreshToken, true).orElseThrow(RuntimeException::new);
+        return tokenRepository.findByRefreshTokenAndValid(refreshToken, true)
+                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.TOKEN_NOT_VALID));
     }
 
     public boolean isVerifiedToken(Token token) {

@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Optional;
 
 import com.pre012.server.auth.util.CustomAuthorityUtils;
+import com.pre012.server.exception.BusinessLogicException;
+import com.pre012.server.exception.ExceptionCode;
 import com.pre012.server.member.entity.Member;
 import com.pre012.server.member.repository.MemberRepository;
 import com.pre012.server.question.entity.Question;
@@ -81,21 +83,21 @@ public class MemberService {
 
     public void verifyMember(Long memberId) {
         Optional<Member> member = memberRepository.findById(memberId);
-        if (member.isEmpty()) throw new RuntimeException();
+        if (member.isEmpty()) throw new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND);
     }
 
     public Member findVerifiedMember(Long memberId) {
         Optional<Member> member = memberRepository.findById(memberId);
-        return member.orElseThrow(RuntimeException::new);
+        return member.orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
     }
 
     public void verifyAlreadyExistsEmailOrDisplayName(String email, String displayName) {
-        Member member = memberRepository.findByEmailOrDisplayName(email, displayName).orElse(null);
+        Member member = memberRepository.findFirstByEmailOrDisplayName(email, displayName).orElse(null);
 
         if (member != null && member.getEmail().equals(email))
-            throw new RuntimeException();
+            throw new BusinessLogicException(ExceptionCode.EMAIL_ALREADY_EXISTS);
         else if (member != null && member.getDisplayName().equals(displayName))
-            throw new RuntimeException();
+            throw new BusinessLogicException(ExceptionCode.NICKNAME_ALREADY_EXISTS);
     }
 
     private void encryptPassword(Member member) {

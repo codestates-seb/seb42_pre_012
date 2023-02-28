@@ -6,15 +6,26 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
+
 public class MemberDto {
     @Getter
     @AllArgsConstructor
     @NoArgsConstructor
     public static class SignUpDto {
+        @NotBlank(message = "이메일은 필수 입력값입니다.")
+        @Email(message = "이메일 형식에 맞지 않습니다.")
         private String email;
+
+        @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{4,}$",
+                 message = "비밀번호는 최소 4자 이상, 숫자와 영문자의 조합으로 이루어져야 합니다.")
         private String password;
+
+        @NotBlank(message = "닉네임은 필수 입력값입니다.")
         private String displayName;
-        // 프로필 이미지 대체
+
         private String profileImage;
     }
 
@@ -22,7 +33,10 @@ public class MemberDto {
     @AllArgsConstructor
     @NoArgsConstructor
     public static class ModifyDto {
+        @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{4,}$",
+                message = "비밀번호는 최소 4자 이상, 숫자와 영문자의 조합으로 이루어져야 합니다.")
         private String password;
+        @NotBlank(message = "닉네임은 필수 입력값입니다.")
         private String displayName;
     }
 

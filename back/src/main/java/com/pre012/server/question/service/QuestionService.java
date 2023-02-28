@@ -61,7 +61,7 @@ public class QuestionService {
         Question findQuestion = findVerifyQuestion(question.getId());
 
         if (findQuestion.getMember().getId() != question.getMember().getId()) {
-            throw new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND);
+            throw new BusinessLogicException(ExceptionCode.MEMBER_UNAUTHORIZED);
         }
 
         findQuestion.setTitle(question.getTitle());
@@ -79,7 +79,7 @@ public class QuestionService {
 
         // question 에 저장된 memberId 와 쿼리스트링으로 받은 memberId 비교
         if (!findQuestion.getMember().getId().equals(memberId)) {
-            throw new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND);
+            throw new BusinessLogicException(ExceptionCode.MEMBER_UNAUTHORIZED);
         }
 
         // answer 지우는 메소드

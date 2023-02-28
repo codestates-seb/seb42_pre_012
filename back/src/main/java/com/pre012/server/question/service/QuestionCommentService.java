@@ -34,7 +34,7 @@ public class QuestionCommentService {
         QuestionComment findComment = findVerifyComment(questionComment.getId());
 
         if (findComment.getMember().getId() != member.getId()) {
-            throw new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND);
+            throw new BusinessLogicException(ExceptionCode.MEMBER_UNAUTHORIZED);
         }
 
         findComment.setContent(questionComment.getContent());
@@ -46,7 +46,7 @@ public class QuestionCommentService {
     public void deleteComment(Long commentId, Long memberId) {
         QuestionComment findComment = findVerifyComment(commentId);
         if (!findComment.getMember().getId().equals(memberId)) {
-            throw new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND);
+            throw new BusinessLogicException(ExceptionCode.MEMBER_UNAUTHORIZED);
         }
 
         repository.deleteById(commentId);

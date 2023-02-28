@@ -17,6 +17,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -40,7 +42,7 @@ public class AnswerController {
     //질문에 따른 답변 작성
     @PostMapping("/{question-id}")
     public ResponseEntity postAnswer(@PathVariable("question-id") @Positive Long questionId,
-                                     @RequestBody AnswerPostDto requestbody){
+                                     @Valid @RequestBody AnswerPostDto requestbody){
         Answer answer = answerMapper.answerPostDtoToAnswer(requestbody);
         answer = answerService.createAnswer(answer,questionId);
 
@@ -50,7 +52,7 @@ public class AnswerController {
     //질문에 해당하는 특정 답변 업데이트
     @PatchMapping("/{answer-id}")
     public ResponseEntity patchAnswer(@PathVariable("answer-id") @Positive Long answerId,
-                                      @RequestBody AnswerPatchDto requestbody){
+                                      @Valid @RequestBody AnswerPatchDto requestbody){
         requestbody.setAnswerId(answerId);
 
         Answer answer = answerMapper.answerPatchDtoToAnswer(requestbody);
@@ -95,7 +97,7 @@ public class AnswerController {
      */
     @PostMapping("/comments/{answer-id}")
     public ResponseEntity postAnswerComment(@PathVariable("answer-id")@Positive Long answer_id,
-                                             @RequestBody AnswerCommentPostDto requestbody){
+                                             @Valid @RequestBody AnswerCommentPostDto requestbody){
         AnswerComment answerComment = answerCommentMapper.answerCommentPostDtoToAnswerComment(requestbody);
         answerComment=answerService.createAnswerComment(answerComment,answer_id);
 
@@ -104,7 +106,7 @@ public class AnswerController {
 
     @PatchMapping("/comments/{comment-id}")
     public ResponseEntity patchAnswerComment(@PathVariable("comment-id")@Positive Long commentId,
-                                             @RequestBody AnswerCommentPatchDto requestbody){
+                                             @Valid @RequestBody AnswerCommentPatchDto requestbody){
         requestbody.setCommentId(commentId);
 
         AnswerComment answerComment = answerCommentMapper.answerCommentPatchDtoToAnswerComment(requestbody);

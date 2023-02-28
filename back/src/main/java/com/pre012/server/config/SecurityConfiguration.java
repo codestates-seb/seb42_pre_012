@@ -20,6 +20,12 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.CorsUtils;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.Arrays;
 
 @Configuration
 @EnableWebSecurity // (debug = true)
@@ -28,20 +34,23 @@ public class SecurityConfiguration {
     private final JWTTokenizer jwtTokenizer;
     private final CustomAuthorityUtils authorityUtils;
     private final MemberAuthenticationSuccessHandler authenticationSuccessHandler;
+    // private final CorsConfig corsConfig;
 
     public SecurityConfiguration(JWTTokenizer jwtTokenizer,
                                  CustomAuthorityUtils authorityUtils,
-                                 MemberAuthenticationSuccessHandler authenticationSuccessHandler) {
+                                 MemberAuthenticationSuccessHandler authenticationSuccessHandler
+                                 ){
+                                //  CorsConfig corsConfig) {
         this.jwtTokenizer = jwtTokenizer;
         this.authorityUtils = authorityUtils;
         this.authenticationSuccessHandler = authenticationSuccessHandler;
+        // this.corsConfig = corsConfig;
     }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .csrf().disable() // stateless(jwt)
-            .cors(Customizer.withDefaults())
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             .and()
             .formLogin().disable()
@@ -52,7 +61,7 @@ public class SecurityConfiguration {
             .and()
             .apply(new CustomFilterConfigurer())
             .and()
-            .authorizeHttpRequests(authorize -> authorize
+            .authorizeRequests().requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
                       .anyRequest().permitAll() // 우선 모든 요청 허용, 제한은 통합 후에 설정 !
 //                    .mvcMatchers(HttpMethod.POST,
 //                            "/members",
@@ -67,7 +76,9 @@ public class SecurityConfiguration {
 //                            "/answers/**"
 //                    ).permitAll()
 //                    .anyRequest().authenticated()
-            )
+//            )
+                .and()
+                .cors().and()
             ;
         return http.build(); 
     }
@@ -77,6 +88,23 @@ public class SecurityConfiguration {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+//        configuration.addAllowedOriginPattern("*");
+//        configuration.addAllowedMethod("*");
+//        configuration.addAllowedHeader("*");
+        configuration.setAllowedHeaders(Arrays.asList("*"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PATCH", "DELETE", "OPTIONS"));
+        configuration.setAllowCredentials(true);
+        configuration.setMaxAge(3600L);
+//       configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000"));
+        configuration.setAllowedOriginPatterns(Arrays.asList("http://localhost:3000", "http://localhost:8080", "http://*:3000", "http://*.*.*.*:3000"));
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
     // JwtAuthenticationFilter 등록
     public class CustomFilterConfigurer extends AbstractHttpConfigurer<CustomFilterConfigurer, HttpSecurity> {
         @Override
@@ -102,7 +130,9 @@ public class SecurityConfiguration {
             builder
                     .addFilter(jwtAuthenticationFilter)
                     .addFilterAfter(jwtVerificationFilter, JwtAuthenticationFilter.class);
+//                    .addFilter(corsConfig.corsFilter());
 
         }
     }
+
 }

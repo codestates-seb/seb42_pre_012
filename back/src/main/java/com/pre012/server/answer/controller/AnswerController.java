@@ -26,6 +26,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/answers")
+@CrossOrigin("*")
 public class AnswerController {
     private final AnswerMapper answerMapper;
     private final AnswerService answerService;

@@ -7,6 +7,7 @@ import com.pre012.server.answer.entity.AnswerComment;
 import com.pre012.server.answer.repository.AnswerCommentRepository;
 import com.pre012.server.answer.repository.AnswerLikeRepository;
 import com.pre012.server.answer.repository.AnswerRepository;
+import com.pre012.server.exception.BusinessLogicException;
 import com.pre012.server.exception.ErrorResponseDto;
 import com.pre012.server.exception.ExceptionCode;
 import com.pre012.server.member.entity.AnswerLike;
@@ -94,18 +95,18 @@ public class AnswerService {
                 answerRepository.findById(answerId);
         Answer findAnswer=
                 optionalAnswer.orElseThrow(()->
-                        new RuntimeException("a"));
+                        new BusinessLogicException(ExceptionCode.ANSWER_NOT_FOUND));
         return findAnswer;
     }
 
     public void verifiedAuthorization(Answer answer, Long memberId) {
         if (!Objects.equals(memberId, answer.getMember().getId()))
-            throw new RuntimeException("a");
+            throw new BusinessLogicException(ExceptionCode.MEMBER_UNAUTHORIZED);
     }
 
     public void verifiedAuthorization(AnswerComment answerComment, Long memberId) {
         if (!Objects.equals(memberId, answerComment.getMember().getId()))
-            throw new RuntimeException("a");
+            throw new BusinessLogicException(ExceptionCode.MEMBER_UNAUTHORIZED);
     }
 
 
@@ -140,7 +141,7 @@ public class AnswerService {
                 answerCommentRepository.findById(commentId);
         AnswerComment findAnswerComment=
                 optionalAnswerComment.orElseThrow(()->
-                        new RuntimeException("a"));
+                        new BusinessLogicException(ExceptionCode.COMMENT_NOT_FOUND));
         return findAnswerComment;
     }
 

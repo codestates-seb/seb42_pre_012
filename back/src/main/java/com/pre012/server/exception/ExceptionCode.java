@@ -17,6 +17,10 @@ public enum ExceptionCode {
 
     SYSTEM_ERROR(5000, "시스템 오류가 발생했습니다."),
 
+    ANSWER_NOT_FOUND(404,"존재하지 않는 답변 입니다."),
+
+    COMMENT_NOT_FOUND(404, "존재하지 않는 댓글 입니다.")
+
 
 
 

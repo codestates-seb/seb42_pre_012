@@ -12,6 +12,6 @@ public class AnswerCommentPostDto {
     @NotNull
     private Long memberId;
 
-    @NotBlank
+    @NotBlank(message = "댓글 내용은 공백이 아니어야 합니다.")
     private String content;
 }

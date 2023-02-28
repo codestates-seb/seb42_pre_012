@@ -17,12 +17,18 @@ import com.pre012.server.tag.service.TagService;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Positive;
 import java.util.List;
 
 @RestController
 @RequestMapping("/questions")
+@Validated
 public class QuestionController {
     private final QuestionService questionService;
     private final MemberService memberService;
@@ -47,7 +53,7 @@ public class QuestionController {
      * 질문 등록
      */
     @PostMapping
-    public ResponseEntity postQuestion(@RequestBody QuestionDto.Request requestBody) {
+    public ResponseEntity postQuestion(@Valid @RequestBody QuestionDto.Request requestBody) {
 
         Question question = mapper.questionRequestToQuestion(requestBody);
 
@@ -70,8 +76,8 @@ public class QuestionController {
      * 질문 수정 ( 제목, 본문, 태그 수정 )
      */
     @PatchMapping("/{question-id}")
-    public ResponseEntity patchQuestion(@PathVariable("question-id") Long questionId,
-                                        @RequestBody QuestionDto.Request requestBody) {
+    public ResponseEntity patchQuestion(@PathVariable("question-id") @Positive Long questionId,
+                                        @Valid @RequestBody QuestionDto.Request requestBody) {
         Question question = mapper.questionRequestToQuestion(requestBody);
         question.setId(questionId);
 
@@ -92,11 +98,10 @@ public class QuestionController {
 
     /**
      * 질문 삭제
-     * answer 지우는 메소드 추가하기
      */
     @DeleteMapping("{question-id}")
-    public ResponseEntity deleteQuestion(@PathVariable("question-id") Long questionId,
-                                         @RequestParam Long memberId) {
+    public ResponseEntity deleteQuestion(@PathVariable("question-id") @Positive Long questionId,
+                                        @Positive @RequestParam Long memberId) {
         questionService.deleteQuestion(questionId, memberId);
 
         return new ResponseEntity(HttpStatus.NO_CONTENT);
@@ -106,7 +111,7 @@ public class QuestionController {
      * 질문 목록 조회 및 필터링
      */
     @GetMapping
-    public ResponseEntity getQuestions(@RequestParam int page,
+    public ResponseEntity getQuestions(@Positive @RequestParam int page,
                                        @RequestParam String sortedBy) {
         Page<Question> pageQuestions = questionService.findQuestions(page - 1, sortedBy);
         List<Question> questionList = pageQuestions.getContent();
@@ -125,8 +130,8 @@ public class QuestionController {
      * 질문 상세 조회
      */
     @GetMapping("/{question-id}")
-    public ResponseEntity getQuestion(@PathVariable("question-id") Long questionId,
-                                      @RequestParam Long memberId) {
+    public ResponseEntity getQuestion(@Positive @PathVariable("question-id") Long questionId,
+                                      @Positive @RequestParam Long memberId) {
         Question question = questionService.findQuestion(questionId);
 
 
@@ -143,8 +148,8 @@ public class QuestionController {
      * 질문 좋아요
      */
     @PostMapping("/like/{question-id}")
-    public ResponseEntity postQuestionLike(@PathVariable("question-id") Long questionId,
-                                           @RequestParam Long memberId) {
+    public ResponseEntity postQuestionLike(@Positive @PathVariable("question-id") Long questionId,
+                                           @Positive @RequestParam Long memberId) {
 
         // 멤버 찾아서 파라미터로 넣기
         Member findMember = memberService.findVerifiedMember(memberId);
@@ -158,8 +163,8 @@ public class QuestionController {
      * 질문 싫어요
      */
     @PostMapping("/unlike/{question-id}")
-    public ResponseEntity postQuestionUnlike(@PathVariable("question-id") Long questionId,
-                                             @RequestParam Long memberId) {
+    public ResponseEntity postQuestionUnlike(@Positive @PathVariable("question-id") Long questionId,
+                                             @Positive @RequestParam Long memberId) {
 
         // 멤버 찾아서 파라미터로 넣기
         Member findMember = memberService.findVerifiedMember(memberId);
@@ -173,8 +178,8 @@ public class QuestionController {
      * 질문 북마크
      */
     @PostMapping("/bookmark/{question-id}")
-    public ResponseEntity postBookmark(@PathVariable("question-id") Long questionId,
-                                       @RequestParam Long memberId) {
+    public ResponseEntity postBookmark(@Positive @PathVariable("question-id") Long questionId,
+                                       @Positive @RequestParam Long memberId) {
 
         Member findMember = memberService.findVerifiedMember(memberId);
 
@@ -187,9 +192,9 @@ public class QuestionController {
      * 질문 검색
      */
     @GetMapping("/search")
-    public ResponseEntity searchQuestions(@RequestParam String keyword,
+    public ResponseEntity searchQuestions(@RequestParam String keyword, // @NotBlank 줄까요?
                                           @RequestParam String type,
-                                          @RequestParam int page) {
+                                          @Positive @RequestParam int page) {
 
         Page<Question> pageQuestions = questionService.searchQuestions(page - 1, keyword, type);
         List<Question> questionList = pageQuestions.getContent();

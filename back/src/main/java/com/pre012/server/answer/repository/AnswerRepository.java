@@ -17,7 +17,7 @@ public interface AnswerRepository extends JpaRepository<Answer, Long> {
      */
     @Modifying
     @Query("delete from Answer a where a.question.id =:questionId")
-    public void deleteByQuestionId(@Param("questionId") Long questionId);
+    void deleteByQuestionId(@Param("questionId") Long questionId);
 
     Page<Answer> findByQuestion_Id(@Param("questionId") Long questionId, Pageable pageable);
 }

@@ -2,7 +2,6 @@ package com.pre012.server.exception;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
 
 @Getter
@@ -23,6 +22,11 @@ public class ErrorResponseDto {
 
     public static ErrorResponseDto of(ExceptionCode exceptionCode) {
         return new ErrorResponseDto(exceptionCode.getStatus(), exceptionCode.getMessage());
+    }
+
+    public static ErrorResponseDto of(String message) {
+        int status = ExceptionCode.PARAMETER_NOT_VALID.getStatus();
+        return new ErrorResponseDto(status, message);
     }
 
 }

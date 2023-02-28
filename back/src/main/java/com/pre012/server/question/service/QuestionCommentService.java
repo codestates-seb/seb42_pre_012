@@ -1,5 +1,7 @@
 package com.pre012.server.question.service;
 
+import com.pre012.server.exception.BusinessLogicException;
+import com.pre012.server.exception.ExceptionCode;
 import com.pre012.server.member.entity.Member;
 import com.pre012.server.question.entity.QuestionComment;
 import com.pre012.server.question.repository.QuestionCommentRepository;
@@ -32,12 +34,10 @@ public class QuestionCommentService {
         QuestionComment findComment = findVerifyComment(questionComment.getId());
 
         if (findComment.getMember().getId() != member.getId()) {
-            throw new RuntimeException("작성자가 아닌 사람이 댓글 수정하려고 함");
+            throw new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND);
         }
 
         findComment.setContent(questionComment.getContent());
-
-//        repository.save(findComment); save 안해도 저장됨.
     }
 
     /**
@@ -46,7 +46,7 @@ public class QuestionCommentService {
     public void deleteComment(Long commentId, Long memberId) {
         QuestionComment findComment = findVerifyComment(commentId);
         if (!findComment.getMember().getId().equals(memberId)) {
-            throw new RuntimeException("다른 멤버가 지우려고 함"); // 비즈니스 예외로 수정 필요
+            throw new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND);
         }
 
         repository.deleteById(commentId);
@@ -57,7 +57,7 @@ public class QuestionCommentService {
         Optional<QuestionComment> optionalComment = repository.findById(questionCommentId);
 
         QuestionComment findComment = optionalComment
-                .orElseThrow(() -> new RuntimeException("잘못된 코맨트")); // 비즈니스 예외 수정
+                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.QUESTION_TAG_NOT_FOUND));
 
         return findComment;
     }

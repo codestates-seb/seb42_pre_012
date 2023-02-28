@@ -1,6 +1,8 @@
 package com.pre012.server.question.service;
 
 import com.pre012.server.answer.repository.AnswerRepository;
+import com.pre012.server.exception.BusinessLogicException;
+import com.pre012.server.exception.ExceptionCode;
 import com.pre012.server.member.entity.Bookmark;
 import com.pre012.server.member.entity.Member;
 import com.pre012.server.member.entity.QuestionLike;
@@ -59,7 +61,7 @@ public class QuestionService {
         Question findQuestion = findVerifyQuestion(question.getId());
 
         if (findQuestion.getMember().getId() != question.getMember().getId()) {
-            throw new RuntimeException("작성자가 아닌 사람이 질문 수정하려고 함");  // 수정 필요 @@@
+            throw new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND);
         }
 
         findQuestion.setTitle(question.getTitle());
@@ -77,7 +79,7 @@ public class QuestionService {
 
         // question 에 저장된 memberId 와 쿼리스트링으로 받은 memberId 비교
         if (!findQuestion.getMember().getId().equals(memberId)) {
-            throw new RuntimeException("다른 아이디가 지우려고 함");  // 비즈니스 예외 넣기
+            throw new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND);
         }
 
         // answer 지우는 메소드
@@ -223,7 +225,9 @@ public class QuestionService {
         } else if (type.equals("TAG")) {
             keyword = keyword.toUpperCase();
 
-            Tag tag = tagRepository.findByName(keyword).get();  // 검색한 태그가 없을 때 예외처리 필요
+            Tag tag = tagRepository.findByName(keyword)
+                    .orElseGet(Tag::new); // DB에 해당하는 값 없으면 다른 검색들이랑 똑같이 비어있게 가도록 함.
+//                    .orElseThrow(()-> new BusinessLogicException(ExceptionCode.TAG_NOT_FOUND));// 검색한 태그가 없을 때 예외처리 필요
 
             List<Long> questionIds = tag.getQuestionTags().stream()
                     .map(questionTag -> questionTag.getQuestion().getId())
@@ -245,7 +249,7 @@ public class QuestionService {
     public Question findVerifyQuestion(Long questionId) {
         Optional<Question> optionalQuestion = questionRepository.findById(questionId);
         Question findQuestion = optionalQuestion
-                .orElseThrow(() -> new RuntimeException("잘못된 질문 아이디")); // 비즈니스 예외처리 넣기
+                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.QUESTION_NOT_FOUND));
 
         return findQuestion;
     }

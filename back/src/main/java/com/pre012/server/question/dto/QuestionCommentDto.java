@@ -3,6 +3,9 @@ package com.pre012.server.question.dto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Positive;
+
 public class QuestionCommentDto {
 
     /**
@@ -11,9 +14,11 @@ public class QuestionCommentDto {
     @Getter
     @AllArgsConstructor
     public static class Request {
+        @Positive
         private Long memberId;
-        private String content;
 
+        @NotBlank(message = "댓글 내용은 공백이 아니어야 합니다.")
+        private String content;
     }
 
     /**

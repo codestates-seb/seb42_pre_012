@@ -53,7 +53,7 @@ public class Member extends Auditable {
     @Formula("(SELECT count(1) FROM answer a WHERE a.member_id = member_id)")
     private int answerCnt;
 
-    @OneToOne(mappedBy = "member")
+    @OneToOne(mappedBy = "member", cascade = CascadeType.REMOVE)
     private Token token;
 
     @Setter(AccessLevel.NONE)

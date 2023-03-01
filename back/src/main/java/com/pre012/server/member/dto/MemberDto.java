@@ -19,8 +19,8 @@ public class MemberDto {
         @Email(message = "이메일 형식에 맞지 않습니다.")
         private String email;
 
-        @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{4,}$",
-                 message = "비밀번호는 최소 4자 이상, 숫자와 영문자의 조합으로 이루어져야 합니다.")
+        @Pattern(regexp = "^(?=.*[A-Za-z!@#$%^&*])(?=.*\\d)[A-Za-z!@#$%^&*\\d]{4,}$",
+                 message = "비밀번호는 최소 4자 이상, 숫자와 영문자의 조합으로 이루어져야 합니다. (특수문자 추가 가능)")
         private String password;
 
         @NotBlank(message = "닉네임은 필수 입력값입니다.")
@@ -33,8 +33,8 @@ public class MemberDto {
     @AllArgsConstructor
     @NoArgsConstructor
     public static class ModifyDto {
-        @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{4,}$",
-                message = "비밀번호는 최소 4자 이상, 숫자와 영문자의 조합으로 이루어져야 합니다.")
+        @Pattern(regexp = "^(?=.*[A-Za-z!@#$%^&*])(?=.*\\d)[A-Za-z!@#$%^&*\\d]{4,}$",
+                message = "비밀번호는 최소 4자 이상, 숫자와 영문자의 조합으로 이루어져야 합니다. (특수문자 추가 가능)")
         private String password;
         @NotBlank(message = "닉네임은 필수 입력값입니다.")
         private String displayName;

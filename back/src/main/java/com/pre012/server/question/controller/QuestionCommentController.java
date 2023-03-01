@@ -19,6 +19,7 @@ import javax.validation.constraints.Positive;
 @RestController
 @RequestMapping("/questions/comments")
 @Validated
+@CrossOrigin("*")
 public class QuestionCommentController {
 
     // DI

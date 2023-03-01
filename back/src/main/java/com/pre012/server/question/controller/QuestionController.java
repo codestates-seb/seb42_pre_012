@@ -29,6 +29,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/questions")
 @Validated
+@CrossOrigin("*")
 public class QuestionController {
     private final QuestionService questionService;
     private final MemberService memberService;
@@ -110,6 +111,7 @@ public class QuestionController {
     /**
      * 질문 목록 조회 및 필터링
      */
+    @CrossOrigin("*")
     @GetMapping
     public ResponseEntity getQuestions(@Positive @RequestParam int page,
                                        @RequestParam String sortedBy) {

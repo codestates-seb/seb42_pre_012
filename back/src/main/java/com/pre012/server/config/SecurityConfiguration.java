@@ -12,7 +12,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -20,6 +19,8 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsUtils;
+
 
 @Configuration
 @EnableWebSecurity // (debug = true)
@@ -40,8 +41,9 @@ public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+            .headers().frameOptions().sameOrigin()
+            .and()
             .csrf().disable() // stateless(jwt)
-            .cors(Customizer.withDefaults())
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             .and()
             .formLogin().disable()
@@ -52,7 +54,9 @@ public class SecurityConfiguration {
             .and()
             .apply(new CustomFilterConfigurer())
             .and()
-            .authorizeHttpRequests(authorize -> authorize
+            .cors()
+            .and()
+            .authorizeRequests().requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
                       .anyRequest().permitAll() // 우선 모든 요청 허용, 제한은 통합 후에 설정 !
 //                    .mvcMatchers(HttpMethod.POST,
 //                            "/members",
@@ -67,7 +71,7 @@ public class SecurityConfiguration {
 //                            "/answers/**"
 //                    ).permitAll()
 //                    .anyRequest().authenticated()
-            )
+//            )
             ;
         return http.build(); 
     }
@@ -77,7 +81,7 @@ public class SecurityConfiguration {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 
-    // JwtAuthenticationFilter 등록
+    // Custom Filters 등록
     public class CustomFilterConfigurer extends AbstractHttpConfigurer<CustomFilterConfigurer, HttpSecurity> {
         @Override
         public void configure(HttpSecurity builder) throws Exception {
@@ -99,10 +103,11 @@ public class SecurityConfiguration {
             // -- verificationFilter
             JwtVerificationFilter jwtVerificationFilter = new JwtVerificationFilter(jwtTokenizer, authorityUtils);
 
-            builder
+            builder.addFilter(new CORSConfiguration().corsFilter())
                     .addFilter(jwtAuthenticationFilter)
                     .addFilterAfter(jwtVerificationFilter, JwtAuthenticationFilter.class);
 
         }
     }
+
 }

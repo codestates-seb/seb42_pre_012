@@ -41,7 +41,7 @@ public class Question extends Auditable {
     @Column(nullable = false)
     private int likeCnt = 0;
 
-    @Formula("(SELECT COUNT(1) FROM ANSWER a WHERE a.question_id = question_id)")
+    @Formula("(SELECT COUNT(1) FROM answer a WHERE a.question_id = question_id)")
     private int answerCnt;
 
     @ManyToOne

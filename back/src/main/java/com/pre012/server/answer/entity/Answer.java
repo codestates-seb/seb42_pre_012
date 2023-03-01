@@ -69,13 +69,4 @@ public class Answer extends Auditable {
         }
     }
 
-    /*
-    stub용 임시
-     */
-
-    public Answer(String content, int likeCnt, String imagePath) {
-        this.content = content;
-        this.likeCnt = likeCnt;
-        this.imagePath = imagePath;
-    }
 }

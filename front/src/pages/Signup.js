@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import axios from "axios";
 
@@ -146,11 +146,6 @@ function Signup() {
           password: passwordInput,
           displayName: displayName,
           profileColor: "red",
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
         }
       )
       .then(function (response) {
@@ -230,9 +225,7 @@ function Signup() {
             <br /> updates, user research invitations,
             <br /> company announcements, and digests.
           </DetailInput>
-          <Button type="submit" onSubmit={handleSubmit}>
-            Sign up
-          </Button>
+          <Button onClick={handleSubmit}>Sign up</Button>
           <DetailInput fontcolor="#AEB3B8">
             By clicking “Sign up”, you agree to our terms of
             <br /> service, privacy policy and cookie policy

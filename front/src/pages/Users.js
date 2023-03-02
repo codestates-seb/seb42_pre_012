@@ -328,6 +328,47 @@ const SubTabContent = styled.div`
     border-color: ${(props) => props.bdrColor || COLORS.subtabBorder};
     border-radius: 5px;
 
+    & > .upper {
+      border-bottom: 1px solid;
+      border-color: ${(props) => COLORS.subtabBorder};
+      padding: 12px;
+
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 5px;
+      & > .like {
+        border: 1px solid ${(props) => COLORS.subtabBorder};
+        border-radius: 5px;
+        padding: 2px 5px;
+        width: 30px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        &.plus {
+          background-color: #5eba7d;
+          color: #fff8d7;
+        }
+      }
+      & > .title {
+        flex-grow: 6;
+        color: blue;
+        max-width: 450px;
+        padding-left: 3px;
+        margin: 0;
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+      }
+      & > .createdAt {
+        flex-grow: 2;
+        max-width: 100px;
+      }
+    }
+    & > .lower {
+      padding: 12px;
+    }
+
     &.fr {
       display: flex;
       justify-content: center;
@@ -584,6 +625,20 @@ function ActivityAnswersTab() {
 
   // console.log("activity answers tab sort option: ", sortOption);
 
+  const memberInfo = useSelector((state) => state);
+  const [myAnswers, setMyAnswers] = useState([]);
+  axios
+    .get(
+      `http://ec2-13-124-137-67.ap-northeast-2.compute.amazonaws.com:8080/members/answers/${memberInfo.memberId}?page=1`
+    )
+    .then((res) => {
+      console.log(res);
+      console.log(res.data.data.questions.length);
+      // const {questions} = res.data.data;
+      // setMyAnswers
+    })
+    .catch(console.log);
+
   return (
     <SubTabContent padding="48px">
       <div className="flexBox">
@@ -605,7 +660,7 @@ function ActivityAnswersTab() {
           ))}
         </ToggleButtonGroup>
       </div>
-      <div className="box fc">
+      <div className="box">
         <div className="main">You have not answered any answers</div>
         <div className="delete">Deleted answers</div>
       </div>
@@ -614,7 +669,6 @@ function ActivityAnswersTab() {
 }
 function ActivityQuestionsTab() {
   // axios
-  const questionsCnt = 0;
 
   const sortOptionArr = ["Score", "Activity", "Newest", "Views"];
 
@@ -624,10 +678,24 @@ function ActivityQuestionsTab() {
     setSortOption(option);
   };
 
+  const memberInfo = useSelector((state) => state);
+  const [myQuestions, setMyQuestions] = useState([]);
+
+  useEffect(() => {
+    axios
+      .get(
+        `http://ec2-13-124-137-67.ap-northeast-2.compute.amazonaws.com:8080/members/questions/${memberInfo.memberId}?page=1`
+      )
+      .then((res) => {
+        setMyQuestions([...res.data.data.questions]);
+      })
+      .catch(console.log);
+  }, []);
+
   return (
     <SubTabContent padding="48px">
       <div className="flexBox">
-        <div className="title">{`${questionsCnt} Questions`}</div>
+        <div className="title">{`${myQuestions.length} Questions`}</div>
         <ToggleButtonGroup
           value={sortOption}
           onChange={handleSortOption}
@@ -645,8 +713,23 @@ function ActivityQuestionsTab() {
           ))}
         </ToggleButtonGroup>
       </div>
-      <div className="box fc">
-        <div className="main">You have not answered any questions</div>
+      <div className="box">
+        {myQuestions.length === 0
+          ? "You have not answered any questions"
+          : myQuestions.map((question) => (
+              <div className="upper" key={question.questionId}>
+                <div className={question.likeCnt >= 0 ? "like plus" : "like"}>
+                  {question.likeCnt}
+                </div>
+                {/* <Link to=" */}
+                <div className="title">
+                  {titleWithLengthLimit(question.title, 40)}
+                </div>
+                <div className="createdAt">
+                  {convertDateStrFormat(question.createdAt)}
+                </div>
+              </div>
+            ))}
         <div className="delete">Deleted questions</div>
       </div>
     </SubTabContent>
@@ -695,6 +778,7 @@ function ActivityTagsTab() {
         <div className="test_opts">options</div>
       </div>
       <div className="test_box">
+        <div className="test_upper">You have not answered any questions</div>
         <div className="test_upper">You have not answered any questions</div>
         <div className="test_lower">Deleted answers</div>
       </div>
@@ -1190,5 +1274,20 @@ const COLORS = {
 //     </ToggleButtonGroup>
 //   );
 // };
+
+const convertDateStrFormat = (str) => {
+  const date = new Date(str);
+  return `${date.toLocaleDateString("default", {
+    month: "short",
+    day: "numeric",
+  })}, ${date.getFullYear()}`;
+};
+
+const titleWithLengthLimit = (title, lengthLimit) => {
+  if (title.length > lengthLimit) {
+    return title.slice(0, lengthLimit) + "...";
+  }
+  return title;
+};
 
 export default Users;

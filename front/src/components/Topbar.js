@@ -23,6 +23,8 @@ const TopbarContainer = styled.div`
   align-items: center;
   position: fixed;
 
+  z-index: 1;
+
   .topbarLeftBlank {
     width: 5.5%;
   }

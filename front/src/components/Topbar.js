@@ -1,6 +1,6 @@
 import styled from "styled-components";
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useRef, useEffect } from "react";
+import { useNavigate, Link } from "react-router-dom";
 
 import { GrSearch } from "react-icons/gr";
 import { FaUser } from "react-icons/fa";
@@ -22,6 +22,7 @@ const TopbarContainer = styled.div`
   display: flex;
   align-items: center;
   position: fixed;
+  z-index: 1;
 
   z-index: 1;
 
@@ -274,12 +275,22 @@ const Keyword = styled.div`
 function Topbar({ login, onLogin }) {
   const [searchFocus, setSearchFocus] = useState(false);
   const navigate = useNavigate();
+  const el = useRef();
 
-  function handleFocus() {
-    setSearchFocus(!searchFocus);
+  function handleClosed(e) {
+    if (!el.current.contains(e.target)) {
+      setSearchFocus(false);
+    }
   }
 
-  function handleblur() {
+  useEffect(() => {
+    window.addEventListener("click", handleClosed);
+    return () => {
+      window.removeEventListener("click", handleClosed);
+    };
+  }, []);
+
+  function handleFocus() {
     setSearchFocus(!searchFocus);
   }
 
@@ -299,19 +310,21 @@ function Topbar({ login, onLogin }) {
     navigate("/signup");
   }
 
+  function navigateToAsk() {
+    navigate("/ask");
+  }
+
   return (
-    <TopbarContainer>
+    <TopbarContainer ref={el}>
       <div className="topbarLeftBlank" />
       <div className="StackOverflowlogoContainer">
         <img onClick={navigateToHome} src={stackOverflowlogo} alt="" />
       </div>
-      <span className="productsText">Products</span>
-      <TopbarSearchContainer>
-        <input
-          placeholder="Search..."
-          onFocus={handleFocus}
-          onBlur={handleblur}
-        />
+      <Link to="question" className="productsText">
+        Products
+      </Link>
+      <TopbarSearchContainer ref={el}>
+        <input placeholder="Search..." onFocus={handleFocus} />
         <GrSearch className="searchIcon" />
       </TopbarSearchContainer>
       {login ? (
@@ -377,6 +390,10 @@ function Topbar({ login, onLogin }) {
               className="keywordButton"
               type={"button"}
               value={"Ask a question"}
+              onClick={() => {
+                navigateToAsk();
+                setSearchFocus();
+              }}
             />
             <span className="keywordSearchHelp">Search help</span>
           </div>

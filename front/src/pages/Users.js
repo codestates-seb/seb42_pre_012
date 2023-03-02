@@ -28,6 +28,9 @@ import { ToggleButtonGroup, ToggleButton } from "@mui/material";
 
 import { FaGithub } from "react-icons/fa";
 import { useSelector } from "react-redux";
+import { useRef } from "react";
+import { useDispatch } from "react-redux";
+import { saveMemberInfo } from "../actions/actions";
 
 const UsersContainer = styled.div`
   min-height: 100vh;
@@ -567,7 +570,7 @@ function ActivityAnswersTab() {
     setSortOption(option);
   };
 
-  console.log("activity answers tab sort option: ", sortOption);
+  // console.log("activity answers tab sort option: ", sortOption);
 
   return (
     <SubTabContent padding="48px">
@@ -846,15 +849,46 @@ function SettingsPersonalInformationTab() {
   //
 }
 function SettingsEditProfileTab() {
-  // redux - global state
-  const member = {
-    fullName: "codestates pre12",
-    displayName: "PRE12",
-    profileImageBgColor: "lightseagreen",
+  const state = useSelector((state) => state);
+  const dispatch = useDispatch();
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // displayName PATCH하고 새로 GET한 값을 redux state로 저장
+    axios
+      .patch(
+        `http://ec2-13-124-137-67.ap-northeast-2.compute.amazonaws.com:8080/members/${state.memberId}`,
+        {
+          displayName,
+          password: "",
+        }
+      )
+      .then((res) => {
+        if (res.status === 200) {
+          axios
+            .get(
+              `http://ec2-13-124-137-67.ap-northeast-2.compute.amazonaws.com:8080/members/profile/${state.memberId}`
+            )
+            .then((res) => {
+              const { displayName } = res.data.data.member;
+              dispatch(
+                saveMemberInfo({
+                  displayName,
+                })
+              );
+              return;
+            })
+            .catch(console.log);
+        }
+        return;
+      })
+      .catch(console.log);
   };
 
+  const [displayName, setDisplayName] = useState(state.displayName);
+
   return (
-    <form action="">
+    <form>
       <SubTabContent padding="24px">
         <div className="subtabTitle">Edit your profile</div>
         <div className="contentItem">
@@ -867,7 +901,7 @@ function SettingsEditProfileTab() {
                   sx={{
                     width: "164px",
                     height: "164px",
-                    backgroundColor: "lightseagreen",
+                    backgroundColor: `${state.profileColor}`,
                     borderRadius: "5px",
                     display: "flex",
                     justifyContent: "center",
@@ -881,7 +915,7 @@ function SettingsEditProfileTab() {
                       fontSize: "37px",
                     }}
                   >
-                    PRE12
+                    {state.displayName}
                   </Typography>
                 </Box>
               </div>
@@ -889,8 +923,9 @@ function SettingsEditProfileTab() {
                 <div className="itemTitle">Display name</div>
                 <input
                   type="text"
-                  value={member.displayName}
+                  value={displayName}
                   className="publicInfo"
+                  onChange={(e) => setDisplayName(e.target.value)}
                 />
               </div>
               <div className="item">
@@ -929,12 +964,7 @@ function SettingsEditProfileTab() {
             <div className="main fr">
               <div className="item fg1">
                 <div className="itemTitle">Website link</div>
-                <input
-                  type="text"
-                  className="links"
-                  value={"codestates.pre12.com"}
-                  disabled
-                />
+                <input type="text" className="links" value={""} disabled />
               </div>
               <div className="item fg1">
                 <div className="itemTitle">Twitter link or username</div>
@@ -956,14 +986,19 @@ function SettingsEditProfileTab() {
             <div className="main">
               <div className="item">
                 <div className="itemTitle">Full name</div>
-                <input type="text" value={member.fullName} disabled />
+                <input type="text" value={state.displayName} disabled />
               </div>
             </div>
           </div>
         </div>
 
         <div className="fr">
-          <input type="submit" value="Save profile" id="saveProfileBtn" />
+          <input
+            type="submit"
+            value="Save profile"
+            id="saveProfileBtn"
+            onClick={handleSubmit}
+          />
           <button id="cancelProfileChangesBtn" value="Cancel" />
         </div>
       </SubTabContent>
@@ -1101,9 +1136,6 @@ function SettingsTab() {
 }
 
 function Users() {
-  const state = useSelector((state) => state);
-  console.log("users page");
-  console.log(state);
   return (
     <UsersContainer>
       <ProfileBlock />

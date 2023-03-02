@@ -184,16 +184,20 @@ function Login({ onLogin }) {
     axios
       .post(
         "http://ec2-13-124-137-67.ap-northeast-2.compute.amazonaws.com:8080/auth/login",
+        // {
+        //   email: emailInputRef.current.value,
+        //   password: passwordInputRef.current.value,
+        // }
         {
-          email: emailInputRef.current.value,
-          password: passwordInputRef.current.value,
+          email: "aa@gmail.com",
+          password: "asdf1",
         }
       )
       .then((res) => {
         console.log(res);
         if (res.status === 200) {
           console.log("success on login");
-          dispatch(saveMemberInfo(res.data));
+          dispatch(saveMemberInfo(res.data.data));
           console.log(res.data);
           onLogin(e);
         }

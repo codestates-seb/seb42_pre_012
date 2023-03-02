@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import javax.validation.ConstraintViolationException;
+import java.sql.SQLSyntaxErrorException;
 
 @RestControllerAdvice
 public class GlobalExceptionAdvice {
@@ -81,5 +82,13 @@ public class GlobalExceptionAdvice {
         return new ResponseEntity<>(new SingleResponseDto<>(response), HttpStatus.EXPECTATION_FAILED);
     }
 
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<SingleResponseDto<ErrorResponseDto>> handleSQLSyntaxErrorException(
+            SQLSyntaxErrorException e) {
+        final ErrorResponseDto response = ErrorResponseDto.of(ExceptionCode.PARAMETER_NOT_VALID);
+
+        return new ResponseEntity<>(new SingleResponseDto<>(response), HttpStatus.EXPECTATION_FAILED);
+    }
 
 }

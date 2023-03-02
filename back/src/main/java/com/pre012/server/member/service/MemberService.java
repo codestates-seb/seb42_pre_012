@@ -2,7 +2,9 @@ package com.pre012.server.member.service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+import com.pre012.server.answer.repository.AnswerRepository;
 import com.pre012.server.auth.util.CustomAuthorityUtils;
 import com.pre012.server.exception.BusinessLogicException;
 import com.pre012.server.exception.ExceptionCode;
@@ -22,15 +24,18 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
     private final QuestionRepository questionRepository;
+    private final AnswerRepository answerRepository;
     private final PasswordEncoder passwordEncoder;
     private final CustomAuthorityUtils authorityUtils;
 
     public MemberService(MemberRepository memberRepository,
                          QuestionRepository questionRepository,
+                         AnswerRepository answerRepository,
                          PasswordEncoder passwordEncoder,
                          CustomAuthorityUtils authorityUtils) {
         this.memberRepository = memberRepository;
         this.questionRepository = questionRepository;
+        this.answerRepository = answerRepository;
         this.passwordEncoder = passwordEncoder;
         this.authorityUtils = authorityUtils;
     }
@@ -67,7 +72,9 @@ public class MemberService {
     public Page<Question> getMemberAnsweredQuestions(Long memberId, int page) {
         // 리팩토링 예정
         PageRequest pageable = PageRequest.of(page - 1, 15, Sort.Direction.DESC, "createdAt");
-        return questionRepository.findByAnswersMemberId(memberId, pageable);
+        List<Long> questionIds = answerRepository.findIdsByMemberId(memberId);
+        questionIds = questionIds.stream().distinct().collect(Collectors.toList());
+        return questionRepository.findByIdIn(questionIds, pageable);
     }
 
     public Page<Question> getMemberBookmarks(Long memberId, int page) {

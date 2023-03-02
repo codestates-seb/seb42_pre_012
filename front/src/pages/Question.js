@@ -415,19 +415,15 @@ function Question({ con, onCon }) {
     axios
       .all([
         axios.get(
-          `http://ec2-13-124-137-67.ap-northeast-2.compute.amazonaws.com:8080/questions/${id}?memberId=${
-            "" || memberId
-          }`
+          `http://ec2-13-124-137-67.ap-northeast-2.compute.amazonaws.com:8080/questions/${id}?memberId=${memberId}`
         ),
-        axios.get(`http://ec2-13-124-137-67.ap-northeast-2.compute.amazonaws.com:8080/answers/${id}?memberId=${
-          "" || memberId
-        }&page=1&sortedBy=newest
+        axios.get(`http://ec2-13-124-137-67.ap-northeast-2.compute.amazonaws.com:8080/answers/${id}?memberId=${memberId}&page=1&sortedBy=newest
     `),
       ])
       .then(
         axios.spread((res1, res2) => {
-          setData([res1.data.data]);
-          setAnsweredData(res2.data.data.answers);
+          setData([res1?.data?.data]);
+          setAnsweredData(res2?.data?.data?.answers);
         })
       )
       .catch((err) => console.log(err));
@@ -453,21 +449,14 @@ function Question({ con, onCon }) {
 
   const [update, setUpdate] = useState([]);
 
-  const postAnswer = async (event) => {
-    event.preventDefault();
-    const response = await axios.post(
+  const postAnswer = () => {
+    axios.post(
       `http://ec2-13-124-137-67.ap-northeast-2.compute.amazonaws.com:8080/answers/${id}`,
       {
         memberId,
         content: con.slice(3, con.length - 4),
       }
     );
-
-    console.log(response);
-
-    if (response.data) {
-      setUpdate([...update, response.data]);
-    }
   };
 
   return (
@@ -537,9 +526,7 @@ function Question({ con, onCon }) {
                     <div className="asked">
                       asked {question.question.createdAt}
                     </div>
-                    <div className="profileImg">
-                      {question.member.profileImage[0]}
-                    </div>
+                    <div className="profileImg"></div>
                     <div className="displayName">
                       {question.member.displayName}
                     </div>
@@ -611,9 +598,7 @@ function Question({ con, onCon }) {
                         <div className="asked">
                           {"asked " + answer.createdAt}
                         </div>
-                        <div className="profileImg">
-                          {answer.writer.profileImage[0]}
-                        </div>
+                        <div className="profileImg"></div>
                         <div className="displayName">
                           {answer.writer.displayName}
                         </div>

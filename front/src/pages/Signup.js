@@ -1,5 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
+import axios from "axios";
+
 import { RiQuestionnaireFill } from "react-icons/ri";
 import { MdThumbsUpDown } from "react-icons/md";
 import { IoMdPricetags } from "react-icons/io";
@@ -8,7 +10,7 @@ import { FcGoogle } from "react-icons/fc";
 import { VscGithub } from "react-icons/vsc";
 import { FaFacebookSquare } from "react-icons/fa";
 
-const Container = styled.form`
+const Container = styled.div`
   display: flex;
   align-items: center;
   background-color: #f1f2f3;
@@ -16,7 +18,7 @@ const Container = styled.form`
   margin-top: 52px;
 `;
 
-const LeftContainer = styled.form`
+const LeftContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: baseline;
@@ -40,7 +42,7 @@ const IconDiv = styled.div`
   align-items: center;
 `;
 
-const RightContainer = styled.form`
+const RightContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -132,11 +134,32 @@ const HumanCheckbox = styled.div`
 function Signup() {
   const [email, setEmail] = useState("");
   const [displayName, setDisplayName] = useState("");
-  const [password, setPassword] = useState("");
+  const [passwordInput, setPasswordInput] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // 여기서 계정을 만들기 위한 Ajax 요청 적기
+    axios
+      .post(
+        `http://ec2-13-124-137-67.ap-northeast-2.compute.amazonaws.com:8080/members`,
+        {
+          email: email,
+          password: passwordInput,
+          displayName: displayName,
+          profileColor: "red",
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      )
+      .then(function (response) {
+        console.log(response);
+        console.log(email, displayName, passwordInput);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
   };
 
   return (
@@ -178,7 +201,7 @@ function Signup() {
           <FaFacebookSquare size="20px" />
           &nbsp;Sign up with Facebook
         </OauthButton>
-        <FormContainer onSubmit={handleSubmit}>
+        <FormContainer>
           <div>Display name</div>
           <Input
             type="text"
@@ -194,8 +217,8 @@ function Signup() {
           <div>Password</div>
           <LastInput
             type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            value={passwordInput}
+            onChange={(e) => setPasswordInput(e.target.value)}
           />
           <DetailInput fontcolor="#AEB3B8">
             Passwords must contain at least eight
@@ -207,7 +230,9 @@ function Signup() {
             <br /> updates, user research invitations,
             <br /> company announcements, and digests.
           </DetailInput>
-          <Button type="submit">Sign up</Button>
+          <Button type="submit" onSubmit={handleSubmit}>
+            Sign up
+          </Button>
           <DetailInput fontcolor="#AEB3B8">
             By clicking “Sign up”, you agree to our terms of
             <br /> service, privacy policy and cookie policy

@@ -4,9 +4,9 @@ import lombok.Getter;
 
 public enum ExceptionCode {
 
-    PARAMETER_NOT_VALID(3000, "유효하지 않은 요청값입니다"),
-    REQUEST_NOT_SUPPORT(3001, "잘못된 요청입니다"),
-    URL_NOT_VALID(3001, "잘못된 요청경로입니다"),
+    PARAMETER_NOT_VALID(3000, "유효하지 않은 요청값입니다."),
+    REQUEST_NOT_SUPPORT(3001, "잘못된 요청입니다."),
+    URL_NOT_VALID(3002, "잘못된 요청경로입니다."),
 
     MEMBER_LOGIN_FAILED(4000, "로그인 인증에 실패했습니다."),
     MEMBER_UNAUTHORIZED(4001, "접근 권한이 없습니다."),

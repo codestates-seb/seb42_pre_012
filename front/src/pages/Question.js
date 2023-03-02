@@ -1,7 +1,8 @@
 import styled from "styled-components";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { useSelector } from "react-redux";
 
 import { GoTriangleUp, GoTriangleDown } from "react-icons/go";
 import { RxBookmarkFilled, RxBookmark } from "react-icons/rx";
@@ -400,22 +401,27 @@ const CommentContainer = styled.div`
   }
 `;
 
-function Question() {
+function Question({ con, onCon }) {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [isBookmarkClicked, setIsBookmarkClicked] = useState(false);
   const [isQuestionCommentClicked, setIsQuestionCommentClicked] =
     useState(false);
-
   const [data, setData] = useState([]);
   const [answeredData, setAnsweredData] = useState([]);
+  const memberId = useSelector((state) => state.memberId);
 
   useEffect(() => {
     axios
       .all([
         axios.get(
-          `http://ec2-13-124-137-67.ap-northeast-2.compute.amazonaws.com:8080/questions/${id}?memberId=2`
+          `http://ec2-13-124-137-67.ap-northeast-2.compute.amazonaws.com:8080/questions/${id}?memberId=${
+            "" || memberId
+          }`
         ),
-        axios.get(`http://ec2-13-124-137-67.ap-northeast-2.compute.amazonaws.com:8080/answers/1?memberId=1&page=1&sortedBy=newest
+        axios.get(`http://ec2-13-124-137-67.ap-northeast-2.compute.amazonaws.com:8080/answers/${id}?memberId=${
+          "" || memberId
+        }&page=1&sortedBy=newest
     `),
       ])
       .then(
@@ -444,6 +450,25 @@ function Question() {
   function onQuestionComment() {
     setIsQuestionCommentClicked(!isQuestionCommentClicked);
   }
+
+  const [update, setUpdate] = useState([]);
+
+  const postAnswer = async (event) => {
+    event.preventDefault();
+    const response = await axios.post(
+      `http://ec2-13-124-137-67.ap-northeast-2.compute.amazonaws.com:8080/answers/${id}`,
+      {
+        memberId,
+        content: con.slice(3, con.length - 4),
+      }
+    );
+
+    console.log(response);
+
+    if (response.data) {
+      setUpdate([...update, response.data]);
+    }
+  };
 
   return (
     <QuestionContainer>
@@ -648,9 +673,11 @@ function Question() {
           <AnswerPost>
             <h2>Your Answer</h2>
             <div className="answeredEditor">
-              <Editor />
+              <Editor con={con} onCon={onCon} />
             </div>
-            <button>Post Your Answer</button>
+            <button type="submit" onClick={postAnswer}>
+              Post Your Answer
+            </button>
           </AnswerPost>
         </AnswerSection>
       </ContentMain>

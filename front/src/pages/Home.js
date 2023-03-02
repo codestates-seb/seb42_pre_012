@@ -209,7 +209,6 @@ function Home() {
       )
       .then((res) => {
         setData(res.data.data.questions);
-        console.log(res.data.data.questions);
       });
   }, [sorted]);
 

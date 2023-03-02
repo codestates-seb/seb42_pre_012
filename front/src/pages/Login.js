@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { FaGithub, FaFacebookSquare, FaExternalLinkAlt } from "react-icons/fa";
 
 import axios from "axios";
-import { useRef, useEffect } from "react";
+import { useRef } from "react";
 
 import { useSelector, useDispatch } from "react-redux";
 import { saveMemberInfo } from "../actions/actions";
@@ -184,13 +184,9 @@ function Login({ onLogin }) {
     axios
       .post(
         "http://ec2-13-124-137-67.ap-northeast-2.compute.amazonaws.com:8080/auth/login",
-        // {
-        //   email: emailInputRef.current.value,
-        //   password: passwordInputRef.current.value,
-        // }
         {
-          email: "aa@gmail.com",
-          password: "asdf1",
+          email: emailInputRef.current.value,
+          password: passwordInputRef.current.value,
         }
       )
       .then((res) => {

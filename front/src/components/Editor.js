@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useRef } from "react";
+import React, { useMemo, useRef } from "react";
 import ReactQuill, { Quill } from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import styled from "styled-components";
@@ -12,14 +12,8 @@ const EditorContainer = styled.div`
   }
 `;
 
-function Editor({ bodySideHandle, bodySideBlur }) {
-  const [value, setValue] = useState("");
+function Editor({ bodySideHandle, bodySideBlur, con, onCon }) {
   const quillRef = useRef();
-
-  function handleText(e) {
-    setValue(e);
-    console.log(value);
-  }
 
   const imageHandler = async () => {
     const input = document.createElement("input");
@@ -87,8 +81,8 @@ function Editor({ bodySideHandle, bodySideBlur }) {
       <ReactQuill
         className="editor"
         theme="snow"
-        value={value}
-        onChange={handleText}
+        con={con}
+        onChange={onCon}
         onFocus={bodySideHandle}
         onBlur={bodySideBlur}
         modules={modules}

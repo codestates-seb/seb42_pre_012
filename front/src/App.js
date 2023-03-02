@@ -27,9 +27,12 @@ const Main = styled.div`
 
 function App() {
   const [login, setLogin] = useState(false);
+  const [con, setCon] = useState("");
+
   const navigate = useNavigate();
 
-  // 시작화면을 login 페이지로 설정 
+  // 시작화면을 login 페이지로 설정
+
   useEffect(() => {
     navigate("/login");
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -45,6 +48,10 @@ function App() {
     }
   }
 
+  function onCon(e) {
+    setCon(e);
+  }
+
   return (
     <Body>
       <GlobalStyle />
@@ -54,12 +61,15 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/questions" element={<Questions />} />
-          <Route path="/questions/:id" element={<Question />} />
+          <Route
+            path="/questions/:id"
+            element={<Question onCon={onCon} con={con} setCon={setCon} />}
+          />
           <Route path="/tags" element={<Tags />} />
           <Route path="/users/*" element={<Users />} />
           <Route path="/login" element={<Login onLogin={onLogin} />} />
           <Route path="/signup" element={<Signup onLogin={onLogin} />} />
-          <Route path="/ask" element={<Ask />} />
+          <Route path="/ask" element={<Ask onCon={onCon} con={con} />} />
         </Routes>
       </Main>
       <Footer login={login} />

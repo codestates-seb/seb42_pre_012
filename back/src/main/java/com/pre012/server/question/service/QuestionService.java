@@ -83,7 +83,7 @@ public class QuestionService {
         }
 
         // answer 지우는 메소드
-        answerRepository.deleteByQuestionId(findQuestion.getId());
+        answerRepository.deleteById(findQuestion.getId());
 
         questionRepository.deleteById(questionId);
     }

@@ -3,6 +3,14 @@ import { useNavigate } from "react-router-dom";
 
 import { FaGithub, FaFacebookSquare, FaExternalLinkAlt } from "react-icons/fa";
 
+import axios from "axios";
+import { useRef } from "react";
+
+import { useSelector, useDispatch } from "react-redux";
+import { saveMemberInfo } from "../actions/actions";
+
+axios.defaults.withCredentials = true; // withCredentials 전역 설정
+
 // 로그인 페이지의 컨테이너
 const LoginContainer = styled.div`
   display: flex;
@@ -164,6 +172,35 @@ function Login({ onLogin }) {
   const handleClickOAuth2Btn = (e) => {
     //
   };
+
+  const emailInputRef = useRef(null);
+  const passwordInputRef = useRef(null);
+
+  const dispatch = useDispatch();
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // main
+    axios
+      .post(
+        "http://ec2-13-124-137-67.ap-northeast-2.compute.amazonaws.com:8080/auth/login",
+        {
+          email: emailInputRef.current.value,
+          password: passwordInputRef.current.value,
+        }
+      )
+      .then((res) => {
+        console.log(res);
+        if (res.status === 200) {
+          console.log("success on login");
+          dispatch(saveMemberInfo(res.data.data));
+          onLogin(e);
+        }
+        return;
+      })
+      .catch(console.log);
+  };
+
   return (
     <LoginContainer>
       {/* stack overflow logo2 */}
@@ -207,13 +244,18 @@ function Login({ onLogin }) {
       {/* Login box; form */}
       <LoginBox>
         <label htmlFor="email_input">Email</label>
-        <input type="email" id="email_input" autoComplete="off" />
+        <input
+          ref={emailInputRef}
+          type="email"
+          id="email_input"
+          autoComplete="off"
+        />
         <div>
           <label htmlFor="password_input">Password</label>
           <a href="#">Forgot password?</a>
         </div>
-        <input type="password" id="password_input" />
-        <input onClick={onLogin} type="submit" value="Log in" />
+        <input ref={passwordInputRef} type="password" id="password_input" />
+        <input onClick={handleSubmit} type="submit" value="Log in" />
       </LoginBox>
 
       {/* Extra messages */}

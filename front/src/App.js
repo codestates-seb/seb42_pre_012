@@ -12,6 +12,8 @@ import Users from "./pages/Users";
 import Footer from "./components/Footer";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
+import Ask from "./pages/Ask";
+import Question from "./pages/Question";
 
 const Body = styled.div`
   display: flex;
@@ -25,7 +27,11 @@ const Main = styled.div`
 
 function App() {
   const [login, setLogin] = useState(false);
+  const [con, setCon] = useState("");
+
   const navigate = useNavigate();
+
+  // 시작화면을 login 페이지로 설정
 
   useEffect(() => {
     navigate("/login");
@@ -35,12 +41,15 @@ function App() {
   function onLogin(e) {
     e.preventDefault();
     setLogin(!login);
-    console.log(login);
     if (login === false) {
       navigate("/");
     } else {
       navigate("/login");
     }
+  }
+
+  function onCon(e) {
+    setCon(e);
   }
 
   return (
@@ -52,10 +61,15 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/questions" element={<Questions />} />
+          <Route
+            path="/questions/:id"
+            element={<Question onCon={onCon} con={con} setCon={setCon} />}
+          />
           <Route path="/tags" element={<Tags />} />
-          <Route path="/users" element={<Users />} />
+          <Route path="/users/*" element={<Users />} />
           <Route path="/login" element={<Login onLogin={onLogin} />} />
           <Route path="/signup" element={<Signup onLogin={onLogin} />} />
+          <Route path="/ask" element={<Ask onCon={onCon} con={con} />} />
         </Routes>
       </Main>
       <Footer login={login} />

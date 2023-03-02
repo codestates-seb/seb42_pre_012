@@ -18,7 +18,7 @@ public class QuestionComment extends Auditable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 1000)
     private String content; // 댓글 내용
 
     @ManyToOne

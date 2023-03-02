@@ -12,4 +12,12 @@ import java.util.List;
 
 public interface AnswerRepository extends JpaRepository<Answer, Long> {
     Page<Answer> findByQuestion_Id(@Param("questionId") Long questionId, Pageable pageable);
+
+    @Query( value = ""
+            + " SELECT DISTINCT question_id "
+            + " FROM answer a "
+            + " WHERE a.member_id = :memberId "
+            , nativeQuery = true
+    )
+    List<Long> findIdsByMemberId(@Param("memberId")Long memberId);
 }

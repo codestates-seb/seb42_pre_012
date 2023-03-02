@@ -2,7 +2,6 @@ package com.pre012.server.exception;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
 
 @Getter

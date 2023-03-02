@@ -19,7 +19,7 @@ public class AnswerComment extends Auditable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column
+    @Column(length = 255, nullable = false)
     private String content;
 
     @JsonIgnore

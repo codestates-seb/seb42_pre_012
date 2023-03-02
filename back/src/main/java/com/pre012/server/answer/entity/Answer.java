@@ -26,7 +26,7 @@ public class Answer extends Auditable {
     private Long id;
 
     //글 내용
-    @Column
+    @Column(columnDefinition = "LONGTEXT",nullable = false)
     private String content;
 
     //좋아요 수

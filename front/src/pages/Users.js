@@ -420,10 +420,22 @@ const ProfileTabContainer = styled.div`
 function ProfileTab() {
   const reputationCnt = 1;
   const reachedCnt = 0;
-  const answersCnt = 0;
-  const questionsCnt = 0;
+  const [answersCnt, setAnswersCnt] = useState(0);
+  const [questionsCnt, setQuestionsCnt] = useState(0);
 
-  // axios
+  const memberInfo = useSelector((state) => state);
+
+  axios
+    .get(
+      `http://ec2-13-124-137-67.ap-northeast-2.compute.amazonaws.com:8080/members/profile/${memberInfo.memberId}`
+    )
+    .then((res) => {
+      const { questionCnt, answerCnt } = res.data.data.activity;
+      setAnswersCnt(answerCnt);
+      setQuestionsCnt(questionCnt);
+      return;
+    })
+    .catch(console.log);
 
   return (
     <ProfileTabContainer>

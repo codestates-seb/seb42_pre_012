@@ -58,9 +58,14 @@ const ProfileBtn = MUIstyled(Button)(() => ({
 }));
 
 function ProfileBlock() {
+  // 임시로 랜덤 값 설정
+  // TODO: response 객체 다른 값 추가 설정 -> 현재 기준으로 계산
   const daysAsMember = Math.floor(Math.random() * 9) + 1;
   const visitedDays = Math.floor(Math.random() * 9) + 1;
   const consecutiveVisitingDays = Math.floor(Math.random() * 9) + 1;
+
+  const state = useSelector((state) => state);
+
   return (
     <Box>
       <Grid container sx={{ height: "144px" }}>
@@ -78,7 +83,7 @@ function ProfileBlock() {
             sx={{
               width: "128px",
               height: "128px",
-              backgroundColor: "lightseagreen",
+              backgroundColor: `${state.profileColor}`,
               borderRadius: "5px",
               display: "flex",
               justifyContent: "center",
@@ -88,7 +93,7 @@ function ProfileBlock() {
             <Typography
               sx={{ color: "white", fontWeight: "bold", fontSize: "30px" }}
             >
-              PRE12
+              {state.displayName}
             </Typography>
           </Box>
         </Grid>
@@ -103,7 +108,7 @@ function ProfileBlock() {
           }}
         >
           <Grid item sx={{ fontSize: "34px", marginBottom: "12px" }}>
-            PRE12
+            {state.displayName}
           </Grid>
           <Grid
             item
@@ -1099,7 +1104,6 @@ function Users() {
   const state = useSelector((state) => state);
   console.log("users page");
   console.log(state);
-
   return (
     <UsersContainer>
       <ProfileBlock />

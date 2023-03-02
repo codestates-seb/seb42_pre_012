@@ -184,68 +184,25 @@ function Login({ onLogin }) {
     axios
       .post(
         "http://ec2-13-124-137-67.ap-northeast-2.compute.amazonaws.com:8080/auth/login",
+        // {
+        //   email: emailInputRef.current.value,
+        //   password: passwordInputRef.current.value,
+        // }
         {
-          email: emailInputRef.current.value,
-          password: passwordInputRef.current.value,
+          email: "aa@gmail.com",
+          password: "asdf1",
         }
       )
       .then((res) => {
         console.log(res);
         if (res.status === 200) {
           console.log("success on login");
-          dispatch(saveMemberInfo(res.data));
-          console.log(res.data);
+          dispatch(saveMemberInfo(res.data.data));
           onLogin(e);
         }
         return;
       })
       .catch(console.log);
-
-    // // 회원가입하고 로그인
-    // axios
-    //   .post("https://7261-121-130-32-138.jp.ngrok.io/members", {
-    //     email: "tmp19@gmail.com",
-    //     password: "tmp19",
-    //     displayName: "tmp19",
-    //     profileColor: "lightseagreen",
-    //   })
-    //   .then((res) => console.log("회원가입 성공"))
-    //   .catch((err) => console.log(err))
-    //   .then(() => {
-    //     axios
-    //       .post("https://7261-121-130-32-138.jp.ngrok.io/auth/login", {
-    //         email: "tmp19@gmail.com",
-    //         password: "tmp19",
-    //       })
-    //       .then((res) => console.log(res))
-    //       .catch((err) => console.log(err));
-    //   });
-
-    // // 회원탈퇴: 11
-    // axios
-    //   .delete("https://7261-121-130-32-138.jp.ngrok.io/members/11")
-    //   .then((res) => console.log("res: ", res, "success"))
-    //   .catch((err) => console.log(err));
-
-    // // 회원정보 조회: 6
-    // axios
-    //   .get(
-    //     "https://7261-121-130-32-138.jp.ngrok.io/members/profile/19?page=1",
-    //     {},
-    //     {
-    //       withCredentials: true,
-    //     }
-    //   )
-    //   .then(console.log)
-    //   .catch(console.log);
-
-    // // 질문 목록 조회 : 16
-    // axios
-    //   .get(
-    //     "http://ec2-13-124-137-67.ap-northeast-2.compute.amazonaws.com:8080/questions?page=1&sortedBy=Newest"
-    //   )
-    //   .then(console.log)
-    //   .catch(console.log);
   };
 
   return (

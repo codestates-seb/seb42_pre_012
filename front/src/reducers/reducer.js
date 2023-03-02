@@ -6,7 +6,7 @@ const reducer = (state = defaultMemberInfoData, action) => {
     case SAVE_MEMBER_INFO:
       return {
         ...state,
-        ...action.payload.data,
+        ...action.payload,
       };
     default:
       return state;

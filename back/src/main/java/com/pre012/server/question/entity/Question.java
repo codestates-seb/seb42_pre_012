@@ -32,7 +32,7 @@ public class Question extends Auditable {
     @Column(length = 200)
     private String image_path;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "LONGTEXT")
     private String content;
 
     @Column(nullable = false)

@@ -36,8 +36,8 @@ public class JwtVerificationFilter extends OncePerRequestFilter {
         Map<String, Object> claims = verifyJws(request, response);
         if (claims != null) { // 토큰 검증, claims 파싱이 잘 되면
             setAuthenticationToContext(claims);
+            filterChain.doFilter(request, response);
         }
-        filterChain.doFilter(request, response);
     }
 
     //  "Header - Authorization 없거나  'Bearer' 로 시작하지 않을 때"

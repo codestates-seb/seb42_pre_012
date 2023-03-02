@@ -1,14 +1,14 @@
-server: 
+server:
     port: 8080
-    servlet: 
+    servlet:
         encoding:
             force-response: true
 spring:
     datasource:
         driver-class-name: com.mysql.cj.jdbc.Driver
-        url: jdbc:mysql://localhost:3306/pre012?serverTimezone=Asia/Seoul
-        username: ${MYSQL_USERNAME}
-        password: ${MYSQL_PASSWORD}
+        url: ${AWS_RDS_URL}
+        username: ${AWS_RDS_USERNAME}
+        password: ${AWS_RDS_PASSWORD}
     jpa:
         hibernate:
             ddl-auto: none
@@ -19,3 +19,15 @@ logging:
             springframework:
             orm:
                 jpa: DEBUG
+    file:
+        path: /home/ubuntu/log
+jwt:
+    key: ${JWT_SECRET_KEY}
+    access-token-expiration-minutes: 30
+    refresh-token-expiration-minutes: 720
+
+mail:
+    address:
+        admin: admin@gmail.com
+#config:
+#    domain: ${AWS_S3_ENDPOINT}

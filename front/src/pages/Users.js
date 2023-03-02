@@ -28,6 +28,9 @@ import { ToggleButtonGroup, ToggleButton } from "@mui/material";
 
 import { FaGithub } from "react-icons/fa";
 import { useSelector } from "react-redux";
+import { useRef } from "react";
+import { useDispatch } from "react-redux";
+import { saveMemberInfo } from "../actions/actions";
 
 const UsersContainer = styled.div`
   min-height: 100vh;
@@ -58,9 +61,14 @@ const ProfileBtn = MUIstyled(Button)(() => ({
 }));
 
 function ProfileBlock() {
+  // 임시로 랜덤 값 설정
+  // TODO: response 객체 다른 값 추가 설정 -> 현재 기준으로 계산
   const daysAsMember = Math.floor(Math.random() * 9) + 1;
   const visitedDays = Math.floor(Math.random() * 9) + 1;
   const consecutiveVisitingDays = Math.floor(Math.random() * 9) + 1;
+
+  const state = useSelector((state) => state);
+
   return (
     <Box>
       <Grid container sx={{ height: "144px" }}>
@@ -78,7 +86,7 @@ function ProfileBlock() {
             sx={{
               width: "128px",
               height: "128px",
-              backgroundColor: "lightseagreen",
+              backgroundColor: `${state.profileColor}`,
               borderRadius: "5px",
               display: "flex",
               justifyContent: "center",
@@ -88,7 +96,7 @@ function ProfileBlock() {
             <Typography
               sx={{ color: "white", fontWeight: "bold", fontSize: "30px" }}
             >
-              PRE12
+              {state.displayName}
             </Typography>
           </Box>
         </Grid>
@@ -103,7 +111,7 @@ function ProfileBlock() {
           }}
         >
           <Grid item sx={{ fontSize: "34px", marginBottom: "12px" }}>
-            PRE12
+            {state.displayName}
           </Grid>
           <Grid
             item
@@ -320,6 +328,47 @@ const SubTabContent = styled.div`
     border-color: ${(props) => props.bdrColor || COLORS.subtabBorder};
     border-radius: 5px;
 
+    & > .upper {
+      border-bottom: 1px solid;
+      border-color: ${(props) => COLORS.subtabBorder};
+      padding: 12px;
+
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 5px;
+      & > .like {
+        border: 1px solid ${(props) => COLORS.subtabBorder};
+        border-radius: 5px;
+        padding: 2px 5px;
+        width: 30px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        &.plus {
+          background-color: #5eba7d;
+          color: #fff8d7;
+        }
+      }
+      & > .title {
+        flex-grow: 6;
+        color: blue;
+        max-width: 450px;
+        padding-left: 3px;
+        margin: 0;
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+      }
+      & > .createdAt {
+        flex-grow: 2;
+        max-width: 100px;
+      }
+    }
+    & > .lower {
+      padding: 12px;
+    }
+
     &.fr {
       display: flex;
       justify-content: center;
@@ -412,10 +461,22 @@ const ProfileTabContainer = styled.div`
 function ProfileTab() {
   const reputationCnt = 1;
   const reachedCnt = 0;
-  const answersCnt = 0;
-  const questionsCnt = 0;
+  const [answersCnt, setAnswersCnt] = useState(0);
+  const [questionsCnt, setQuestionsCnt] = useState(0);
 
-  // axios
+  const memberInfo = useSelector((state) => state);
+
+  axios
+    .get(
+      `http://ec2-13-124-137-67.ap-northeast-2.compute.amazonaws.com:8080/members/profile/${memberInfo.memberId}`
+    )
+    .then((res) => {
+      const { questionCnt, answerCnt } = res.data.data.activity;
+      setAnswersCnt(answerCnt);
+      setQuestionsCnt(questionCnt);
+      return;
+    })
+    .catch(console.log);
 
   return (
     <ProfileTabContainer>
@@ -562,7 +623,21 @@ function ActivityAnswersTab() {
     setSortOption(option);
   };
 
-  console.log("activity answers tab sort option: ", sortOption);
+  // console.log("activity answers tab sort option: ", sortOption);
+
+  const memberInfo = useSelector((state) => state);
+  const [myAnswers, setMyAnswers] = useState([]);
+  axios
+    .get(
+      `http://ec2-13-124-137-67.ap-northeast-2.compute.amazonaws.com:8080/members/answers/${memberInfo.memberId}?page=1`
+    )
+    .then((res) => {
+      console.log(res);
+      console.log(res.data.data.questions.length);
+      // const {questions} = res.data.data;
+      // setMyAnswers
+    })
+    .catch(console.log);
 
   return (
     <SubTabContent padding="48px">
@@ -585,7 +660,7 @@ function ActivityAnswersTab() {
           ))}
         </ToggleButtonGroup>
       </div>
-      <div className="box fc">
+      <div className="box">
         <div className="main">You have not answered any answers</div>
         <div className="delete">Deleted answers</div>
       </div>
@@ -594,7 +669,6 @@ function ActivityAnswersTab() {
 }
 function ActivityQuestionsTab() {
   // axios
-  const questionsCnt = 0;
 
   const sortOptionArr = ["Score", "Activity", "Newest", "Views"];
 
@@ -604,10 +678,24 @@ function ActivityQuestionsTab() {
     setSortOption(option);
   };
 
+  const memberInfo = useSelector((state) => state);
+  const [myQuestions, setMyQuestions] = useState([]);
+
+  useEffect(() => {
+    axios
+      .get(
+        `http://ec2-13-124-137-67.ap-northeast-2.compute.amazonaws.com:8080/members/questions/${memberInfo.memberId}?page=1`
+      )
+      .then((res) => {
+        setMyQuestions([...res.data.data.questions]);
+      })
+      .catch(console.log);
+  }, []);
+
   return (
     <SubTabContent padding="48px">
       <div className="flexBox">
-        <div className="title">{`${questionsCnt} Questions`}</div>
+        <div className="title">{`${myQuestions.length} Questions`}</div>
         <ToggleButtonGroup
           value={sortOption}
           onChange={handleSortOption}
@@ -625,8 +713,23 @@ function ActivityQuestionsTab() {
           ))}
         </ToggleButtonGroup>
       </div>
-      <div className="box fc">
-        <div className="main">You have not answered any questions</div>
+      <div className="box">
+        {myQuestions.length === 0
+          ? "You have not answered any questions"
+          : myQuestions.map((question) => (
+              <div className="upper" key={question.questionId}>
+                <div className={question.likeCnt >= 0 ? "like plus" : "like"}>
+                  {question.likeCnt}
+                </div>
+                {/* <Link to=" */}
+                <div className="title">
+                  {titleWithLengthLimit(question.title, 40)}
+                </div>
+                <div className="createdAt">
+                  {convertDateStrFormat(question.createdAt)}
+                </div>
+              </div>
+            ))}
         <div className="delete">Deleted questions</div>
       </div>
     </SubTabContent>
@@ -675,6 +778,7 @@ function ActivityTagsTab() {
         <div className="test_opts">options</div>
       </div>
       <div className="test_box">
+        <div className="test_upper">You have not answered any questions</div>
         <div className="test_upper">You have not answered any questions</div>
         <div className="test_lower">Deleted answers</div>
       </div>
@@ -841,15 +945,46 @@ function SettingsPersonalInformationTab() {
   //
 }
 function SettingsEditProfileTab() {
-  // redux - global state
-  const member = {
-    fullName: "codestates pre12",
-    displayName: "PRE12",
-    profileImageBgColor: "lightseagreen",
+  const state = useSelector((state) => state);
+  const dispatch = useDispatch();
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // displayName PATCH하고 새로 GET한 값을 redux state로 저장
+    axios
+      .patch(
+        `http://ec2-13-124-137-67.ap-northeast-2.compute.amazonaws.com:8080/members/${state.memberId}`,
+        {
+          displayName,
+          password: "",
+        }
+      )
+      .then((res) => {
+        if (res.status === 200) {
+          axios
+            .get(
+              `http://ec2-13-124-137-67.ap-northeast-2.compute.amazonaws.com:8080/members/profile/${state.memberId}`
+            )
+            .then((res) => {
+              const { displayName } = res.data.data.member;
+              dispatch(
+                saveMemberInfo({
+                  displayName,
+                })
+              );
+              return;
+            })
+            .catch(console.log);
+        }
+        return;
+      })
+      .catch(console.log);
   };
 
+  const [displayName, setDisplayName] = useState(state.displayName);
+
   return (
-    <form action="">
+    <form>
       <SubTabContent padding="24px">
         <div className="subtabTitle">Edit your profile</div>
         <div className="contentItem">
@@ -862,7 +997,7 @@ function SettingsEditProfileTab() {
                   sx={{
                     width: "164px",
                     height: "164px",
-                    backgroundColor: "lightseagreen",
+                    backgroundColor: `${state.profileColor}`,
                     borderRadius: "5px",
                     display: "flex",
                     justifyContent: "center",
@@ -876,7 +1011,7 @@ function SettingsEditProfileTab() {
                       fontSize: "37px",
                     }}
                   >
-                    PRE12
+                    {state.displayName}
                   </Typography>
                 </Box>
               </div>
@@ -884,8 +1019,9 @@ function SettingsEditProfileTab() {
                 <div className="itemTitle">Display name</div>
                 <input
                   type="text"
-                  value={member.displayName}
+                  value={displayName}
                   className="publicInfo"
+                  onChange={(e) => setDisplayName(e.target.value)}
                 />
               </div>
               <div className="item">
@@ -924,12 +1060,7 @@ function SettingsEditProfileTab() {
             <div className="main fr">
               <div className="item fg1">
                 <div className="itemTitle">Website link</div>
-                <input
-                  type="text"
-                  className="links"
-                  value={"codestates.pre12.com"}
-                  disabled
-                />
+                <input type="text" className="links" value={""} disabled />
               </div>
               <div className="item fg1">
                 <div className="itemTitle">Twitter link or username</div>
@@ -951,14 +1082,19 @@ function SettingsEditProfileTab() {
             <div className="main">
               <div className="item">
                 <div className="itemTitle">Full name</div>
-                <input type="text" value={member.fullName} disabled />
+                <input type="text" value={state.displayName} disabled />
               </div>
             </div>
           </div>
         </div>
 
         <div className="fr">
-          <input type="submit" value="Save profile" id="saveProfileBtn" />
+          <input
+            type="submit"
+            value="Save profile"
+            id="saveProfileBtn"
+            onClick={handleSubmit}
+          />
           <button id="cancelProfileChangesBtn" value="Cancel" />
         </div>
       </SubTabContent>
@@ -1096,10 +1232,6 @@ function SettingsTab() {
 }
 
 function Users() {
-  const state = useSelector((state) => state);
-  console.log("users page");
-  console.log(state);
-
   return (
     <UsersContainer>
       <ProfileBlock />
@@ -1142,5 +1274,20 @@ const COLORS = {
 //     </ToggleButtonGroup>
 //   );
 // };
+
+const convertDateStrFormat = (str) => {
+  const date = new Date(str);
+  return `${date.toLocaleDateString("default", {
+    month: "short",
+    day: "numeric",
+  })}, ${date.getFullYear()}`;
+};
+
+const titleWithLengthLimit = (title, lengthLimit) => {
+  if (title.length > lengthLimit) {
+    return title.slice(0, lengthLimit) + "...";
+  }
+  return title;
+};
 
 export default Users;

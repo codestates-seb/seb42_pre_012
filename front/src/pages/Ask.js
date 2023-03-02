@@ -1,5 +1,8 @@
 import styled from "styled-components";
 import { useState } from "react";
+import axios from "axios";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 import pencil from "../assets/pencil.png";
 import askBackgroundImg from "../assets/askBackgroundImg.png";
@@ -271,9 +274,23 @@ const BodySideBox = styled.div`
   }
 `;
 
-function Ask() {
+function Ask({ con, onCon }) {
   const [titleSide, setTitleSide] = useState(false);
   const [bodySide, setBodySide] = useState(false);
+  const [val, setVal] = useState({
+    title: "",
+    tags: "",
+  });
+
+  const { title, tags } = val;
+
+  const handleText = (e) => {
+    const { value, name } = e.target;
+    setVal({
+      ...val,
+      [name]: value,
+    });
+  };
 
   function titleSideHandle() {
     setTitleSide(!titleSide);
@@ -290,6 +307,24 @@ function Ask() {
   function bodySideBlur() {
     setBodySide(false);
   }
+
+  const navigate = useNavigate();
+
+  const memberId = useSelector((state) => state.memberId);
+
+  const onPost = () => {
+    axios.post(
+      "http://ec2-13-124-137-67.ap-northeast-2.compute.amazonaws.com:8080/questions",
+      {
+        memberId,
+        title: val.title,
+        content: con.slice(3, con.length - 4),
+        tags: [{ name: val.tags }],
+      }
+    );
+
+    navigate("/");
+  };
 
   return (
     <AskContainer>
@@ -325,6 +360,9 @@ function Ask() {
             Be specific and imagine you’re asking a question to another person.
           </p>
           <input
+            name="title"
+            value={title}
+            onChange={handleText}
             onFocus={titleSideHandle}
             onBlur={titleSideBlur}
             placeholder="e.g. Is there an R function for finding the index of an element in a vector?"
@@ -340,6 +378,8 @@ function Ask() {
             <Editor
               bodySideHandle={bodySideHandle}
               bodySideBlur={bodySideBlur}
+              con={con}
+              onCon={onCon}
             />
           </div>
         </AskBody>
@@ -349,9 +389,14 @@ function Ask() {
             Add up to 5 tags to describe what your question is about. Start
             typing to see suggestions.
           </p>
-          <input placeholder="e.g. (vba css json)"></input>
+          <input
+            name="tags"
+            value={tags}
+            onChange={handleText}
+            placeholder="e.g. (vba css json)"
+          ></input>
         </AskTags>
-        <button>Post your quesiton</button>
+        <button onClick={onPost}>Post your quesiton</button>
       </main>
       {titleSide ? (
         <TitleSideBox>

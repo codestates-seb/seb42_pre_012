@@ -35,6 +35,7 @@ public class AuthDto {
     @NoArgsConstructor
     public static class LoginResponse {
         private Long memberId;
+        private String displayName;
         private String profileColor;
     }
 

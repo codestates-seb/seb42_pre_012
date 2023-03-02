@@ -3,7 +3,6 @@ import ButtonGroup from "@mui/material/ButtonGroup";
 import Button from "@mui/material/Button";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { green } from "@mui/material/colors";
-import { questions } from "./Questiondata";
 import RightSidebar from "../components/RightSidebar";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
@@ -19,6 +18,7 @@ const HomeContainer = styled.div`
   width: 100%;
   border-left: 1px solid RGB(225, 226, 228);
   overflow: scroll;
+  overflow-x: hidden;
 
   h1 {
     display: flex;
@@ -34,6 +34,7 @@ const MainContainer = styled.div`
   display: flex;
   flex-direction: column;
   flex: 8;
+  border-bottom: none;
 `;
 
 const TopQuestions = styled.div`
@@ -66,6 +67,7 @@ const TopQuestions = styled.div`
 
 const QuestionContent = styled.div`
   display: flex;
+  flex-direction: column;
   flex-grow: 8;
   border-top: 1px solid RGB(225, 226, 228);
 `;
@@ -87,6 +89,10 @@ const Question = styled.li`
   padding: 22px 34px 15px 34px;
   font-size: 16px;
   border-bottom: 1px solid RGB(225, 226, 228);
+
+  form {
+    border: none;
+  }
 `;
 
 const QuestionLeftForm = styled.div`
@@ -168,6 +174,10 @@ const Tagbuttons = styled.form`
   flex: 1;
 `;
 
+const Pages = styled.form`
+  display: flex;
+`
+
 const theme = createTheme({
   typography: {
     button: {
@@ -184,25 +194,60 @@ const theme = createTheme({
   },
 });
 
-function QuestionsContainer() {
+function Home() {
   const [data, setData] = useState([]);
+  const [sorted, setSorted] = useState('');
 
   useEffect(() => {
     axios
       .get(
-        `http://ec2-13-124-137-67.ap-northeast-2.compute.amazonaws.com:8080/questions?page=1&sortedBy=newest`
+        `http://ec2-13-124-137-67.ap-northeast-2.compute.amazonaws.com:8080/questions?page=1`,{
+          params: {
+            sortedBy: sorted,
+          }
+        }
       )
       .then((res) => {
         setData(res.data.data.questions);
         console.log(res.data.data.questions);
       });
-  }, []);
+  }, [sorted]);
+
+  function filteringButton (e) {
+    setSorted(e.target.name)
+    
+  }
 
   return (
-    <QuestionContent>
-      <AllQuestion>
-        {data.map((question) => {
-          return (
+    <HomeContainer>
+      <MainContainer>
+        <TopQuestions>
+          <h1>Top Questions</h1>
+          <Buttons>
+            <Link to="ask" className="askbutton">
+              Ask Questions
+            </Link>
+            <ThemeProvider theme={theme}>
+              <ButtonGroup
+                size="large"
+                aria-label="small button group"
+                color="secondary"
+                sx={{ width: 380 }}
+              >
+                <Button onClick={filteringButton} name='Newest' sx={{ fontSize: 13 }}>Newest</Button>
+                <Button onClick={filteringButton} name='Unanswered' sx={{ fontSize: 13 }}>Unanswered</Button>
+                <Button onClick={filteringButton} name='Interesting' sx={{ fontSize: 13 }}>Interesting</Button>
+                <Button onClick={filteringButton} name='Hot' sx={{ fontSize: 13 }}>Hot</Button>
+                <Button onClick={filteringButton} name='Active' sx={{ fontSize: 13 }}>Active</Button>
+              </ButtonGroup>
+            </ThemeProvider>
+          </Buttons>
+        </TopQuestions>
+
+        <QuestionContent>
+         <AllQuestion>
+          {data.map((question) => {
+           return (
             <Question key={question.questionId}>
               <QuestionLeftForm>
                 <div>{question.likeCnt} votes</div>
@@ -236,39 +281,9 @@ function QuestionsContainer() {
               </QuestionRightForm>
             </Question>
           );
-        })}
-      </AllQuestion>
-    </QuestionContent>
-  );
-}
-
-function Home() {
-  return (
-    <HomeContainer>
-      <MainContainer>
-        <TopQuestions>
-          <h1>Top Questions</h1>
-          <Buttons>
-            <Link to="ask" className="askbutton">
-              Ask Questions
-            </Link>
-            <ThemeProvider theme={theme}>
-              <ButtonGroup
-                size="large"
-                aria-label="small button group"
-                color="secondary"
-                sx={{ width: 380 }}
-              >
-                <Button sx={{ fontSize: 13 }}>Newest</Button>
-                <Button sx={{ fontSize: 13 }}>Unanswered</Button>
-                <Button sx={{ fontSize: 13 }}>Interesting</Button>
-                <Button sx={{ fontSize: 13 }}>Hot</Button>
-                <Button sx={{ fontSize: 13 }}>Active</Button>
-              </ButtonGroup>
-            </ThemeProvider>
-          </Buttons>
-        </TopQuestions>
-        <QuestionsContainer />
+         })}
+        </AllQuestion>
+       </QuestionContent>
       </MainContainer>
       <RightSidebar />
     </HomeContainer>

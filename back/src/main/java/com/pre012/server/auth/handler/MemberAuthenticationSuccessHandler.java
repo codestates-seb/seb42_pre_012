@@ -59,7 +59,7 @@ public class MemberAuthenticationSuccessHandler implements AuthenticationSuccess
 
         Gson gson = new Gson();
         String imgPath = member.getProfileImage() != null ? member.getProfileImage() : "";
-        LoginResponse memberInfo = new LoginResponse(member.getId(), imgPath);
+        LoginResponse memberInfo = new LoginResponse(member.getId(), member.getDisplayName(), imgPath);
         SingleResponseDto<LoginResponse> responseDto = new SingleResponseDto<>(memberInfo);
 
         response.setHeader("Authorization", "Bearer " + accessToken);

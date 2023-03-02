@@ -19,6 +19,8 @@ logging:
             springframework:
             orm:
                 jpa: DEBUG
+    file:
+        path: /home/ubuntu/log
 jwt:
     key: ${JWT_SECRET_KEY}
     access-token-expiration-minutes: 30
@@ -27,3 +29,5 @@ jwt:
 mail:
     address:
         admin: admin@gmail.com
+#config:
+#    domain: ${AWS_S3_ENDPOINT}

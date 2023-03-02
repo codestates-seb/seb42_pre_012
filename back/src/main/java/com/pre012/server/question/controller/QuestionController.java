@@ -61,11 +61,11 @@ public class QuestionController {
         // 검증된 member 찾아서 넣기
         addMemberToQuestion(requestBody, question);
 
-        Question savedQuestion = questionService.createQuestion(question);
-
         // 검증된 List<Tag> 찾기
         List<Tag> findTags = tagService.findVerifyTags(
                 tagMapper.tagRequestDtosToTags(requestBody.getTags()));
+
+        Question savedQuestion = questionService.createQuestion(question);
 
         // 새 QuestionTag 만들어서 setTag, setQuestion 해줌 <- questionId 가 필요해서 question 생성 후 해야 함.
         questionTagService.createQuestionTags(question, findTags);
@@ -85,11 +85,12 @@ public class QuestionController {
         // 검증된 member 찾아서 넣기
         addMemberToQuestion(requestBody, question);
 
-        Question updatedQuestion = questionService.updateQuestion(question);
-
         // 검증된 tag 찾기
         List<Tag> findTags = tagService.findVerifyTags(
                 tagMapper.tagRequestDtosToTags(requestBody.getTags()));
+
+        Question updatedQuestion = questionService.updateQuestion(question);
+
 
         questionTagService.updateQuestionTags(question, findTags);
 

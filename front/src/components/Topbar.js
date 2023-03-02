@@ -320,9 +320,7 @@ function Topbar({ login, onLogin }) {
       <div className="StackOverflowlogoContainer">
         <img onClick={navigateToHome} src={stackOverflowlogo} alt="" />
       </div>
-      <Link to="question" className="productsText">
-        Products
-      </Link>
+      <div className="productsText">Products</div>
       <TopbarSearchContainer ref={el}>
         <input placeholder="Search..." onFocus={handleFocus} />
         <GrSearch className="searchIcon" />

@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { FaGithub, FaFacebookSquare, FaExternalLinkAlt } from "react-icons/fa";
 
 import axios from "axios";
-import { useRef, useEffect } from "react";
+import { useRef } from "react";
 
 import { useSelector, useDispatch } from "react-redux";
 import { saveMemberInfo } from "../actions/actions";
